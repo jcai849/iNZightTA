@@ -24,5 +24,6 @@ Imports:
     textstem,
     magrittr,
     stats,
-    textrank
+    textrank,
+    lexRankr
 RoxygenNote: 6.1.1
