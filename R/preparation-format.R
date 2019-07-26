@@ -3,7 +3,7 @@
 #' @param data a tibble formatted with a text and (optional) group
 #'     column
 #'
-#' @return a tibble formatted such that columns correspond to
+#' @return a [tibble][tibble::tibble-package] formatted such that columns correspond to
 #'     identifiers of group, line, sentence, word (groups ignored)
 #'
 #' @export
@@ -29,7 +29,7 @@ format_data <- function(data){
 #' @param addl user defined character vector of additional stopwords,
 #'     each element being a stopword
 #'
-#' @return a tibble with one column named "word"
+#' @return a [tibble][tibble::tibble-package] with one column named "word"
 get_sw <- function(lexicon = "snowball", addl = NA){
   addl_char <- as.character(addl)
   tidytext::get_stopwords(source = lexicon) %>%
@@ -47,7 +47,8 @@ get_sw <- function(lexicon = "snowball", addl = NA){
 #'
 #' @param ... arguments of get_sw
 #'
-#' @return a dataframe equivalent to the input dataframe, with an additional stopword column
+#' @return a [tibble][tibble::tibble-package] equivalent to the input
+#'   dataframe, with an additional stopword column
 #'
 #' @export
 determine_stopwords <- function(.data, ...){
@@ -67,8 +68,9 @@ determine_stopwords <- function(.data, ...){
 #'
 #' @param addl_stopwords char vector of user-supplied stopwords
 #'
-#' @return tibble with one token per line, stopwords removed leaving
-#'   NA values, column for analysis named "text"
+#' @return a [tibble][tibble::tibble-package] with one token per line,
+#'   stopwords removed leaving NA values, column for analysis named
+#'   "text"
 #'
 #' @export
 text_prep <- function(.data, lemmatize=TRUE, stopwords=TRUE, sw_lexicon="snowball", addl_stopwords=NA){

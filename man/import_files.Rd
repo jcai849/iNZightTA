@@ -10,7 +10,8 @@ import_files(filepaths)
 \item{filepaths}{char vector of filepaths}
 }
 \value{
-imported files with document id, bound into tibble
+a [tibble][tibble::tibble-package] imported files with
+  document id
 }
 \description{
 Import any number of files

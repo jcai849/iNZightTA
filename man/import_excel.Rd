@@ -11,7 +11,7 @@ import_excel(filepath)
 filepath of the file to import}
 }
 \value{
-tibble of each row corrresponding to a line of the text
+a [tibble][tibble::tibble-package] of each row corrresponding to a line of the text
     file, with the column named "text"
 }
 \description{

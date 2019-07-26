@@ -2,9 +2,10 @@
 #'
 #' @param filepath a string indicating the relative or absolute
 #'     filepath of the file to import
-#'
-#' @return tibble of each row corrresponding to a line of the text
-#'     file, with the column named "text"
+#' 
+#' @return a [tibble][tibble::tibble-package] of each row
+#'   corrresponding to a line of the text file, with the column named
+#'   "text"
 import_txt <- function(filepath){
   readr::read_lines(filepath) %>%
     tibble::tibble(text=.)
@@ -15,8 +16,9 @@ import_txt <- function(filepath){
 #' @param filepath a string indicating the relative or absolute
 #'     filepath of the file to import
 #'
-#' @return tibble of each row corrresponding to a line of the text
-#'     file, with the column named "text"
+#' @return a [tibble][tibble::tibble-package] of each row
+#'   corrresponding to a line of the text file, with the column named
+#'   "text"
 import_csv <- function(filepath){
   readr::read_csv(filepath) %>%
     table_textcol()
@@ -27,7 +29,7 @@ import_csv <- function(filepath){
 #' @param filepath a string indicating the relative or absolute
 #'     filepath of the file to import
 #'
-#' @return tibble of each row corrresponding to a line of the text
+#' @return a [tibble][tibble::tibble-package] of each row corrresponding to a line of the text
 #'     file, with the column named "text"
 import_excel <- function(filepath){
   readxl::read_excel(filepath) %>%
@@ -38,7 +40,7 @@ import_excel <- function(filepath){
 #'
 #' @param filepath string filepath of file for import
 #'
-#' return imported file with document id
+#' @return imported file with document id
 import_base_file <- function(filepath){
   filetype <- get_filetype(filepath)
   filename <- basename(filepath)
@@ -57,9 +59,8 @@ import_base_file <- function(filepath){
 #'
 #' @param filepaths char vector of filepaths
 #'
-#' @return imported files with document id, bound into tibble
-#' 
-#' @importFrom magrittr %>%
+#' @return a [tibble][tibble::tibble-package] imported files with
+#'   document id
 #' 
 #' @export
 import_files <- function(filepaths){

@@ -14,7 +14,7 @@ get_sw(lexicon = "snowball", addl = NA)
 each element being a stopword}
 }
 \value{
-a tibble with one column named "word"
+a [tibble][tibble::tibble-package] with one column named "word"
 }
 \description{
 Gets stopwords from a default list and user-provided list

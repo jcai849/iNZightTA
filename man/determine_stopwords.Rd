@@ -12,7 +12,8 @@ determine_stopwords(.data, ...)
 \item{...}{arguments of get_sw}
 }
 \value{
-a dataframe equivalent to the input dataframe, with an additional stopword column
+a [tibble][tibble::tibble-package] equivalent to the input
+  dataframe, with an additional stopword column
 }
 \description{
 determine stopword status

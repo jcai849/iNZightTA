@@ -7,9 +7,10 @@
 import_base_file(filepath)
 }
 \arguments{
-\item{filepath}{string filepath of file for import
-
-return imported file with document id}
+\item{filepath}{string filepath of file for import}
+}
+\value{
+imported file with document id
 }
 \description{
 Base case for file import

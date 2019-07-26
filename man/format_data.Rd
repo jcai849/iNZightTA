@@ -11,7 +11,7 @@ format_data(data)
 column}
 }
 \value{
-a tibble formatted such that columns correspond to
+a [tibble][tibble::tibble-package] formatted such that columns correspond to
     identifiers of group, line, sentence, word (groups ignored)
 }
 \description{

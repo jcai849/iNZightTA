@@ -19,8 +19,9 @@ text_prep(.data, lemmatize = TRUE, stopwords = TRUE,
 \item{addl_stopwords}{char vector of user-supplied stopwords}
 }
 \value{
-tibble with one token per line, stopwords removed leaving
-  NA values, column for analysis named "text"
+a [tibble][tibble::tibble-package] with one token per line,
+  stopwords removed leaving NA values, column for analysis named
+  "text"
 }
 \description{
 takes imported one-line-per-row data and prepares it for later analysis
