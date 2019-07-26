@@ -13,3 +13,15 @@ Description: Provides text analytics functions for the importation,
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
+Imports: 
+    readr,
+    tibble,
+    stringr,
+    dplyr,
+    readxl,
+    purrr,
+    tidytext,
+    textstem,
+    magrittr,
+    stats
+RoxygenNote: 6.1.1
