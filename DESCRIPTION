@@ -23,5 +23,6 @@ Imports:
     tidytext,
     textstem,
     magrittr,
-    stats
+    stats,
+    textrank
 RoxygenNote: 6.1.1

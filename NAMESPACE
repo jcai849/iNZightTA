@@ -2,9 +2,13 @@
 
 export(determine_stopwords)
 export(format_data)
+export(get_bigram)
 export(get_chapters)
 export(get_parts)
 export(get_sections)
 export(import_files)
+export(keywords_tr)
+export(term_freq)
 export(text_prep)
+export(word_sentiment)
 importFrom(magrittr,"%>%")
