@@ -1,0 +1,15 @@
+Package: inzightta
+Title: iNZight Text Analytics
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Jason",
+           family = "Cairns",
+           role = c("aut", "cre"),
+           email = "jcai849@aucklanduni.ac.nz")
+Description: Provides text analytics functions for the importation,
+	     analysis, and visualisation of text. This package is
+	     designed specifically for output in shiny, with the
+	     analytical functions all working well with dplyr tools.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
