@@ -2,7 +2,7 @@
 % Please edit documentation in R/preparation-format.R
 \name{format_data}
 \alias{format_data}
-\title{formats imported data into an analysis-ready format}
+\title{formats imported data into an analysis-ready format '}
 \usage{
 format_data(data)
 }
@@ -11,9 +11,10 @@ format_data(data)
 column}
 }
 \value{
-a [tibble][tibble::tibble-package] formatted such that columns correspond to
-    identifiers of group, line, sentence, word (groups ignored)
+a [tibble][tibble::tibble-package] formatted such that
+    columns correspond to identifiers of group, line, sentence,
+    word (groups ignored)
 }
 \description{
-formats imported data into an analysis-ready format
+formats imported data into an analysis-ready format '
 }

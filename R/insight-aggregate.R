@@ -20,8 +20,10 @@ term_count <- function(.data, aggregate_on){
 #'
 #' @param aggregate_on vector to aggregate .data over; ideally, sentence_id
 #'
+#' @return lexrank scores of aggregates
+#'
 #' @export
-key_sentences <- function(.data, aggregate_on){
+key_aggregates <- function(.data, aggregate_on){
   ## prepare .data for lexrank
   base <-  tibble::tibble(word = !! .data, aggregate = aggregate_on)
   aggregated <- base %>%
@@ -55,15 +57,70 @@ key_sentences <- function(.data, aggregate_on){
 #'   median, sd.
 #'
 #' @export
-aggregate_sentiment <- function(.data, aggregate_on, statistic){
+aggregate_sentiment <- function(.data, aggregate_on, statistic = mean){
   tibble::enframe(.data, "nil1", "word") %>%
     dplyr::bind_cols(tibble::enframe(aggregate_on, "nil2", "aggregate")) %>%
     dplyr::select(word, aggregate) %>%
-    dplyr::mutate(sentiment = word_sentiment(word)) %>%
+    dplyr::mutate(sentiment = term_sentiment(word)) %>%
     dplyr::group_by(aggregate) %>%
     dplyr::mutate(aggregate_sentiment =
 		    (function(.x){
 		      rep(statistic(.x, na.rm = TRUE), length(.x))
 		    })(sentiment)) %>%
     dplyr::pull(aggregate_sentiment)
+}
+
+#' perform group-aware term operations on the data
+#'
+#' @param .data dataframe of terms as per output of text_prep
+#'
+#' @param operations character vector of term operations to perform
+#'
+#' @return .data with operation columns added
+#'
+#' @export
+get_term_insight <- function(.data, operations){
+    opstable <- list("Term Frequency" = term_freq,
+                     "Bigrams" = get_bigram,
+                     "Key Words" = keywords_tr,
+                     "Term Sentiment" = term_sentiment,
+                     "Lagged Term Sentiment" = lagged_term_sentiment)
+    ops <- opstable[operations]
+    lapply(seq(length(ops)),
+           function(x){
+               name <- dplyr::sym(names(ops[x]))
+               operation <- ops[x][[1]]
+               df <- dplyr::mutate(.data,
+                                   !!name := operation(text))
+               df[names(ops[x])]
+           }) %>%
+        dplyr::bind_cols(.data, .)
+}
+
+#' perform group-aware aggregate operations on the data
+#'
+#' @param .data dataframe of terms as per output of text_prep
+#'
+#' @param operations character vector of operations to perform
+#'
+#' @param aggregate_on character name of the column to perform aggregate operations on
+#'
+#' @return .data with operation columns added
+#'
+#' @export
+get_aggregate_insight <- function(.data, operations, aggregate_on){
+    opstable <- list("Term Count" = term_count,
+                     "Key Sections" = key_aggregates,
+                     "Aggregated Sentiment" = aggregate_sentiment)
+    ops <- opstable[operations]
+    lapply(seq(length(ops)),
+           function(x){
+               name <- dplyr::sym(names(ops[x]))
+               operation <- ops[x][[1]]
+               agg_on <- dplyr::sym(aggregate_on)
+               df <- dplyr::mutate(.data,
+                                   !!name := operation(text, !! agg_on))
+               df[names(ops[x])]
+           }) %>%
+        dplyr::bind_cols(.data, .)
 }
