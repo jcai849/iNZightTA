@@ -4,7 +4,8 @@
 \alias{aggregate_sentiment}
 \title{Get statistics for sentiment over some group, such as sentence.}
 \usage{
-aggregate_sentiment(.data, aggregate_on, statistic = mean)
+aggregate_sentiment(.data, aggregate_on, lexicon = "afinn",
+  statistic = mean)
 }
 \arguments{
 \item{.data}{character vector of words}
@@ -12,8 +13,13 @@ aggregate_sentiment(.data, aggregate_on, statistic = mean)
 \item{aggregate_on}{vector to aggregate .data over; ideally,
 sentence_id, but could be chapter, document, etc.}
 
+\item{lexicon}{as per term sentiment}
+
 \item{statistic}{function that accepts na.rm argument; e.g. mean,
 median, sd.}
+}
+\value{
+sentiment of same length as input vector aggregated over the aggregate_on vector
 }
 \description{
 Get statistics for sentiment over some group, such as sentence.

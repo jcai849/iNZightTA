@@ -4,17 +4,19 @@
 \alias{score_bar_ungrouped}
 \title{output a ggplot column graph of the top texts from some insight function}
 \usage{
-score_bar_ungrouped(.data, col_name, n = 15, desc = FALSE)
+score_bar_ungrouped(.data, y, n = 15, x = text, desc = FALSE)
 }
 \arguments{
 \item{.data}{a dataframe containing "text" and insight columns as
 per the output of the get_(term|aggregate)_insight wrapper
 function}
 
-\item{col_name}{symbol name of the column insight was
+\item{y}{symbol name of the column insight was
 outputted to}
 
 \item{n}{number of bars to display}
+
+\item{x}{symbol name of column for insight labels}
 
 \item{desc}{bool: show bars in descending order}
 }

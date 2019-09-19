@@ -4,12 +4,14 @@
 \alias{get_term_insight}
 \title{perform group-aware term operations on the data}
 \usage{
-get_term_insight(.data, operations)
+get_term_insight(.data, operations, ...)
 }
 \arguments{
 \item{.data}{dataframe of terms as per output of text_prep}
 
 \item{operations}{character vector of term operations to perform}
+
+\item{...}{additional arguments to the operation - only sensible for singular operations}
 }
 \value{
 .data with operation columns added

@@ -4,10 +4,13 @@
 \alias{keywords_tr}
 \title{Determine textrank score for vector of words}
 \usage{
-keywords_tr(.data)
+keywords_tr(.data, summ_method)
 }
 \arguments{
 \item{.data}{character vector of words}
+
+\item{summ_method}{method to use for summarisation: textrank or
+lexrank. Doesn't do anything yet}
 }
 \value{
 vector of scores for each word

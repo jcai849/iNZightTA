@@ -18,12 +18,15 @@ term_count <- function(.data, aggregate_on){
 #'
 #' @param .data character vector of words
 #'
+#' @param summ_method method to use for summarisation: textrank or
+#'     lexrank. Doesn't do anything yet
+#'
 #' @param aggregate_on vector to aggregate .data over; ideally, sentence_id
 #'
 #' @return lexrank scores of aggregates
 #'
 #' @export
-key_aggregates <- function(.data, aggregate_on){
+key_aggregates <- function(.data, aggregate_on, summ_method){
   ## prepare .data for lexrank
   base <-  tibble::tibble(word = !! .data, aggregate = aggregate_on)
   aggregated <- base %>%
@@ -53,15 +56,19 @@ key_aggregates <- function(.data, aggregate_on){
 #' @param aggregate_on vector to aggregate .data over; ideally,
 #'   sentence_id, but could be chapter, document, etc.
 #'
+#' @param lexicon as per term sentiment
+#'
 #' @param statistic function that accepts na.rm argument; e.g. mean,
 #'   median, sd.
 #'
+#' @return sentiment of same length as input vector aggregated over the aggregate_on vector
+#'
 #' @export
-aggregate_sentiment <- function(.data, aggregate_on, statistic = mean){
+aggregate_sentiment <- function(.data, aggregate_on, lexicon = "afinn", statistic = mean){
   tibble::enframe(.data, "nil1", "word") %>%
     dplyr::bind_cols(tibble::enframe(aggregate_on, "nil2", "aggregate")) %>%
     dplyr::select(word, aggregate) %>%
-    dplyr::mutate(sentiment = term_sentiment(word)) %>%
+    dplyr::mutate(sentiment = term_sentiment(word, lexicon)) %>%
     dplyr::group_by(aggregate) %>%
     dplyr::mutate(aggregate_sentiment =
 		    (function(.x){
@@ -76,22 +83,25 @@ aggregate_sentiment <- function(.data, aggregate_on, statistic = mean){
 #'
 #' @param operations character vector of term operations to perform
 #'
+#' @param ... additional arguments to the operation - only sensible for singular operations 
+#'
 #' @return .data with operation columns added
 #'
 #' @export
-get_term_insight <- function(.data, operations){
+get_term_insight <- function(.data, operations, ...){
     opstable <- list("Term Frequency" = term_freq,
-                     "Bigrams" = get_bigram,
+                     "n-gram Frequency" = ngram_freq,
+                     "n-grams" = get_ngram,
                      "Key Words" = keywords_tr,
                      "Term Sentiment" = term_sentiment,
-                     "Lagged Term Sentiment" = lagged_term_sentiment)
+                     "Moving Average Term Sentiment" = lagged_term_sentiment)
     ops <- opstable[operations]
     lapply(seq(length(ops)),
            function(x){
                name <- dplyr::sym(names(ops[x]))
                operation <- ops[x][[1]]
                df <- dplyr::mutate(.data,
-                                   !!name := operation(text))
+                                   !!name := operation(text, ...))
                df[names(ops[x])]
            }) %>%
         dplyr::bind_cols(.data, .)
@@ -105,22 +115,46 @@ get_term_insight <- function(.data, operations){
 #'
 #' @param aggregate_on character name of the column to perform aggregate operations on
 #'
+#' @param ... additional arguments to the operation - only sensible for singular operations 
+#'
 #' @return .data with operation columns added
 #'
 #' @export
-get_aggregate_insight <- function(.data, operations, aggregate_on){
-    opstable <- list("Term Count" = term_count,
+get_aggregate_insight <- function(.data, operations, aggregate_on, ...){
+    opstable <- list("Aggregated Term Count" = term_count,
                      "Key Sections" = key_aggregates,
-                     "Aggregated Sentiment" = aggregate_sentiment)
+                     "Aggregated Sentiment" = aggregate_sentiment,
+                     "Bound Aggregates" = bind_aggregation)
     ops <- opstable[operations]
     lapply(seq(length(ops)),
            function(x){
                name <- dplyr::sym(names(ops[x]))
                operation <- ops[x][[1]]
                agg_on <- dplyr::sym(aggregate_on)
-               df <- dplyr::mutate(.data,
-                                   !!name := operation(text, !! agg_on))
+               df <- if (names(ops[x]) == "Bound Aggregates"){
+                         dplyr::mutate(.data,
+                                       !!name := operation(word, !! agg_on))
+                     } else {
+                         dplyr::mutate(.data,
+                                       !!name := operation(text, !! agg_on, ...))
+                     }
                df[names(ops[x])]
            }) %>%
         dplyr::bind_cols(.data, .)
+}
+
+#' bind aggregate terms together
+#'
+#' @param data vector of terms
+#'
+#' @param aggregate_on vector of aggregations
+#'
+#' @return data with every aggregation bound, as in a sentence
+#'
+#'
+bind_aggregation <- function(data, aggregate_on){
+    tibble::tibble(data, agg = aggregate_on) %>%
+        dplyr::group_by(agg) %>%
+        dplyr::mutate(bound = paste(data, collapse = " ")) %>%
+        dplyr::pull(bound)
 }

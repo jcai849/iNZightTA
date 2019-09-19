@@ -12,7 +12,7 @@ column}
 }
 \value{
 a [tibble][tibble::tibble-package] formatted such that
-    columns correspond to identifiers of group, line, sentence,
+    columns correspond to identifiers of group, sentence,
     word (groups ignored)
 }
 \description{

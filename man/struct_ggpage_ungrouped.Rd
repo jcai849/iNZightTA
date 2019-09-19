@@ -4,7 +4,7 @@
 \alias{struct_ggpage_ungrouped}
 \title{Colours a ggpage based on an insight function}
 \usage{
-struct_ggpage_ungrouped(.data, col_name)
+struct_ggpage_ungrouped(.data, col_name, num_terms, term_index, palette)
 }
 \arguments{
 \item{.data}{a dataframe containing "word" and insight columns as
@@ -13,6 +13,12 @@ function}
 
 \item{col_name}{symbol name of the insight column intended to
 colour plot}
+
+\item{num_terms}{the number of terms to visualise}
+
+\item{term_index}{which term to start the visualisation from}
+
+\item{palette}{determine coloration of palette (not yet implemented)}
 }
 \value{
 ggplot object as per ggpage

@@ -7,7 +7,7 @@
 #'   corrresponding to a line of the text file, with the column named
 #'   "text"
 import_txt <- function(filepath){
-  readr::read_lines(filepath) %>%
+  paste(readLines(filepath), collapse = "\n") %>%
     tibble::tibble(text=.)
 }
 

@@ -4,7 +4,7 @@
 \alias{get_aggregate_insight}
 \title{perform group-aware aggregate operations on the data}
 \usage{
-get_aggregate_insight(.data, operations, aggregate_on)
+get_aggregate_insight(.data, operations, aggregate_on, ...)
 }
 \arguments{
 \item{.data}{dataframe of terms as per output of text_prep}
@@ -12,6 +12,8 @@ get_aggregate_insight(.data, operations, aggregate_on)
 \item{operations}{character vector of operations to perform}
 
 \item{aggregate_on}{character name of the column to perform aggregate operations on}
+
+\item{...}{additional arguments to the operation - only sensible for singular operations}
 }
 \value{
 .data with operation columns added
