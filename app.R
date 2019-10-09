@@ -39,8 +39,7 @@ ui <- navbarPage("iNZight Text Analytics",
                                            uiOutput("group_by"),
                                            uiOutput("insight_options"),
                                            uiOutput("vis_options"),
-                                           uiOutput("vis_facet_by"),
-                                           actionButton("plot_button", "PLOT!!!")),
+                                           uiOutput("vis_facet_by")),
                               mainPanel(
                                   plotOutput("plot"))))
                  )
