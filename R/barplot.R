@@ -30,7 +30,8 @@ score_barplot <- function(.data, y, n = 15,
         ggplot2::ggplot(ggplot2::aes(x = text)) +
         ggplot2::geom_col(ggplot2::aes(y = !! insight_col)) +
         ggplot2::coord_flip() +
-        ggplot2::theme(text = ggplot2::element_text(size = 50))
+        ggplot2::theme(axis.text.x = ggplot2::element_text(size = 50),
+                       axis.text.y = ggplot2::element_text(size = 50))
 }
 
 #' Shorten some text up to n characters
