@@ -133,7 +133,7 @@ server <- function(input, output) {
                                                                           "Histogram")),
                                                          sliderInput("term_sent_lag",
                                                                      "Lag Length for Calculation of Moving Average",
-                                                                     3,500,50),
+                                                                     3,1000,250),
                                                          selectInput("sent_lex",
                                                                      "Lexicon for Sentiment Dictionary",
                                                                      list("afinn", "bing",
