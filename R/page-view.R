@@ -23,5 +23,9 @@ struct_pageview <- function(.data, col_name, num_terms, term_index, palette){
         dplyr::pull(word) %>%
         ggpage::ggpage_build() %>%
         dplyr::bind_cols(.data[seq(term_index, end),]) %>% 
-        ggpage::ggpage_plot(ggplot2::aes(fill = !! q_col_name)) ## +
+        ggpage::ggpage_plot(ggplot2::aes(fill = !! q_col_name)) +
+                ggplot2::geom_text(ggplot2::aes(label = word,
+                              x = (xmax + xmin)/2,
+                              y = (ymin + ymax)/2),
+                          size = 4, color = "white")
 }
