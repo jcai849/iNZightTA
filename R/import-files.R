@@ -6,15 +6,27 @@
 import_base_file <- function(filepath){
   filetype <- get_filetype(filepath)
   filename <- basename(filepath)
+  
   if (filetype == "csv"){
     imported <- import_csv(filepath)
-  } else if (filetype == "xlsx" | filetype == "xls") {
+  } 
+  
+  else if (filetype == "xlsx" | filetype == "xls") {
     imported <- import_excel(filepath)
-  } else {
+  } 
+  
+  ################
+  else if (filetype == "pdf"){
+    imported <- pdf_text(filepath) %>% 
+      tibble::tibble(text=.)
+  }
+
+  ################
+  else {
     imported <- import_txt(filepath)
   }
-  imported %>%
-    dplyr::mutate(doc_id = filename)
+
+  imported
 }
 
 #' Import any number of files

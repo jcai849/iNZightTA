@@ -19,17 +19,34 @@ score_barplot <- function(.data, y, n = 15,
     wrap <- 50
     text <- dplyr::enquo(x)
     insight_col <- dplyr::enquo(y)
-    .data %>%
-        dplyr::distinct(!! text, .keep_all=TRUE) %>%
-        dplyr::arrange(dplyr::desc(!! insight_col)) %>%
-        dplyr::group_modify(~{.x %>% head(n)}) %>%
-        dplyr::ungroup() %>%
-        dplyr::mutate(text = forcats::fct_reorder(shorten(!! text, wrap),
-                                                  !! insight_col,
-                                                  .desc = desc)) %>%
-        ggplot2::ggplot(ggplot2::aes(x = text)) +
-        ggplot2::geom_col(ggplot2::aes(y = !! insight_col)) +
-        ggplot2::coord_flip() 
+    if (desc == FALSE){
+        .data %>%
+            dplyr::distinct(!! text, .keep_all=TRUE) %>%
+            dplyr::arrange(dplyr::desc(!! insight_col)) %>%
+            dplyr::group_modify(~{.x %>% head(n)}) %>%
+            dplyr::ungroup() %>%
+            dplyr::mutate(text = forcats::fct_reorder(shorten(!! text, wrap),
+                                                      !! insight_col,
+                                                      #.desc = desc
+                                                      )) %>%
+            ggplot2::ggplot(ggplot2::aes(x = text)) +
+            ggplot2::geom_col(ggplot2::aes(y = !! insight_col)) +
+            ggplot2::coord_flip() 
+    }
+    else {
+        .data %>%
+            dplyr::distinct(!! text, .keep_all=TRUE) %>%
+            dplyr::arrange(!! insight_col) %>%
+            dplyr::group_modify(~{.x %>% head(n)}) %>%
+            dplyr::ungroup() %>%
+            dplyr::mutate(text = forcats::fct_reorder(shorten(!! text, wrap),
+                                                      !! insight_col,
+                                                      #.desc = desc
+            )) %>%
+            ggplot2::ggplot(ggplot2::aes(x = text)) +
+            ggplot2::geom_col(ggplot2::aes(y = !! insight_col)) +
+            ggplot2::coord_flip() 
+    }
 }
 
 #' Shorten some text up to n characters
