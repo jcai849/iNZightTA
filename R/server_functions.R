@@ -354,8 +354,7 @@ getPushshiftDataRecursive <- function(postType = "submission",
                                       after = NULL,
                                       before = NULL,
                                       subreddit = NULL,
-                                      nest_level = NULL,
-                                      delay = 0) {
+                                      nest_level = NULL) {
 
   tmp <- getPushshiftData(postType,
                           title,
@@ -367,7 +366,6 @@ getPushshiftDataRecursive <- function(postType = "submission",
                           nest_level)
   
   out <- tmp %>% filter(FALSE)
-  on.exit(return(out), add = TRUE)
   after <- last(tmp$created_utc)
   
   while(nrow(tmp) > 0) {
@@ -387,7 +385,7 @@ getPushshiftDataRecursive <- function(postType = "submission",
                             subreddit,
                             nest_level)
   }
-  Sys.sleep(delay)
+  on.exit(return(out), add = TRUE)
 }
 
 
