@@ -9,7 +9,7 @@
 
 ######### Create reactive object merged text. Both for Dispersion Plot and for Readability
 merged <- reactive({
-  merge_id(x = imported_filtered(), source = input$import_from, groups = input$groups)
+  merge_id(x = imported_filtered(), source = input$import_from)#, groups = input$groups)
 })
 
 
@@ -22,10 +22,6 @@ observeEvent(input$create_kwic, {
              case_ins = input$disp_case_insensitive)
   })
   
-  # output$view <- renderDataTable({
-  #   kwic <- ins()
-  #   data.frame("pre" = kwic$pre, "keyword" = kwic$keyword, "post" = kwic$post)
-  # })
   ####
   new.pts <- reactive({
     dt <- tryCatch({

@@ -74,8 +74,8 @@ raw_data <- eventReactive(input$gather_data, {
   }
   
   else if (input$import_from == "Upload .txt, .csv, .xlsx, or .xls file"){
-    inzightta::import_files(input$file1$datapath) %>%
-      mutate(id = basename(input$file1$name))
+    inzightta::import_files(input$file1$datapath, input$file1$name)# %>%
+      #mutate(id = basename(input$file1$name))
   }
   
   else if (input$import_from == "Spotify/Genius"){

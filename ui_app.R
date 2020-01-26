@@ -154,8 +154,8 @@ ui <- navbarPage("iNZight Text Analytics",
                                                      ##### For keywords in context
                                                      actionButton("add", "Add Points"),
                                                      actionButton("delete", "Delete Points"),
-                                                     conditionalPanel("input.import_from == 'Project Gutenberg'",
-                                                                      checkboxInput('groups', 'Group by chapter', value = FALSE, width = NULL)),
+                                                     # conditionalPanel("input.import_from == 'Project Gutenberg'",
+                                                     #                  checkboxInput('groups', 'Group by chapter', value = FALSE, width = NULL)),
                                                      checkboxInput('line_num', 'See doc name', value = FALSE, width = NULL)
                                                      
                           ),

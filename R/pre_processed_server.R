@@ -51,6 +51,14 @@ imported <- reactive({
     # Fix the pound sign becoming ?
     cleaned$text <- gsub("[?](\\d+)", "£\\1", cleaned$text)
   }
+  
+  else if(input$import_from == "Reddit"){
+    
+    cleaned <- raw_data() %>% clean_for_app()
+    ##### for reddit
+    cleaned$text <- gsub("[[(]http.+?[[)]", "", cleaned$text)
+    cleaned$text <- textclean::replace_url(cleaned$text)
+  }
     
   else {
     # for imported text files
@@ -58,7 +66,7 @@ imported <- reactive({
     
     #cleaned$text <- gsub('""', "", cleaned$text)
     cleaned$text <- gsub('" "', " ", cleaned$text)
-    cleaned$text <- str_squish(cleaned$text)
+    #cleaned$text <- str_squish(cleaned$text)
     
     cleaned <- cleaned %>% clean_for_app()
   }

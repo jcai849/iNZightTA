@@ -81,4 +81,4 @@ pacman::p_load(
 
 source("ui_app.R", local = TRUE)$value
 source("server_app.R", local = TRUE)$value
-shinyApp(ui, server) # launch app
+shinyApp(ui, server) 

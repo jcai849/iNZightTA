@@ -10,33 +10,42 @@
 ##################### dispersion plot
 #########################################################
 
+section_for_merge_id  <- function(.data, section_by){
+  sec_table <- list("chapter" = get_chapters,
+                    "part" = get_parts,
+                    "section" = get_sections,
+                    "canto" = get_cantos,
+                    "book" = get_books)
+  .data %>%
+    group_by(id) %>%
+    dplyr::mutate(!! section_by := sec_table[[section_by]](text))
+  #dplyr::mutate(!! section_by := sec_table[[section_by]](word))
+}
 # merge_id() groups the text by id and collapses them together into 
 # one long string
 
-merge_id <- function(x, source, groups){
+merge_id <- function(x, source){
   if (source == "Project Gutenberg")
   {
-    # If the book is from project gutenberg, find where the chapter breaks are.
-    search_chaps <- x %>% group_by(id) %>%
-      mutate(chapter = cumsum(str_detect(text, regex("^chapter [\\divxlc]",
-                                                     ignore_case = TRUE))))
-    
-    # If user wants to divide the books into chapters
-    ######## (NEED TO FIX. HOW ABOUT CANTOS, Books)
-    ######## (Can use group_by? see ui_app.R)
-    
-    if (groups == TRUE){
-      chaps <- search_chaps %>%
-        group_by(id, chapter) %>%
+    # if user sections the text by chapter/book/canto in the beginning, 
+    # add in the column for the sectioning
+    if (isTruthy(input$section_by)){
+      x <- x %>%
+        section_for_merge_id(input$section_by)
+      
+      # and merge the text by these columns
+      by_section <- x %>%
+        group_by(id, !! dplyr::sym(input$section_by)) %>%
         mutate(text = paste(text, collapse = " ")) %>%
         distinct(text) %>% ungroup() %>%
-        mutate(id = paste(id, chapter))
-      chaps
+        mutate(id = paste(id, input$section_by))
+      by_section
     }
+    
     
     # Otherwise just merge together the text from the whole book. 
     else{
-      by_id <- search_chaps %>% group_by(id) %>%
+      by_id <- x %>% group_by(id) %>%
         mutate(text = paste(text, collapse = " ")) %>%
         distinct(text)
       
@@ -61,6 +70,55 @@ merge_id <- function(x, source, groups){
   }
   
 }
+
+# merge_id <- function(x, source, groups){
+#   if (source == "Project Gutenberg")
+#   {
+#     # If the book is from project gutenberg, find where the chapter breaks are.
+#     search_chaps <- x %>% group_by(id) %>%
+#       mutate(chapter = cumsum(str_detect(text, regex("^chapter [\\divxlc]",
+#                                                      ignore_case = TRUE))))
+#     
+#     # If user wants to divide the books into chapters
+#     ######## (NEED TO FIX. HOW ABOUT CANTOS, Books)
+#     ######## (Can use group_by? see ui_app.R)
+#     
+#     if (groups == TRUE){
+#       chaps <- search_chaps %>%
+#         group_by(id, chapter) %>%
+#         mutate(text = paste(text, collapse = " ")) %>%
+#         distinct(text) %>% ungroup() %>%
+#         mutate(id = paste(id, chapter))
+#       chaps
+#     }
+#     
+#     # Otherwise just merge together the text from the whole book. 
+#     else{
+#       by_id <- search_chaps %>% group_by(id) %>%
+#         mutate(text = paste(text, collapse = " ")) %>%
+#         distinct(text)
+#       
+#       by_id
+#       
+#     }
+#     
+#   }
+#   
+#   else if (source %in% c("The Guardian Articles", "Spotify/Genius", "Upload .txt, .csv, .xlsx, or .xls file")){
+#     by_id <- x %>% group_by(id) %>%
+#       mutate(text = paste(text, collapse = " ")) %>%
+#       distinct(text)
+#     by_id
+#   }
+#   
+#   # For tweets, comments, etc 
+#   else{
+#     all_merged <- x %>% mutate(text = paste(text, collapse = ". ")) %>%
+#       distinct(text) %>% mutate(id = "Text")
+#     all_merged
+#   }
+#   
+# }
 
 # get_kwic() creates kwic object to pass into textplot_xray() 
 # and for concordance table
@@ -124,11 +182,6 @@ clean_for_app <- function(df){
   
   df$text <- textclean::replace_contraction(df$text)
   df$text <- gsub("^\"|\"$", "", df$text)
-  
-  
-  ##### for reddit
-  df$text <- gsub("[[(]http.+?[[)]", "", df$text)
-  df$text <- textclean::replace_url(df$text)
   
   return(df)
 }
@@ -354,7 +407,8 @@ getPushshiftDataRecursive <- function(postType = "submission",
                                       after = NULL,
                                       before = NULL,
                                       subreddit = NULL,
-                                      nest_level = NULL) {
+                                      nest_level = NULL,
+                                      delay = 0) {
 
   tmp <- getPushshiftData(postType,
                           title,
@@ -366,6 +420,7 @@ getPushshiftDataRecursive <- function(postType = "submission",
                           nest_level)
   
   out <- tmp %>% filter(FALSE)
+  on.exit(return(out), add = TRUE)
   after <- last(tmp$created_utc)
   
   while(nrow(tmp) > 0) {
@@ -385,7 +440,7 @@ getPushshiftDataRecursive <- function(postType = "submission",
                             subreddit,
                             nest_level)
   }
-  on.exit(return(out), add = TRUE)
+  Sys.sleep(delay)
 }
 
 
