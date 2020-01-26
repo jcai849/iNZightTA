@@ -3,9 +3,9 @@
 #' @param filepath string filepath of file for import
 #'
 #' @return imported file with document id
-import_base_file <- function(filepath){
+import_base_file <- function(filepath, filename){
   filetype <- get_filetype(filepath)
-  filename <- basename(filepath)
+  id <- basename(filename)
   
   if (filetype == "csv"){
     imported <- import_csv(filepath)
@@ -26,7 +26,8 @@ import_base_file <- function(filepath){
     imported <- import_txt(filepath)
   }
 
-  imported
+  imported %>%
+    dplyr::mutate(id = id)
 }
 
 #' Import any number of files
@@ -37,8 +38,10 @@ import_base_file <- function(filepath){
 #'   document id
 #' 
 #' @export
-import_files <- function(filepaths){
-  filepaths %>%
-    purrr::map(import_base_file) %>%
+import_files <- function(filepaths, filenames){
+  purrr::map2(filepaths,filenames,import_base_file) %>%
     dplyr::bind_rows()
 }
+
+
+
