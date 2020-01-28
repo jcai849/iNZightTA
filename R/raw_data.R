@@ -134,12 +134,14 @@ raw_data <- eventReactive(input$gather_data, {
         playlist_audio <- get_playlist_audio_features(input$spotify_username, input$playlist_id,
                                                       authorization = spotify_access_token())
         
-        artists = character(0)
-        for (i in 1:nrow(playlist_audio)){
-          artists[i] <- playlist_audio[[44]][[i]]$name[1]
-        }
+        # artists = character(0)
+        # for (i in 1:nrow(playlist_audio)){
+        #   artists[i] <- playlist_audio[[44]][[i]]$name[1]
+        # }
+        # 
+        # playlist_audio$artist <- artists
         
-        playlist_audio$artist <- artists
+        playlist_audio$artist <- unlist(lapply(playlist_audio[[44]], function(x) x[["name"]][1]))
         
         ##### Fix track name
         playlist_audio <- playlist_audio %>%

@@ -71,54 +71,6 @@ merge_id <- function(x, source){
   
 }
 
-# merge_id <- function(x, source, groups){
-#   if (source == "Project Gutenberg")
-#   {
-#     # If the book is from project gutenberg, find where the chapter breaks are.
-#     search_chaps <- x %>% group_by(id) %>%
-#       mutate(chapter = cumsum(str_detect(text, regex("^chapter [\\divxlc]",
-#                                                      ignore_case = TRUE))))
-#     
-#     # If user wants to divide the books into chapters
-#     ######## (NEED TO FIX. HOW ABOUT CANTOS, Books)
-#     ######## (Can use group_by? see ui_app.R)
-#     
-#     if (groups == TRUE){
-#       chaps <- search_chaps %>%
-#         group_by(id, chapter) %>%
-#         mutate(text = paste(text, collapse = " ")) %>%
-#         distinct(text) %>% ungroup() %>%
-#         mutate(id = paste(id, chapter))
-#       chaps
-#     }
-#     
-#     # Otherwise just merge together the text from the whole book. 
-#     else{
-#       by_id <- search_chaps %>% group_by(id) %>%
-#         mutate(text = paste(text, collapse = " ")) %>%
-#         distinct(text)
-#       
-#       by_id
-#       
-#     }
-#     
-#   }
-#   
-#   else if (source %in% c("The Guardian Articles", "Spotify/Genius", "Upload .txt, .csv, .xlsx, or .xls file")){
-#     by_id <- x %>% group_by(id) %>%
-#       mutate(text = paste(text, collapse = " ")) %>%
-#       distinct(text)
-#     by_id
-#   }
-#   
-#   # For tweets, comments, etc 
-#   else{
-#     all_merged <- x %>% mutate(text = paste(text, collapse = ". ")) %>%
-#       distinct(text) %>% mutate(id = "Text")
-#     all_merged
-#   }
-#   
-# }
 
 # get_kwic() creates kwic object to pass into textplot_xray() 
 # and for concordance table
@@ -147,11 +99,12 @@ books_with_samples <- function(books){
     mutate(scores = map(text, quanteda::textstat_readability, measure = "Flesch.Kincaid"))
   
   # extract the scores and place them in their own column in the data frame
-  FK <- numeric(0)
-  for (i in 1:nrow(books)){
-    FK[i] <- books[[3]][[i]][[2]]
-  }
-  books$FK <- FK
+  books$FK <- unlist(lapply(books[[3]], function(x) x[[2]])) 
+  # FK <- numeric(0)
+  # for (i in 1:nrow(books)){
+  #   FK[i] <- books[[3]][[i]][[2]]
+  # }
+  # books$FK <- FK
   
   # no sample excerpts for the texts provided
   books$excerpt <- ""
@@ -479,8 +432,7 @@ plot_exception <-function(
 #' bytes and another column called "y" with its description
 
 emoji_to_words <- function(x, emoji_dt = lexicon::hash_emojis){
-  Encoding(x) <- "latin1"
-  x <- iconv(x, "latin1", "ASCII", "byte")
+  x <- iconv(x, "UTF-8", "ASCII", "byte")
   gsub("\\s+", " ", mgsub(x, emoji_dt[["x"]], paste0("::", emoji_dt[["y"]], "::")))
 }
 

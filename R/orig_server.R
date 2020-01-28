@@ -343,50 +343,59 @@ output$plot <- renderPlot({
 })
 
 output$insighted_table <- renderDT({
-  if (input$what_vis %in% c("Term Frequency",
-                            "Key Words", "Term Sentiment")){
-    tab <- insighted() %>%
-      select(id, word, tail(names(.), 2)) %>%
-      filter(!is.na(!! dplyr::sym(input$what_vis))) %>%
-      distinct(word, .keep_all = TRUE) 
-    
-    if (input$desc == FALSE) {
-        tab <- tab %>% arrange(desc(!! dplyr::sym(input$what_vis))) 
-    }
-    else{
-      tab <- tab %>% 
-        arrange(!! dplyr::sym(input$what_vis)) 
-    }
-    
-  }
-  
-  else if (input$what_vis %in% c("n-gram Frequency")){
-    tab <- insighted() %>%
-      select(id, word, tail(names(.), 2)) %>%
-      filter(!is.na(!! dplyr::sym(input$what_vis))) %>%
-      distinct(n-grams, .keep_all = TRUE) 
-    
-    if (input$desc == FALSE) {
-      tab <- tab %>% arrange(desc(!! dplyr::sym(input$what_vis))) 
-    }
-    else{
-      tab <- tab %>% 
-        arrange(!! dplyr::sym(input$what_vis)) 
-    }
-  }
-  
-  else if (input$what_vis %in% c("Moving Average Term Sentiment")){
-    tab <- insighted() %>%
-      select(id, word, tail(names(.), 1)) 
-  }
-  
-  else {
-    tab <- insighted() ##%>%
-      #select(!! dplyr::sym(input$agg_var), !! dplyr::sym(input$what_vis)) %>%
-      #distinct(!! dplyr::sym(input$agg_var), .keep_all = TRUE)
-  }
-  
-})
+  insighted()}, 
+  filter = "bottom")
+
+# # table to show the data table output after visualization 
+# output$insighted_table <- renderDT({
+#   if (input$what_vis %in% c("Term Frequency",
+#                             "Key Words", "Term Sentiment")){
+#     tab <- insighted() %>%
+#       select(id, word, tail(names(.), 2)) %>%
+#       filter(!is.na(!! dplyr::sym(input$what_vis))) %>%
+#       distinct(word, .keep_all = TRUE) 
+#     
+#     if (input$desc == FALSE) {
+#         tab <- tab %>% arrange(desc(!! dplyr::sym(input$what_vis))) 
+#     }
+#     else{
+#       tab <- tab %>% 
+#         arrange(!! dplyr::sym(input$what_vis)) 
+#     }
+#     
+#   }
+#   
+#   else if (input$what_vis %in% c("n-gram Frequency")){
+#     tab <- insighted() %>%
+#       select(id, word, tail(names(.), 2)) %>%
+#       filter(!is.na(!! dplyr::sym(input$what_vis))) %>%
+#       distinct(n-grams, .keep_all = TRUE) 
+#     
+#     if (input$desc == FALSE) {
+#       tab <- tab %>% arrange(desc(!! dplyr::sym(input$what_vis))) 
+#     }
+#     else{
+#       tab <- tab %>% 
+#         arrange(!! dplyr::sym(input$what_vis)) 
+#     }
+#   }
+#   
+#   else if (input$what_vis %in% c("Moving Average Term Sentiment")){
+#     tab <- insighted() %>%
+#       select(id, word, tail(names(.), 1)) 
+#   }
+#   
+#   else {
+#     tab <- insighted() %>%
+#       select(-word, -word_id, -lemma, -stopword, -text) %>%
+#       distinct(`Bound Aggregates`, .keep_all = TRUE) 
+#     
+#     ##%>%
+#       #select(!! dplyr::sym(input$agg_var), !! dplyr::sym(input$what_vis)) %>%
+#       #distinct(!! dplyr::sym(input$agg_var), .keep_all = TRUE)
+#   }
+#   
+# })
   
 output$downloadData <- downloadHandler(
   filename = function() {

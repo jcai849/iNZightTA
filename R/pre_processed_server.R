@@ -15,7 +15,9 @@ imported <- reactive({
   else if (input$import_from == "Twitter"){
     cleaned <- raw_data()
     
+    # fixes the weird apostrophes
     cleaned$text <- gsub(intToUtf8(8217), "'", cleaned$text)
+    
     # converts the emojis to their description
     cleaned$text <- emoji_to_words(cleaned$text)
 
@@ -28,7 +30,8 @@ imported <- reactive({
       
     # remove hashtags
     cleaned$text <- textclean::replace_hash(cleaned$text)
-      
+    
+    
     cleaned$text <- textclean::replace_word_elongation(cleaned$text)
       
     # remove username mentions

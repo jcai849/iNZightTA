@@ -68,6 +68,7 @@ ui <- navbarPage("iNZight Text Analytics",
                                 ),
                                 tabPanel("Processed",
                                          tableOutput("table")
+                                         
                                 )
                                 
                               )
