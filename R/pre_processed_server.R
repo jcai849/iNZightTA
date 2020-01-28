@@ -52,7 +52,9 @@ imported <- reactive({
         id = str_replace_all(id, "<.+?>", ""))
       
     # Fix the pound sign becoming ?
-    cleaned$text <- gsub("[?](\\d+)", "Â£\\1", cleaned$text)
+    cleaned$text <- gsub("[?](\\d+)", "£\\1", cleaned$text)
+    
+    cleaned$text <- gsub("Join the debate.+", "", cleaned$text)
   }
   
   else if(input$import_from == "Reddit"){

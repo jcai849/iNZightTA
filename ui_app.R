@@ -9,7 +9,12 @@ ui <- navbarPage("iNZight Text Analytics",
                               useShinyjs(),
                               selectizeInput("import_from", "Retrieve text from", choices = text_sources),
                               
+                              conditionalPanel(
+                                condition = "input.import_from == 'Project Gutenberg'",
+                                selectInput("gutenberg_work", "Please select a book.", multiple = TRUE, choices = character(0))
+                              ),
                               uiOutput("side"),
+                               
                               
                               tags$h4("Process"),
                               checkboxInput("lemmatise", "Lemmatise"),

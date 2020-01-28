@@ -29,18 +29,21 @@ output$side <- renderUI({
                     "lifestyle","jobs","education", "technology", "science",
                     "fashion", "culture", "society", "tourism", "health", "cars",
                     "uk-news", "business", "football", "stage", "money")
+  
   ##### Proj Gutenberg choices
-  choices <- gutenberg_metadata %>%
-    filter(language == "en", gutenberg_id != 0, has_text) %>%
-    mutate(choice = ifelse(!is.na(author),
-                           paste(title, author, sep = " :by: "),
-                           title)) %>%
-    select(choice) %>%
-    mutate(choice = str_replace_all(choice, "\\n|\\r", " "))
+  # choices <- gutenberg_metadata %>%
+  #   filter(language == "en", gutenberg_id != 0, has_text) %>%
+  #   mutate(choice = ifelse(!is.na(author),
+  #                          paste(title, author, sep = " :by: "),
+  #                          title)) %>%
+  #   select(choice) %>%
+  #   mutate(choice = str_replace_all(choice, "\\n|\\r", " "))
+
+  
   
   switch(input$import_from,
-         "Project Gutenberg" = tagList(selectizeInput("gutenberg_work", "Please select a book.", choices,
-                                                      selected = NULL, multiple = TRUE, options = NULL),
+         "Project Gutenberg" = tagList(#selectInput("gutenberg_work", "Please select a book.", multiple = TRUE, choices = character(0)),
+                                                      #selected = NULL, multiple = TRUE),
                                        
                                        actionButton("gather_data", "Import text"), tags$hr()),
          
@@ -208,3 +211,16 @@ output$side <- renderUI({
          
   )
 })
+
+
+###### Choices of books for Project Gutenberg
+gut <- copy(gutenberg_metadata)
+gut <- setDT(gut)
+gut <- gut[language == "en" & gutenberg_id != 0 & has_text]
+gut <- gut[,choice := gsub("\\n|\\r", "", 
+                           ifelse(!is.na(author),
+                                  paste(title, author, sep = " :by: "),
+                                  title))]
+choices <- gut[,choice]
+
+updateSelectizeInput(session, "gutenberg_work", choices = choices, server = TRUE)
