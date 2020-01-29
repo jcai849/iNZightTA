@@ -30,8 +30,6 @@ imported <- reactive({
       
     # remove hashtags
     cleaned$text <- textclean::replace_hash(cleaned$text)
-    
-    
     cleaned$text <- textclean::replace_word_elongation(cleaned$text)
       
     # remove username mentions
@@ -53,6 +51,9 @@ imported <- reactive({
       
     # Fix the pound sign becoming ?
     cleaned$text <- gsub("[?](\\d+)", "£\\1", cleaned$text)
+    while(sum(grepl("<.+?>", df$text)) > 0){
+      df$text <- trimws(gsub("<.+?>|_", "", df$text))
+    }
     
     cleaned$text <- gsub("Join the debate.+", "", cleaned$text)
   }

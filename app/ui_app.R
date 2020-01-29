@@ -84,6 +84,7 @@ ui <- navbarPage("iNZight Text Analytics",
                             sidebarPanel(selectInput("what_vis",
                                                      "Select what you want to Visualise",
                                                      c("Term Frequency",
+                                                       "Term Frequency-Inverse Document Frequency", 
                                                        "n-gram Frequency",
                                                        "Key Words",
                                                        ###########

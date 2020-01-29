@@ -77,6 +77,14 @@ output$insight_options <- renderUI({
                                              "Time Series",
                                              "Density",
                                              "Histogram")),
+         "Term Frequency-Inverse Document Frequency" = selectInput("vis_type",
+                                                                   "Select how to Visualise it",
+                                                                   list("Bar",
+                                                                        "Word Cloud",
+                                                                        "Page View",
+                                                                        "Time Series",
+                                                                        "Density",
+                                                                        "Histogram")),
          "n-gram Frequency" = tagList(selectInput("vis_type",
                                                   "Select how to Visualise it",
                                                   list("Bar",
@@ -199,6 +207,7 @@ insighted <- reactive({
                                         input$summ_method),
          
          ########################################
+         "Term Frequency-Inverse Document Frequency" = get_tf_idf(grouped()),
          
          "Readability" = books_with_samples(merged()),
          

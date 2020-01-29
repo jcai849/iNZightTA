@@ -5,6 +5,60 @@
 # This file contains the miscellaneous functions called in the server. 
 
 
+#' @param .data dataframe of terms as per output of format_data
+#'              
+#' 
+
+
+##################### sample tf_idf
+get_tf_idf <- function(.data){
+  # count term frequency by group (already lemmatised and excl stopwords)
+  df <- .data %>%
+    dplyr::count(!! dplyr::sym(input$group_var), text) 
+  
+  # total number of words in each group
+  tot_words <- .data %>%
+    dplyr::count(!! dplyr::sym(input$group_var), word) %>%
+    dplyr::group_by(!! dplyr::sym(input$group_var)) %>%
+    dplyr::summarise(total_words = sum(n))
+  
+  # calculate term frequency tf 
+  df <- left_join(df, tot_words) %>% 
+    mutate(tf = n/total_words)
+  
+  # calculate inverse doc freq idf
+  t <- df$text
+  idf <- log(nrow(tot_words) / table(t))
+  
+  df$idf <- idf[t]
+  df$`Term Frequency-Inverse Document Frequency` <- df$tf * df$idf
+  df <- df %>% select(!! dplyr::sym(input$group_var), text, `Term Frequency-Inverse Document Frequency`)
+  left_join(.data, df)
+}
+# get_tf_idf <- function(.data){
+#   # count term frequency by group
+#   df <- .data %>%
+#     dplyr::count(!! dplyr::sym(input$group_var), word) 
+#   
+#   # total number of terms in each group
+#   tot_words <- df %>%
+#     dplyr::group_by(!! dplyr::sym(input$group_var)) %>%
+#     dplyr::summarise(total_words = sum(n))
+#   
+#   # calculate term frequency tf 
+#   df <- left_join(df, tot_words) %>% 
+#     mutate(tf = n/total_words)
+#   
+#   # calculate inverse doc freq idf
+#   words <- df$word
+#   idf <- log(nrow(tot_words) / table(words))
+#   
+#   df$idf <- idf[words]
+#   df$`Term Frequency-Inverse Document Frequency` <- df$tf * df$idf
+#   df
+# }
+
+
 #########################################################
 ##################### For readability, word tree, and lexical 
 ##################### dispersion plot
@@ -19,8 +73,8 @@ section_for_merge_id  <- function(.data, section_by){
   .data %>%
     group_by(id) %>%
     dplyr::mutate(!! section_by := sec_table[[section_by]](text))
-  #dplyr::mutate(!! section_by := sec_table[[section_by]](word))
 }
+
 # merge_id() groups the text by id and collapses them together into 
 # one long string
 
@@ -44,7 +98,8 @@ merge_id <- function(x, source){
     
     
     # Otherwise just merge together the text from the whole book. 
-    else{
+    else {
+      
       by_id <- x %>% group_by(id) %>%
         mutate(text = paste(text, collapse = " ")) %>%
         distinct(text)
@@ -95,16 +150,10 @@ get_kwic <- function(merged, patt, window, value, case_ins){
 
 books_with_samples <- function(books){
   # calculate the FK score of the text for each id
-  books <- books %>%
-    mutate(scores = map(text, quanteda::textstat_readability, measure = "Flesch.Kincaid"))
+  books$scores <- lapply(books$text, quanteda::textstat_readability, measure = "Flesch.Kincaid")
   
   # extract the scores and place them in their own column in the data frame
-  books$FK <- unlist(lapply(books[[3]], function(x) x[[2]])) 
-  # FK <- numeric(0)
-  # for (i in 1:nrow(books)){
-  #   FK[i] <- books[[3]][[i]][[2]]
-  # }
-  # books$FK <- FK
+  books$FK <- unlist(lapply(books[["scores"]], function(x) x[[2]])) 
   
   # no sample excerpts for the texts provided
   books$excerpt <- ""
@@ -128,10 +177,10 @@ clean_for_app <- function(df){
   df$text <- gsub("<figcaption.+?</figcaption>|Related.+?</aside>", "", df$text)
   
   #################
-  while(sum(grepl("<.+?>", df$text)) > 0){
-    df$text <- trimws(gsub("<.+?>|_", "", df$text))
-  }
-  
+  df$text <- trimws(gsub("<.+?>|_", "", df$text))
+
+  # Fix &...; symbols
+  #Try to see if this line slowing down.
   df$text <- textutils::HTMLdecode(df$text)
   df$text <- gsub("&\\w+?;", " ", df$text)
   
