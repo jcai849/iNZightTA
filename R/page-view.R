@@ -17,11 +17,49 @@
 #'
 #' @export
 struct_pageview <- function(.data, col_name, num_terms, term_index, palette){
+    
     end <- min(nrow(.data), term_index + num_terms)
     q_col_name <- dplyr::enquo(col_name)
-    .data[seq(term_index, end),] %>%
-        dplyr::pull(word) %>%
-        ggpage::ggpage_build() %>%
-        dplyr::bind_cols(.data[seq(term_index, end),]) %>% 
-        ggpage::ggpage_plot(ggplot2::aes(fill = !! q_col_name)) ## +
+    
+    if (as_label(q_col_name) %in% c("Term Sentiment", "Moving Average Term Sentiment", 
+                        "Aggregated Sentiment")){
+        if (sum(grepl("[[:digit:]]",.data[,as_label(q_col_name)])) > 0) {
+            limit <- max(abs(.data[,as_label(q_col_name)])) * c(-1, 1) # limits for color palette
+            .data[seq(term_index, end),] %>%
+                dplyr::pull(word) %>%
+                ggpage::ggpage_build() %>%
+                dplyr::bind_cols(.data[seq(term_index, end),]) %>% 
+                ggpage::ggpage_plot(ggplot2::aes(fill = !! q_col_name)) +
+                ggplot2::scale_fill_distiller(palette = "RdYlGn", limit = limit, direction = 1) +
+                ggplot2::geom_text(ggplot2::aes(label = word,
+                                                x = (xmax + xmin)/2,
+                                                y = (ymin + ymax)/2),
+                                   size = 4, color = "white")
+        }
+        else {
+            .data[seq(term_index, end),] %>%
+                dplyr::pull(word) %>%
+                ggpage::ggpage_build() %>%
+                dplyr::bind_cols(.data[seq(term_index, end),]) %>% 
+                ggpage::ggpage_plot(ggplot2::aes(fill = !! q_col_name)) +
+                ggplot2::geom_text(ggplot2::aes(label = word,
+                                                x = (xmax + xmin)/2,
+                                                y = (ymin + ymax)/2),
+                                   size = 4, color = "white")
+        }
+    }
+    else{
+        limit <- c(0, max(.data[,as_label(q_col_name)])) # limits for color palette
+        .data[seq(term_index, end),] %>%
+            dplyr::pull(word) %>%
+            ggpage::ggpage_build() %>%
+            dplyr::bind_cols(.data[seq(term_index, end),]) %>% 
+            ggpage::ggpage_plot(ggplot2::aes(fill = !! q_col_name)) +
+            ggplot2::scale_fill_distiller(limit = limit, direction = 1) +
+            ggplot2::geom_text(ggplot2::aes(label = word,
+                                            x = (xmax + xmin)/2,
+                                            y = (ymin + ymax)/2),
+                               size = 4, color = "white")
+    }
+    
 }

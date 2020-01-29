@@ -27,11 +27,18 @@ get_vis <- function(.data, vis, col, facet_by="", scale_fixed = TRUE, ...){
     if (shiny::isTruthy(facet_by)){
         facet_name <- dplyr::sym(facet_by)
         q_facet_name <- dplyr::enquo(facet_name)
-        return(chart + ggplot2::facet_wrap(ggplot2::vars(!! q_facet_name),
-                                           scales = ifelse(vis == "struct_pageview" | scale_fixed,
-                                                           "fixed",
-                                                           "free")))
-
+        if (vis == "Time Series"){
+            return(chart + ggplot2::facet_wrap(ggplot2::vars(!! q_facet_name),
+                                               scales = ifelse(vis == "struct_pageview" | scale_fixed,
+                                                               "fixed",
+                                                               "free"), ncol = 1))
+        }
+        else{
+            return(chart + ggplot2::facet_wrap(ggplot2::vars(!! q_facet_name),
+                                               scales = ifelse(vis == "struct_pageview" | scale_fixed,
+                                                               "fixed",
+                                                               "free")))
+        }
     } else {
         return(chart)
     }
