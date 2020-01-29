@@ -72,6 +72,8 @@ ui <- navbarPage("iNZight Text Analytics",
                                          )
                                 ),
                                 tabPanel("Processed",
+                                         downloadButton('downloadprocessed', 'Download'),
+                                         
                                          tableOutput("table")
                                          
                                 )

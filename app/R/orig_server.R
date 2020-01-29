@@ -414,3 +414,20 @@ output$downloadData <- downloadHandler(
     write.csv(insighted(), file, row.names = FALSE)
   }
 )
+
+
+output$downloadprocessed <- downloadHandler(
+  
+  # This function returns a string which tells the client
+  # browser what name to use when saving the file.
+  filename = function() {
+    paste("processed", "Rdata", sep = ".") # example : iris.Rdata
+    
+  },
+  
+  # This function should write data to a file given to it by
+  # the argument 'file'.
+  content = function(file) {
+    saveRDS(filtered(), file)
+  }
+)
