@@ -9,8 +9,6 @@
 #'              
 #' 
 
-
-##################### sample tf_idf
 get_tf_idf <- function(.data){
   # count term frequency by group (already lemmatised and excl stopwords)
   df <- .data %>%
@@ -30,34 +28,11 @@ get_tf_idf <- function(.data){
   t <- df$text
   idf <- log(nrow(tot_words) / table(t))
   
-  df$idf <- idf[t]
+  df$idf <- as.numeric(idf[t])
   df$`Term Frequency-Inverse Document Frequency` <- df$tf * df$idf
   df <- df %>% select(!! dplyr::sym(input$group_var), text, `Term Frequency-Inverse Document Frequency`)
   left_join(.data, df)
 }
-# get_tf_idf <- function(.data){
-#   # count term frequency by group
-#   df <- .data %>%
-#     dplyr::count(!! dplyr::sym(input$group_var), word) 
-#   
-#   # total number of terms in each group
-#   tot_words <- df %>%
-#     dplyr::group_by(!! dplyr::sym(input$group_var)) %>%
-#     dplyr::summarise(total_words = sum(n))
-#   
-#   # calculate term frequency tf 
-#   df <- left_join(df, tot_words) %>% 
-#     mutate(tf = n/total_words)
-#   
-#   # calculate inverse doc freq idf
-#   words <- df$word
-#   idf <- log(nrow(tot_words) / table(words))
-#   
-#   df$idf <- idf[words]
-#   df$`Term Frequency-Inverse Document Frequency` <- df$tf * df$idf
-#   df
-# }
-
 
 #########################################################
 ##################### For readability, word tree, and lexical 
@@ -179,10 +154,12 @@ clean_for_app <- function(df){
   #################
   df$text <- trimws(gsub("<.+?>|_", "", df$text))
 
-  # Fix &...; symbols
-  #Try to see if this line slowing down.
-  df$text <- textutils::HTMLdecode(df$text)
-  df$text <- gsub("&\\w+?;", " ", df$text)
+  # HTML decode slows text down too much. see what common to gsub
+  # Fix &lt; symbols
+  df$text <- gsub("&amp;", "&", df$text)
+  df$text <- gsub("&quot;", '"', df$text)
+  df$text <- gsub("&#039;|&#39;", "'", df$text)
+  df$text <- gsub("&.*\\w+?;", " ", df$text)
   
   df$text <- textclean::replace_contraction(df$text)
   df$text <- gsub("^\"|\"$", "", df$text)
@@ -201,11 +178,6 @@ get_lyrics <- function(artist,song){
   names(df)[names(df) == "track_title"] <- "title"
   df
 }
-
-
-# unescape_xml <- function(str){
-#   xml2::xml_text(xml2::read_xml(paste0("<x>", str, "</x>")))
-# }
 
 
 #########################################################

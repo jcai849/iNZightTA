@@ -6,7 +6,7 @@
 # cleaning for the raw data and the code that presents the pre-processed data
 # as a data table. 
 
-imported <- reactive({
+imported <- eventReactive(input$pre_process_text, {
   ############################
   if (input$import_from == "Spotify/Genius"){
     cleaned <- raw_data()[[1]] %>% clean_for_app()
@@ -16,24 +16,29 @@ imported <- reactive({
     cleaned <- raw_data()
     
     # fixes the weird apostrophes
-    cleaned$text <- gsub(intToUtf8(8217), "'", cleaned$text)
+    cleaned$text <- gsub(intToUtf8(8217), "'", cleaned$text, perl = TRUE)
     
     # converts the emojis to their description
     cleaned$text <- emoji_to_words(cleaned$text)
 
     # remove links
-    cleaned$text <- gsub("http.+? ", "", cleaned$text)
-    cleaned$text <- gsub("http.+", "", cleaned$text)
+    cleaned$text <- gsub("http.+? ", "", cleaned$text, perl = TRUE)
+    cleaned$text <- gsub("http.+", "", cleaned$text, perl = TRUE)
       
     # remove line breaks 
-    cleaned$text <- gsub("\\n", " ", cleaned$text)
+    cleaned$text <- gsub("\\n", " ", cleaned$text, perl = TRUE)
       
     # remove hashtags
-    cleaned$text <- textclean::replace_hash(cleaned$text)
+    if (input$remove_hash == TRUE){
+      cleaned$text <- textclean::replace_hash(cleaned$text)
+    }
+    
     cleaned$text <- textclean::replace_word_elongation(cleaned$text)
-      
+    
     # remove username mentions
-    cleaned$text <- gsub("@\\w+", "", cleaned$text)
+    if (input$remove_user == TRUE){
+      cleaned$text <- gsub("@\\w+", "", cleaned$text)
+    }
     
     cleaned <- cleaned %>% clean_for_app()
     cleaned
@@ -41,29 +46,34 @@ imported <- reactive({
     
   else if (input$import_from == "The Guardian Articles"){
       
-    cleaned <- raw_data() %>% clean_for_app()
+    cleaned <- raw_data() 
+    
+    cleaned$text <- gsub("<figcaption.+?</figcaption>|Related.+?</aside>", "", cleaned$text, perl = TRUE)
+    
+    cleaned <- clean_for_app(cleaned)
 
     cleaned$id <- iconv(cleaned$id, from = "UTF-8", to = "ASCII//TRANSLIT")
       
     cleaned <- cleaned %>%
-      mutate(
-        id = str_replace_all(id, "<.+?>", ""))
+      mutate(id = str_replace_all(id, "<.+?>", ""))
       
     # Fix the pound sign becoming ?
-    cleaned$text <- gsub("[?](\\d+)", "£\\1", cleaned$text)
-    while(sum(grepl("<.+?>", df$text)) > 0){
-      df$text <- trimws(gsub("<.+?>|_", "", df$text))
+    cleaned$text <- gsub("[?](\\d+)", "£\\1", cleaned$text, perl = TRUE)
+    
+    while(sum(grepl("<.+?>", cleaned$text)) > 0){
+      cleaned$text <- trimws(gsub("<.+?>|_", "", cleaned$text, perl = TRUE))
     }
     
-    cleaned$text <- gsub("Join the debate.+", "", cleaned$text)
+    cleaned$text <- gsub("Join the debate.+", "", cleaned$text, perl = TRUE)
   }
   
   else if(input$import_from == "Reddit"){
     
     cleaned <- raw_data() %>% clean_for_app()
-    ##### for reddit
-    cleaned$text <- gsub("[[(]http.+?[[)]", "", cleaned$text)
+    cleaned$text <- gsub("[[(]http.+?[[)]", "", cleaned$text, perl = TRUE)
     cleaned$text <- textclean::replace_url(cleaned$text)
+    df$text <- gsub("[**Extended Summary**].+", "", df$text)
+    
   }
     
   else {
@@ -71,9 +81,7 @@ imported <- reactive({
     cleaned <- raw_data() 
     
     #cleaned$text <- gsub('""', "", cleaned$text)
-    cleaned$text <- gsub('" "', " ", cleaned$text)
-    #cleaned$text <- str_squish(cleaned$text)
-    
+    cleaned$text <- gsub('" "', " ", cleaned$text, perl = TRUE)
     cleaned <- cleaned %>% clean_for_app()
   }
   

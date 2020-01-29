@@ -44,8 +44,11 @@ output$side <- renderUI({
   switch(input$import_from,
          "Project Gutenberg" = tagList(#selectInput("gutenberg_work", "Please select a book.", multiple = TRUE, choices = character(0)),
                                                       #selected = NULL, multiple = TRUE),
-                                       
-                                       actionButton("gather_data", "Import text"), tags$hr()),
+                                     
+                                       actionButton("gather_data", "Import text"), 
+                                       actionButton("pre_process_text", "Pre-process text"), tags$hr() 
+                                       ),
+
          
          "Upload .txt, .csv, .xlsx, or .xls file" = tagList(tags$h4("Import"),
                                                             fileInput("file1", "Choose File(s)",
@@ -54,7 +57,8 @@ output$side <- renderUI({
                                                                                  "text/comma-separated-values,text/plain",
                                                                                  ".csv", ".xlsx", ".xls")),
                                                             
-                                                            actionButton("gather_data", "Import text"), tags$hr()),
+                                                            actionButton("gather_data", "Import text"), 
+                                                            actionButton("pre_process_text", "Pre-process text"), tags$hr()),
          "Spotify/Genius" = tagList(
            
            a(id = "toggleAdvanced2", "Create Spotify and Genius authorization tokens", href = "#"),
@@ -96,6 +100,7 @@ output$side <- renderUI({
                                                 
            )}),
            actionButton("gather_data", "Gather lyrics"),
+           actionButton("pre_process_text", "Pre-process text"), 
            tags$hr()
          ),
          
@@ -121,6 +126,7 @@ output$side <- renderUI({
            dateRangeInput("guardian_dates", "Date range"),
            selectizeInput("guardian_sections", "Section", guardian_sec),
            actionButton("gather_data", "Gather articles"),
+           actionButton("pre_process_text", "Pre-process text"), 
            tags$hr()
            
          ),
@@ -130,6 +136,7 @@ output$side <- renderUI({
            textInput(inputId = "rss_link", label = "URL of RSS Feed"),
            
            actionButton("gather_data", "Gather comments"),
+           actionButton("pre_process_text", "Pre-process text"), 
            tags$hr()
          ),
          
@@ -170,6 +177,9 @@ output$side <- renderUI({
                         value = 500),
            checkboxInput("include_retweets", "Include retweets"),
            actionButton("gather_data", "Gather tweets"),
+           checkboxInput("remove_hash", "Remove hashtags"), 
+           checkboxInput("remove_user", "Remove user mentions"),
+           actionButton("pre_process_text", "Pre-process text"), 
            
            tags$hr()
          ),
@@ -206,6 +216,7 @@ output$side <- renderUI({
                                                   )
            )}),
            actionButton("gather_data", "Gather data"),
+           actionButton("pre_process_text", "Pre-process text"), 
            tags$hr()
          )
          
