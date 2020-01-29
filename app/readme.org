@@ -1,0 +1,16 @@
+* iNZight Text Analytics Shiny App
+
+This is the repository for the text analytics shiny app. It can be run
+on your computer in conjunction with my text analytics package. [[https://www.r-project.org/][R]] must
+be installed on your computer. 
+
+To run the app, download the text analytics package and it's dependencies,
+then source this repository:
+
+#+begin_src R :results output :colnames yes :hline yes :session rsession1 :tangle yes :comments link :exports both :eval never-export
+  install.packages(c("remotes", "shiny"))
+  remotes::install_gitlab("jasoncairns/inzightta")
+  shiny::runGitHub("jcai849/inzightta-shiny")
+#+end_src
+
+
