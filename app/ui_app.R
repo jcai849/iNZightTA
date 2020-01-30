@@ -169,6 +169,9 @@ ui <- navbarPage("iNZight Text Analytics",
                                                      
                                                      checkboxInput("disp_case_insensitive", "Case Insensitive",
                                                                    value = TRUE, width = NULL),
+                                                     sliderInput("plot_height2", "Plot height",
+                                                                 min = 400, max = 2000,
+                                                                 value = 1000),
                                                      actionButton("create_kwic", "Create lexical dispersion plot"),
                                                      tags$hr(),
                                                      
@@ -181,14 +184,15 @@ ui <- navbarPage("iNZight Text Analytics",
                                                      
                           ),
                           mainPanel(
-                            plotOutput("plot2",
-                                       dblclick = "plot_dblclick",
-                                       brush = brushOpts(
-                                         id = "plot_brush",
-                                         resetOnNew = TRUE
-                                       ),
-                                       height = "800px"
-                            ),
+                            # plotOutput("plot2",
+                            #            dblclick = "plot_dblclick",
+                            #            brush = brushOpts(
+                            #              id = "plot_brush",
+                            #              resetOnNew = TRUE
+                            #            ),
+                            #            height = "800px"
+                            # ),
+                            uiOutput("plot2.ui"),
                             DT::dataTableOutput("keyword_table")
                           ))
                  ),

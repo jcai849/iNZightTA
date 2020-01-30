@@ -92,6 +92,17 @@ observeEvent(input$create_kwic, {
     return(p2)
   })
   
+  output$plot2.ui <- renderUI({
+    plotOutput("plot2",
+               dblclick = "plot_dblclick",
+               brush = brushOpts(
+                 id = "plot_brush",
+                 resetOnNew = TRUE
+               ),
+               height = input$plot_height2
+    )
+  })
+  
   output$keyword_table <- DT::renderDataTable({
     df <- data.frame(points)
     if (input$line_num == TRUE){
