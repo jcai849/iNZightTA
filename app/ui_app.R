@@ -118,10 +118,16 @@ ui <- navbarPage("iNZight Text Analytics",
                                            downloadButton("downloadData", "Download data used in visualization")
                                          ), 
                                          
-                                         ##### Sample controlling plot height
+                                         ##### controlling plot height
                                          sliderInput("plot_height", "Plot height",
-                                                     min = 800, max = 2000,
-                                                     value = 1000)
+                                                     min = 400, max = 2000,
+                                                     value = 1000), 
+                                         ##### controlling text size
+                                         sliderInput("text_size", "Text size", 
+                                                     min = 5, max = 30, value = 15),
+                                         ##### controlling number of columns for facet wrap
+                                         sliderInput("n_col_facet", "Number of columns for multi-panel plots", 
+                                                     min = 1, max = 7, value = 5)
                             ),
                             
                             mainPanel(

@@ -11,11 +11,13 @@
 #' @param facet_by character name of the column to facet by
 #'
 #' @param scale_fixed force scales to be fixed in a facet
+#' 
+#' @param ncol number of columns for facet wrap
 #'  
 #' @param ... additional arguments to the visualisation
 #'
 #' @export
-get_vis <- function(.data, vis, col, facet_by="", scale_fixed = TRUE, ...){
+get_vis <- function(.data, vis, col, facet_by="", scale_fixed = TRUE, ncol = 3, ...){
     vistable <- list("Page View" = struct_pageview,
                      "Time Series" = struct_time_series,
                      "Bar" = score_barplot,
@@ -27,19 +29,13 @@ get_vis <- function(.data, vis, col, facet_by="", scale_fixed = TRUE, ...){
     if (shiny::isTruthy(facet_by)){
         facet_name <- dplyr::sym(facet_by)
         q_facet_name <- dplyr::enquo(facet_name)
-        if (vis == "Time Series"){
-            return(chart + ggplot2::facet_wrap(ggplot2::vars(!! q_facet_name),
-                                               scales = ifelse(vis == "struct_pageview" | scale_fixed,
+        return(chart + ggplot2::facet_wrap(ggplot2::vars(!! q_facet_name),
+                  scales = ifelse(vis == "struct_pageview" | scale_fixed,
                                                                "fixed",
-                                                               "free"), ncol = 1))
+                                                               "free"), ncol = ncol))
         }
-        else{
-            return(chart + ggplot2::facet_wrap(ggplot2::vars(!! q_facet_name),
-                                               scales = ifelse(vis == "struct_pageview" | scale_fixed,
-                                                               "fixed",
-                                                               "free")))
-        }
-    } else {
+
+    else {
         return(chart)
     }
 }
