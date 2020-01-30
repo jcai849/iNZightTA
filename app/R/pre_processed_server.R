@@ -13,7 +13,7 @@ imported <- eventReactive(input$pre_process_text, {
   }
     
   else if (input$import_from == "Twitter"){
-    cleaned <- raw_data()
+    cleaned <- raw_data() 
     
     # fixes the weird apostrophes
     cleaned$text <- gsub(intToUtf8(8217), "'", cleaned$text, perl = TRUE)

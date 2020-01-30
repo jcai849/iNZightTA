@@ -182,7 +182,8 @@ books_with_samples <- function(books){
 clean_for_app <- function(df){
   
   # converts weird punctuation in Guardian Articles. ! deletes tweets with emojis?
-  df$text <- iconv(df$text, from = "UTF-8", to = "ASCII//TRANSLIT", "byte")
+  #df$text <- iconv(df$text, from = "UTF-8", to = "ASCII//TRANSLIT", "byte")
+  Encoding(df$text) <- "UTF-8"
   
   # For the guardian
   df$text <- gsub("<figcaption.+?</figcaption>|Related.+?</aside>", "", df$text)
