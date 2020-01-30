@@ -116,7 +116,12 @@ ui <- navbarPage("iNZight Text Analytics",
                                            uiOutput("vis_options"),
                                            uiOutput("vis_facet_by"),
                                            downloadButton("downloadData", "Download data used in visualization")
-                                         )
+                                         ), 
+                                         
+                                         ##### Sample controlling plot height
+                                         sliderInput("plot_height", "Plot height",
+                                                     min = 800, max = 2000,
+                                                     value = 1000)
                             ),
                             
                             mainPanel(
@@ -128,14 +133,15 @@ ui <- navbarPage("iNZight Text Analytics",
                                 condition =  "input.what_vis == 'Readability'",
                                 plotOutput("flesch_plot",
                                            dblclick = dblclickOpts(
-                                             id = "plot1_click"), height = "800px"
+                                             id = "plot1_click"), height = "1000px"
                                 ),
                                 
                                 verbatimTextOutput("ex")
                               ),
                               conditionalPanel(
                                 condition =  "!(input.what_vis == 'Word Tree'||input.what_vis == 'Readability')",
-                                plotOutput("plot", height = "1000px"),
+                                #plotOutput("plot", height = "1000px"),
+                                uiOutput("plot.ui"), 
                                 DTOutput("insighted_table")
                               )
                               

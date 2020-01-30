@@ -21,7 +21,7 @@ output$flesch_plot <- renderPlot({
       req(global$selectedBar)
       insighted()[insighted()$id == global$selectedBar, "excerpt"]
     })
-    colors = ifelse(insighted()$id %in% c(imported_filtered()$id, "Text"), "red", "white")
+    colors = ifelse(!insighted()$id %in% samples$id, "red", "white")
     
     ggplot(insighted(), aes(y = reorder(id, FK), x = FK, fill = FK)) +
       geom_barh(stat = "identity", alpha = 0.8) +
@@ -34,6 +34,6 @@ output$flesch_plot <- renderPlot({
       scale_x_continuous(expand=c(0,0)) +
       scale_fill_continuous(high = "#132B43", low = "#56B1F7") +
       labs(y = "Grade Level", x = NULL,
-           title = "Comparing Flesch-Kincaid readability scores") #+ coord_flip()
+           title = "Comparing Flesch-Kincaid readability scores") 
   }
 })

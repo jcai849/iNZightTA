@@ -351,6 +351,10 @@ output$plot <- renderPlot({
   visualisation()
 })
 
+output$plot.ui <- renderUI({
+  plotOutput("plot", height = input$plot_height)
+})
+
 output$insighted_table <- renderDT({
   insighted()}, 
   filter = "bottom")
