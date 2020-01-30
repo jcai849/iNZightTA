@@ -32,7 +32,33 @@ Imports:
     forcats,
     shiny,
     ggwordcloud,
-    textdata
+    textdata, 
+    spotifyr,
+    rlang, 
+    gutenbergr, 
+    pdftools,
+    stringi, 
+    tidyr, 
+    genius, 
+    tidyRSS, 
+    rtweet, 
+    shinyjs, 
+    shinybusy, 
+    shinyWidgets, 
+    GuardianR, 
+    quanteda, 
+    jsonlite, 
+    data.table, 
+    DT, 
+    textclean, 
+    googleVis, 
+    shinyBS, 
+    ggstance, 
+    ggthemes,
+    rvest, 
+    httr, 
+    lubridate
+
 RoxygenNote: 6.1.1
 NeedsCompilation: no
 Packaged: 2019-09-08 10:33:01 UTC; user
