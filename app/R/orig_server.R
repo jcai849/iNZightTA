@@ -207,7 +207,7 @@ insighted <- reactive({
                                         input$summ_method),
          
          ########################################
-         "Term Frequency-Inverse Document Frequency" = get_tf_idf(grouped()),
+         "Term Frequency-Inverse Document Frequency" = get_tf_idf(grouped(), input$group_var),
          
          "Readability" = books_with_samples(merged()),
          
@@ -421,7 +421,7 @@ output$downloadprocessed <- downloadHandler(
   # This function returns a string which tells the client
   # browser what name to use when saving the file.
   filename = function() {
-    paste("processed", "Rdata", sep = ".") # example : iris.Rdata
+    paste("processed", "RDS", sep = ".") 
     
   },
   

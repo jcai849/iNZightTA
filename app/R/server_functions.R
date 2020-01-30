@@ -4,20 +4,27 @@
 
 # This file contains the miscellaneous functions called in the server. 
 
+#########################################################
+##################### For calculating td-idf
+##################### 
+#########################################################
 
 #' @param .data dataframe of terms as per output of format_data
-#'              
 #' 
+#' @param grouping character string indicating how the text is grouped into documents
+#' 
+#' @return original data frame additional tf-idf column                
 
-get_tf_idf <- function(.data){
-  # count term frequency by group (already lemmatised and excl stopwords)
-  df <- .data %>%
-    dplyr::count(!! dplyr::sym(input$group_var), text) 
+get_tf_idf <- function(.data, grouping){
   
-  # total number of words in each group
+  # count term frequency by group 
+  df <- .data %>%
+    dplyr::count(!! dplyr::sym(grouping), text) 
+  
+  # total number of words in each group (including the stopwords)
   tot_words <- .data %>%
-    dplyr::count(!! dplyr::sym(input$group_var), word) %>%
-    dplyr::group_by(!! dplyr::sym(input$group_var)) %>%
+    dplyr::count(!! dplyr::sym(grouping), word) %>%
+    dplyr::group_by(!! dplyr::sym(grouping)) %>%
     dplyr::summarise(total_words = sum(n))
   
   # calculate term frequency tf 
@@ -30,7 +37,7 @@ get_tf_idf <- function(.data){
   
   df$idf <- as.numeric(idf[t])
   df$`Term Frequency-Inverse Document Frequency` <- df$tf * df$idf
-  df <- df %>% select(!! dplyr::sym(input$group_var), text, `Term Frequency-Inverse Document Frequency`)
+  df <- df %>% select(!! dplyr::sym(grouping), text, `Term Frequency-Inverse Document Frequency`)
   left_join(.data, df)
 }
 
@@ -38,6 +45,15 @@ get_tf_idf <- function(.data){
 ##################### For readability, word tree, and lexical 
 ##################### dispersion plot
 #########################################################
+
+#' Adds section column to dataframe
+#'
+#' @param .data data frame as per output of pre-processing (still with stopwords)
+#'
+#' @param section_by character name of what to section over
+#'
+#' @return input dataframe with additional section column
+#'
 
 section_for_merge_id  <- function(.data, section_by){
   sec_table <- list("chapter" = get_chapters,
@@ -50,9 +66,15 @@ section_for_merge_id  <- function(.data, section_by){
     dplyr::mutate(!! section_by := sec_table[[section_by]](text))
 }
 
-# merge_id() groups the text by id and collapses them together into 
-# one long string
 
+#' Groups the text by id and collapses them together into one long string
+#'
+#' @param x data frame as per output of pre-processing 
+#'
+#' @param source character name of text source
+#'
+#' @return data frame with new groupings and text within each group merged together
+#' 
 merge_id <- function(x, source){
   if (source == "Project Gutenberg")
   {
@@ -102,10 +124,24 @@ merge_id <- function(x, source){
 }
 
 
-# get_kwic() creates kwic object to pass into textplot_xray() 
-# and for concordance table
+#' Creates kwic object to pass into textplot_xray() and for concordance table
+#'
+#' @param merged data frame as per output ofmerge_id()
+#'
+#' @param patt pattern to find in text
+#' 
+#' @param value type of pattern matching "glob", "regex", or "fixed"
+#' 
+#' @param window how many words displayed around keyword
+#' 
+#' @param case_ins case insensitive pattern matching?
+#'
+#' @return input dataframe with additional section column
+#'
+#' @export data frame with new groupings and text within each group merged together
+#'
 
-get_kwic <- function(merged, patt, window, value, case_ins){
+get_kwic <- function(merged, patt, value, window, case_ins){
   words <- phrase(unlist(strsplit(patt, split = ",")))
   corp <- corpus(merged, text_field = "text",
                  docid_field = "id")
@@ -151,14 +187,13 @@ clean_for_app <- function(df){
   # For the guardian
   df$text <- gsub("<figcaption.+?</figcaption>|Related.+?</aside>", "", df$text)
   
-  #################
   df$text <- trimws(gsub("<.+?>|_", "", df$text))
 
-  # HTML decode slows text down too much. see what common to gsub
-  # Fix &lt; symbols
+  # Decodes common HTML entities 
   df$text <- gsub("&amp;", "&", df$text)
   df$text <- gsub("&quot;", '"', df$text)
   df$text <- gsub("&#039;|&#39;", "'", df$text)
+  
   df$text <- gsub("&.*\\w+?;", " ", df$text)
   
   df$text <- textclean::replace_contraction(df$text)
@@ -313,14 +348,23 @@ textplot_xray.kwic <- function(..., scale = c("absolute", "relative"),
 
 #' gets the pushshift data
 #'
-#' @param postType One of `submission` or `comment`
-#' @param title A string to search for in post titles
+#' @param postType "submission" or "comment"
+#' 
+#' @param title Character string to search for in post titles
+#' 
 #' @param size Number of results to return, maximum is 1000
-#' @param q A query to search for
+#' 
+#' @param q Character string with search query
+#' 
 #' @param after Only search for posts made after this data, specified as a UNIX epoch time
-#' @param before As `after`, but before
+#' 
+#' @param before Only search for posts made before this data, specified as a UNIX epoch time
+#' 
 #' @param subreddit Only return posts made in this subreddit
-#' @param nest_level How deep to search? `nest_level = 1` returns only top-level comments
+#' 
+#' @param nest_level How deep to search? nest_level = 1 returns only top-level comments
+#' 
+#' @return data frame with desired comments and submissions
 
 getPushshiftData <- function(postType,
                              title = NULL,
@@ -428,7 +472,10 @@ getPushshiftDataRecursive <- function(postType = "submission",
 #' To present error message in plot outputs in shiny 
 #'
 #' @param ... Text strings to be printed in the plot window 
-#' @param sep A string to separate the strings provided in ...
+#' 
+#' @param sep Character string to separate the strings provided in ...
+#' 
+#' @return Plot with text strings printed on it
 
 
 plot_exception <-function(
@@ -448,16 +495,21 @@ plot_exception <-function(
 ##################### emojis (for use in sentimentr)
 #########################################################
 
-#' Convert the emojis/emoticons in a text vector to ::their description::
+#' Convert the emojis in a text vector to ::their description::
 #'
 #' @param x A character vector
+#' 
 #' @param emoji_dt data frame where a column called "x" contains the emoji in 
 #' bytes and another column called "y" with its description
+#' 
+#' @return Character vector with emojis replaced with ::description of emoji::
 
 emoji_to_words <- function(x, emoji_dt = lexicon::hash_emojis){
   x <- iconv(x, "UTF-8", "ASCII", "byte")
   gsub("\\s+", " ", mgsub(x, emoji_dt[["x"]], paste0("::", emoji_dt[["y"]], "::")))
 }
+
+#' Same as above, but for emoticons 
 
 emoticon_to_words <- function (x, emoticon_dt = lexicon::hash_emoticons) 
 {

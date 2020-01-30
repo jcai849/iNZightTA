@@ -9,7 +9,7 @@
 
 ######### Create reactive object merged text. Both for Dispersion Plot and for Readability
 merged <- reactive({
-  merge_id(x = imported_filtered(), source = input$import_from)#, groups = input$groups)
+  merge_id(x = imported_filtered(), source = input$import_from)
 })
 
 
