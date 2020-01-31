@@ -16,7 +16,7 @@ imported <- eventReactive(input$pre_process_text, {
     cleaned <- raw_data() 
     
     # fixes the weird apostrophes
-    cleaned$text <- gsub(intToUtf8(8217), "'", cleaned$text, perl = TRUE)
+    # cleaned$text <- gsub(intToUtf8(8217), "'", cleaned$text, perl = TRUE)
     
     # converts the emojis to their description
     cleaned$text <- emoji_to_words(cleaned$text)

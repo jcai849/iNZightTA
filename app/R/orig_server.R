@@ -52,7 +52,12 @@ grouped <- reactive({
   if (isTruthy(input$group_var)){
     data <- data %>%
       dplyr::group_by(!! dplyr::sym(input$group_var))}
-  data})
+  data
+  
+  
+  })
+
+
 
 output$table <- renderTable({
   filtered() %>% head(300)})
@@ -67,6 +72,7 @@ output$group_by <- renderUI(selectInput("group_var",
                                         "select which columns to group on",
                                         c("", names(filtered())) %||% c(""))
 )
+
 output$insight_options <- renderUI({
   switch(input$what_vis,
          "Term Frequency" = selectInput("vis_type",
@@ -210,7 +216,6 @@ insighted <- reactive({
          "Term Frequency-Inverse Document Frequency" = get_tf_idf(grouped(), input$group_var),
          
          "Readability" = books_with_samples(merged()),
-         
          ########################################
          "Term Sentiment" = get_term_insight(grouped(),
                                              input$what_vis,
@@ -361,6 +366,7 @@ output$plot <- renderPlot({
   visualisation() + theme(axis.text = element_text(size = input$text_size))
 })
 
+# to allow users to dynamically alter the plot
 output$plot.ui <- renderUI({
   plotOutput("plot", height = input$plot_height)
 })
