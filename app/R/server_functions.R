@@ -218,10 +218,9 @@ books_with_samples <- function(books){
 
 clean_for_app <- function(df){
   
-  # converts weird punctuation in Guardian Articles. ! deletes tweets with emojis?
-  #df$text <- iconv(df$text, from = "UTF-8", to = "ASCII//TRANSLIT", "byte")
   Encoding(df$text) <- "UTF-8"
-  # replaces the fancy apostrophes
+  
+  # replaces the fancy apostrophes (for replacing contractions later on)
   df$text <- gsub(intToUtf8(8217), "'", df$text, perl = TRUE)
   
   # For the guardian
@@ -238,7 +237,7 @@ clean_for_app <- function(df){
   
   df$text <- textclean::replace_contraction(df$text)
   
-  # Replace Mr. with Mister ... for sentence tokenization
+  # Replace Mr. with Mister ... for sentence tokenization 
   df$text <- qdap::replace_abbreviation(df$text)
   df$text <- gsub("^\"|\"$", "", df$text)
   

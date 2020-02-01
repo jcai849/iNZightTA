@@ -116,8 +116,9 @@ ui <- navbarPage("iNZight Text Analytics",
                                            uiOutput("vis_options"),
                                            uiOutput("vis_facet_by"),
                                            a(id = "toggle_vis", "Additional visualization options", href = "#"),
-                              
+                                           
                                            uiOutput("add_vis_options"), 
+                  
                                            downloadButton("downloadData", "Download data used in visualization")
                                          )
                             ),
@@ -140,11 +141,12 @@ ui <- navbarPage("iNZight Text Analytics",
                                 condition =  "!(input.what_vis == 'Word Tree'||input.what_vis == 'Readability')",
                                 #plotOutput("plot", height = "1000px"),
                                 uiOutput("plot.ui"), 
-                                DTOutput("insighted_table"), 
-                                actionButton("subset_data", "Subset Data"), 
-                                actionButton("restore_data", "Restore Data"), 
-                                verbatimTextOutput("num_subset"), 
-                                verbatimTextOutput("num_restore")
+                                DTOutput("insighted_table")
+                                # , 
+                                # actionButton("subset_data", "Subset Data"), 
+                                # actionButton("restore_data", "Restore Data"), 
+                                # verbatimTextOutput("num_subset"), 
+                                # verbatimTextOutput("num_restore")
                               )
                               
                             ))),

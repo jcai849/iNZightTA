@@ -16,12 +16,21 @@ output$add_vis_options <- renderUI({
         sliderInput("plot_height", "Plot height",
                     min = 400, max = 2000,
                     value = 1000), 
+        
         ##### controlling text size
-        sliderInput("text_size", "Text size", 
-                    min = 1, max = 30, value = 15),
+        conditionalPanel("input.vis_type != 'Page View'",
+                sliderInput("text_size", "Text size", 
+                            min = 1, max = 30, value = 15)),
+        
+        ##### controlling text size for page view
+        conditionalPanel("input.vis_type == 'Page View'", 
+                         sliderInput("page_text_size", "Text size", 
+                                     min = 1, max = 10, value = 4)), 
+        
         ##### controlling number of columns for facet wrap
-        sliderInput("n_col_facet", "Number of columns for multi-panel plots", 
-                    min = 1, max = 7, value = 5)
+        conditionalPanel("!input.vis_facet == ''",
+            sliderInput("n_col_facet", "Number of columns for multi-panel plots", 
+                        min = 1, max = 7, value = 3))
     )
   )
 })

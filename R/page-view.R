@@ -16,7 +16,7 @@
 #' @return ggplot object as per ggpage
 #'
 #' @export
-struct_pageview <- function(.data, col_name, num_terms, term_index, palette){
+struct_pageview <- function(.data, col_name, num_terms, term_index, word_size, palette){
     
     end <- min(nrow(.data), term_index + num_terms)
     q_col_name <- dplyr::enquo(col_name)
@@ -34,7 +34,7 @@ struct_pageview <- function(.data, col_name, num_terms, term_index, palette){
                 ggplot2::geom_text(ggplot2::aes(label = word,
                                                 x = (xmax + xmin)/2,
                                                 y = (ymin + ymax)/2),
-                                   size = 4, color = "black")
+                                   size = word_size, color = "black")
         }
         else {
             .data[seq(term_index, end),] %>%
@@ -45,7 +45,7 @@ struct_pageview <- function(.data, col_name, num_terms, term_index, palette){
                 ggplot2::geom_text(ggplot2::aes(label = word,
                                                 x = (xmax + xmin)/2,
                                                 y = (ymin + ymax)/2),
-                                   size = 4, color = "black")
+                                   size = word_size, color = "black")
         }
     }
     else{
@@ -59,7 +59,7 @@ struct_pageview <- function(.data, col_name, num_terms, term_index, palette){
             ggplot2::geom_text(ggplot2::aes(label = word,
                                             x = (xmax + xmin)/2,
                                             y = (ymin + ymax)/2),
-                               size = 4, color = "black")
+                               size = word_size, color = "black")
     }
     
 }
