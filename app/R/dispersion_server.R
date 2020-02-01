@@ -6,6 +6,15 @@
 # This file contains the code in server that groups the text by id and collapses them together, also
 # creates the lexical dispersion plot in Key Words in Context tab. 
 
+merge_choices <- reactive({
+  raw <- raw_data()
+  c(input$section_by, names(raw)[names(raw) != "text"])
+})
+
+observe({
+updateSelectizeInput(session, "merge_id_grps", 
+                     choices = merge_choices(), server = TRUE)
+})
 
 ######### Create reactive object merged text. Both for Dispersion Plot and for Readability
 merged <- reactive({

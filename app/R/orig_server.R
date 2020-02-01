@@ -47,52 +47,14 @@ filtered <- reactive({
   data
 })
 
-# grouped <- reactive({
-#   data <- filtered()
-#   if (isTruthy(input$group_var)){
-#     data <- data %>%
-#       dplyr::group_by(!! dplyr::sym(input$group_var))}
-#   data
-# })
-
-output$num_subset <- renderText({as.character(input$subset_data)
-                                })
-output$num_restore <- renderText({as.character(input$restore_data)
+grouped <- reactive({
+  data <- filtered()
+  if (isTruthy(input$group_var)){
+    data <- data %>%
+      dplyr::group_by(!! dplyr::sym(input$group_var))}
+  data
 })
 
-# ############################################
-# Attempt at conditioning on features
-# ############################################
-
- insighted_filtered <- reactive({
-    full_data <- insighted()
-    filtered_rows <- input$insighted_table_rows_all
-    full_data[filtered_rows, 1:7]
-  })
-
- values <- reactiveValues(data=NULL)
-
- observe({
-  input$subset_data
-  values$data<-insighted_filtered()
-  curr <<- data.frame(values$data)
- })
-
- grouped <- reactive({
-   if (input$restore_data >= input$subset_data){
-     data <- filtered()
-     if (isTruthy(input$group_var)){
-       data <- data %>%
-        dplyr::group_by(!! dplyr::sym(input$group_var))}
-       data
-     }
-   else{
-     curr
-   }
- })
-
-# ############################################
-###########################################
 
 output$table <- renderTable({
   filtered() %>% head(300)})

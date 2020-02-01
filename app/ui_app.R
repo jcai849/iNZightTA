@@ -11,7 +11,7 @@ ui <- navbarPage("iNZight Text Analytics",
                               
                               conditionalPanel(
                                 condition = "input.import_from == 'Project Gutenberg'",
-                                selectInput("gutenberg_work", "Please select a book.", multiple = TRUE, choices = character(0))
+                                selectInput("gutenberg_work", "Select work(s)", multiple = TRUE, choices = character(0))
                               ),
                               uiOutput("side"),
                                
@@ -120,7 +120,6 @@ ui <- navbarPage("iNZight Text Analytics",
                                            uiOutput("add_vis_options"), 
                                            downloadButton("downloadData", "Download data used in visualization")
                                          )
-       
                             ),
                             
                             mainPanel(
@@ -169,6 +168,10 @@ ui <- navbarPage("iNZight Text Analytics",
                                                      sliderInput("plot_height2", "Plot height",
                                                                  min = 400, max = 2000,
                                                                  value = 1000),
+                                                     ###################
+                                                     selectInput("merge_id_grps", "Group text by", 
+                                                                 choices = NULL, selected = "id"), 
+                                                     ###################
                                                      actionButton("create_kwic", "Create lexical dispersion plot"),
                                                      tags$hr(),
                                                      
@@ -193,6 +196,22 @@ ui <- navbarPage("iNZight Text Analytics",
                             DT::dataTableOutput("keyword_table")
                           ))
                  ),
+                 tabPanel("Help", 
+                          fluidPage(
+                            navlistPanel(
+                              "Getting keys and tokens",
+                              tabPanel("Twitter",
+                                       includeMarkdown("C:\\Users\\Home\\Desktop\\git stuff\\iNZightTA\\app\\R\\help_files\\twitter_token.rmd")
+                              ),
+                              tabPanel("Second",
+                                       h3("sec")
+                              ),
+                              tabPanel("Third",
+                                       h3("third")
+                              )
+                            )
+                          )
+                          ), 
                  
                  add_busy_spinner(spin = "fading-circle")
 )

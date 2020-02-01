@@ -1,0 +1,15 @@
+#### You will need a Twitter account and a valid mobile number. 
+
+1. Visit https://developer.twitter.com/en/apps and log in with your Twitter account.
+
+2. Fill in all the information requested. Once you reach the “Intended use” page, you might want to save what you filled out in a separate document. 
+
+3. Submit your application and check your email inbox to verify the developer account. 
+
+4. Return to https://developer.twitter.com/en/apps and create an app. 
+
+5. Fill out name, description and website (can be anything). Save the app name. No need to enable sign in with Twitter. In the field “Tell us how the app will be used”, you could paste the information you gave under point 2 above. Click on create app. 
+
+6. Click on the “Keys and Tokens” tab and save the API key and the API secret key.
+
+7. Now, click the “Generate” button under the heading “Access token & access token secret” and save both. 

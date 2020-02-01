@@ -75,15 +75,16 @@ section_for_merge_id  <- function(.data, section_by){
 #'
 #' @return data frame with new groupings and text within each group merged together
 #' 
+
 merge_id <- function(x, source){
-  if (source == "Project Gutenberg")
-  {
-    # if user sections the text by chapter/book/canto in the beginning, 
-    # add in the column for the sectioning
-    if (isTruthy(input$section_by)){
+  if (isTruthy(input$merge_id_grps)){
+    if (input$section_by == input$merge_id_grps)
+    {
+      # if user sections the text by chapter/book/canto in the beginning, 
+      # add in the column for the sectioning
       x <- x %>%
         section_for_merge_id(input$section_by)
-      
+        
       # and merge the text by these columns
       by_section <- x %>%
         group_by(id, !! dplyr::sym(input$section_by)) %>%
@@ -93,28 +94,16 @@ merge_id <- function(x, source){
       by_section
     }
     
-    
-    # Otherwise just merge together the text from the whole book. 
     else {
-      
-      by_id <- x %>% group_by(id) %>%
+      by_chosen <- x %>% 
+        group_by(!! dplyr::sym(input$merge_id_grps)) %>%
         mutate(text = paste(text, collapse = " ")) %>%
-        distinct(text)
-      
-      by_id
-      
+        distinct(text) %>% ungroup() %>%
+        mutate(id = !! dplyr::sym(input$merge_id_grps))
+      by_chosen
     }
-    
   }
-  
-  else if (source %in% c("The Guardian Articles", "Spotify/Genius", "Upload .txt, .csv, .xlsx, or .xls file")){
-    by_id <- x %>% group_by(id) %>%
-      mutate(text = paste(text, collapse = " ")) %>%
-      distinct(text)
-    by_id
-  }
-  
-  # For tweets, comments, etc 
+ 
   else{
     all_merged <- x %>% mutate(text = paste(text, collapse = ". ")) %>%
       distinct(text) %>% mutate(id = "Text")
@@ -122,6 +111,54 @@ merge_id <- function(x, source){
   }
   
 }
+
+# merge_id <- function(x, source){
+#   if (source == "Project Gutenberg")
+#   {
+#     # if user sections the text by chapter/book/canto in the beginning, 
+#     # add in the column for the sectioning
+#     if (isTruthy(input$section_by)){
+#       x <- x %>%
+#         section_for_merge_id(input$section_by)
+#       
+#       # and merge the text by these columns
+#       by_section <- x %>%
+#         group_by(id, !! dplyr::sym(input$section_by)) %>%
+#         mutate(text = paste(text, collapse = " ")) %>%
+#         distinct(text) %>% ungroup() %>%
+#         mutate(id = paste(id, input$section_by))
+#       by_section
+#     }
+#     
+#     
+#     # Otherwise just merge together the text from the whole book. 
+#     else {
+#       
+#       by_id <- x %>% group_by(id) %>%
+#         mutate(text = paste(text, collapse = " ")) %>%
+#         distinct(text)
+#       
+#       by_id
+#       
+#     }
+#     
+#   }
+#   
+#   else if (source %in% c("The Guardian Articles", "Spotify/Genius", "Upload .txt, .csv, .xlsx, or .xls file")){
+#     by_id <- x %>% group_by(id) %>%
+#       mutate(text = paste(text, collapse = " ")) %>%
+#       distinct(text)
+#     by_id
+#   }
+#   
+#   # For tweets, comments, etc 
+#   else{
+#     all_merged <- x %>% mutate(text = paste(text, collapse = ". ")) %>%
+#       distinct(text) %>% mutate(id = "Text")
+#     all_merged
+#   }
+#   
+# }
 
 
 #' Creates kwic object to pass into textplot_xray() and for concordance table
@@ -200,6 +237,9 @@ clean_for_app <- function(df){
   df$text <- gsub("&.*\\w+?;", " ", df$text)
   
   df$text <- textclean::replace_contraction(df$text)
+  
+  # Replace Mr. with Mister ... for sentence tokenization
+  df$text <- qdap::replace_abbreviation(df$text)
   df$text <- gsub("^\"|\"$", "", df$text)
   
   return(df)

@@ -91,12 +91,12 @@ output$side <- renderUI({
                           "spotify playlist ID" = "playlist")),
            
            output$more_spot <- renderUI({switch(input$type_spotify,
-                                                "songs" = tagList(textInput(inputId = "artist", label = "Artist(s)"),
-                                                                  textInput(inputId = "song_title", label = "Song Title(s)")),
-                                                "album" = tagList(textInput(inputId = "artist", label = "Artist"),
-                                                                  textInput(inputId = "album_title", label = "Album Title")),
-                                                "playlist" = tagList(textInput(inputId = "spotify_username", label = "Spotify Username"),
-                                                                     textInput(inputId = "playlist_id", label = "Spotify Playlist ID"))
+                                                "songs" = tagList(textInput(inputId = "artist", label = "Artist(s)", placeholder = "Taylor Swift,Adele"),
+                                                                  textInput(inputId = "song_title", label = "Song Title(s)", placeholder = "Love Story,Rolling in the Deep")),
+                                                "album" = tagList(textInput(inputId = "artist", label = "Artist", placeholder = "Adele"),
+                                                                  textInput(inputId = "album_title", label = "Album Title", placeholder = "21,25")),
+                                                "playlist" = tagList(textInput(inputId = "spotify_username", label = "Spotify Username", placeholder = "spotify"),
+                                                                     textInput(inputId = "playlist_id", label = "Spotify Playlist ID", placeholder = "4OIVU71yO7SzyGrh0ils2i"))
                                                 
            )}),
            actionButton("gather_data", "Gather lyrics"),
@@ -133,7 +133,7 @@ output$side <- renderUI({
          
          "stuff.co.nz Comments" = tagList(
            
-           textInput(inputId = "rss_link", label = "URL of RSS Feed"),
+           textInput(inputId = "rss_link", label = "URL of RSS Feed", placeholder = ""),
            
            actionButton("gather_data", "Gather comments"),
            actionButton("pre_process_text", "Pre-process text"), 
@@ -192,8 +192,8 @@ output$side <- renderUI({
            
            output$more_reddit <- renderUI({switch(input$type_reddit,
                                                   "comment" = tagList(
-                                                    textInput(inputId = "q", label = "Search Query", placeholder = "vegan"),
-                                                    textInput(inputId = "subreddit", label = "Subreddit", placeholder = "Cooking"),
+                                                    textInput(inputId = "q", label = "Search Query", placeholder = "brexit"),
+                                                    textInput(inputId = "subreddit", label = "Subreddit", placeholder = "politics"),
                                                     textInput(inputId = "after", label = "After Date Time (in epoch time)"),
                                                     textInput(inputId = "before",label = "Before Date Time (in epoch time)"),
                                                     
