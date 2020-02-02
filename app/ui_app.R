@@ -142,11 +142,12 @@ ui <- navbarPage("iNZight Text Analytics",
                                 #plotOutput("plot", height = "1000px"),
                                 uiOutput("plot.ui"), 
                                 DTOutput("insighted_table")
-                                # , 
-                                # actionButton("subset_data", "Subset Data"), 
-                                # actionButton("restore_data", "Restore Data"), 
-                                # verbatimTextOutput("num_subset"), 
-                                # verbatimTextOutput("num_restore")
+                                ,
+                                actionButton("subset_data", "Subset Data"),
+                                actionButton("restore_data", "Restore Data"),
+                                # verbatimTextOutput("num_subset"),
+                                # verbatimTextOutput("num_restore"), 
+                                dataTableOutput("lookie")
                               )
                               
                             ))),
@@ -180,8 +181,7 @@ ui <- navbarPage("iNZight Text Analytics",
                                                      ##### For keywords in context
                                                      actionButton("add", "Add Points"),
                                                      actionButton("delete", "Delete Points"),
-                                                     # conditionalPanel("input.import_from == 'Project Gutenberg'",
-                                                     #                  checkboxInput('groups', 'Group by chapter', value = FALSE, width = NULL)),
+                                            
                                                      checkboxInput('line_num', 'See doc name', value = FALSE, width = NULL)
                                                      
                           ),

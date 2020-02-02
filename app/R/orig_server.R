@@ -238,7 +238,7 @@ output$vis_options <- renderUI({
   switch(input$vis_type,
          "Word Cloud" = tagList(sliderInput("num_terms",
                                             "Select the number of terms to visualise",
-                                            3, 50, 15),
+                                            3, 50, 5),
                                 selectInput("wordcloud_shape",
                                             "Select the shape of the wordcloud",
                                             list("circle",
@@ -260,14 +260,14 @@ output$vis_options <- renderUI({
                                            list("Sequential", "Diverging"))),
          
          "Bar" = tagList(sliderInput("num_terms", "Select the number of terms to visualise",
-                                     2,50,15),
+                                     2,50,5),
                          checkboxInput("desc", "Sort descending")))})
 
 
 output$vis_facet_by <- renderUI(tagList(selectInput("vis_facet",
                                                     "select which variable to facet on",
-                                                    c("", names(grouped())) %||% c("")),
-                                        checkboxInput("scale_fixed", "Scale Fixed", value=TRUE)))
+                                                    c("", names(grouped())) %||% c(""), selected = input$group_var),
+                                        checkboxInput("scale_fixed", "Scale Fixed", value=FALSE)))
 
 
 
@@ -342,9 +342,17 @@ visualisation <- reactive({
                                                          x = `Bound Aggregates`,
                                                          desc = input$desc, 
                                                          ncol = input$n_col_facet),
+                        "Term Frequency-Inverse Document Frequency" = get_vis(insighted(), input$vis_type,
+                                                                              input$what_vis,
+                                                                              facet_by = input$vis_facet,
+                                                                              input$scale_fixed,
+                                                                              input$num_terms,
+                                                                              desc = input$desc, 
+                                                                              ncol = input$n_col_facet),
+                        
                         get_vis(insighted(), input$vis_type,
                                 input$what_vis,
-                                input$vis_facet,
+                                facet_by = input$vis_facet,
                                 input$scale_fixed,
                                 input$num_terms,
                                 desc = input$desc, 
