@@ -14,8 +14,8 @@ output$add_vis_options <- renderUI({
     div(id = "vis",
         ##### controlling plot height
         sliderInput("plot_height", "Plot height",
-                    min = 400, max = 2000,
-                    value = 1000), 
+                    min = 400, max = 2500,
+                    value = 400), 
         
         ##### controlling text size
         conditionalPanel("input.vis_type != 'Page View'",

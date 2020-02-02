@@ -220,18 +220,25 @@ insighted <- reactive({
          "Moving Average Term Sentiment" = get_term_insight(grouped(),
                                                             input$what_vis,
                                                             input$sent_lex,
-                                                            input$term_sent_lag),
-         "Aggregated Term Count" = get_aggregate_insight(grouped(),
-                                                         c("Bound Aggregates", input$what_vis),
-                                                         input$agg_var),
-         "Key Sections" = get_aggregate_insight(grouped(),
-                                                c("Bound Aggregates", input$what_vis),
-                                                input$agg_var,
-                                                input$summ_method),
-         "Aggregated Sentiment" = get_aggregate_insight(grouped(),
-                                                        c("Bound Aggregates", input$what_vis),
-                                                        input$agg_var,
-                                                        input$sent_lex))})
+                                                            input$term_sent_lag))})
+
+insighted_agg <- reactive({
+  shiny::validate(
+    need(input$agg_var != "", "Please select which variable to aggregate on")
+  )
+  #req(input$agg_var)
+  switch(input$what_vis,
+    "Aggregated Term Count" = get_aggregate_insight(grouped(),
+                                                    c("Bound Aggregates", input$what_vis),
+                                                    input$agg_var),
+    "Key Sections" = get_aggregate_insight(grouped(),
+                                           c("Bound Aggregates", input$what_vis),
+                                           input$agg_var,
+                                           input$summ_method),
+    "Aggregated Sentiment" = get_aggregate_insight(grouped(),
+                                                   c("Bound Aggregates", input$what_vis),
+                                                   input$agg_var,
+                                                   input$sent_lex))})
 
 
 output$vis_options <- renderUI({
@@ -290,7 +297,7 @@ visualisation <- reactive({
                                "Aggregated Term Count" =,
                                "Key Sections" =,
                                "Aggregated Sentiment" = get_vis(
-                                 insighted(),
+                                 insighted_agg(),
                                  input$vis_type,
                                  input$what_vis,
                                  input$vis_facet,
@@ -307,20 +314,40 @@ visualisation <- reactive({
                                        input$num_terms,
                                        shape = input$wordcloud_shape, 
                                        ncol = input$n_col_facet)),
-         "Page View" = get_vis(insighted(), input$vis_type,
-                               input$what_vis,
-                               input$vis_facet,
-                               input$scale_fixed,
-                               input$num_terms,
-                               input$term_index,
-                               palette = input$palette, 
-                               ncol = input$n_col_facet, 
-                               word_size = input$page_text_size),
-         "Time Series" = get_vis(insighted(), input$vis_type,
-                                 input$what_vis,
-                                 input$vis_facet,
-                                 input$scale_fixed, 
-                                 ncol = input$n_col_facet),
+         "Page View" = switch(input$what_vis,
+                              "Aggregated Term Count" =,
+                              "Key Sections" =,
+                              "Aggregated Sentiment" = get_vis(insighted_agg(), input$vis_type,
+                                                               input$what_vis,
+                                                               input$vis_facet,
+                                                               input$scale_fixed,
+                                                               input$num_terms,
+                                                               input$term_index,
+                                                               palette = input$palette, 
+                                                               ncol = input$n_col_facet, 
+                                                               word_size = input$page_text_size),
+                             get_vis(insighted(), input$vis_type,
+                                                 input$what_vis,
+                                                 input$vis_facet,
+                                                 input$scale_fixed,
+                                                 input$num_terms,
+                                                 input$term_index,
+                                                 palette = input$palette, 
+                                                 ncol = input$n_col_facet, 
+                                                 word_size = input$page_text_size)),
+         "Time Series" = switch(input$what_vis,
+                                "Aggregated Term Count" =,
+                                "Key Sections" =,
+                                "Aggregated Sentiment" = get_vis(insighted_agg(), input$vis_type,
+                                                                 input$what_vis,
+                                                                 input$vis_facet,
+                                                                 input$scale_fixed, 
+                                                                 ncol = input$n_col_facet), 
+                                   get_vis(insighted(), input$vis_type,
+                                                         input$what_vis,
+                                                         input$vis_facet,
+                                                         input$scale_fixed, 
+                                                         ncol = input$n_col_facet)),
          "Bar" = switch(input$what_vis,
                         "n-gram Frequency" = get_vis(insighted(),
                                                      input$vis_type,
@@ -333,7 +360,7 @@ visualisation <- reactive({
                                                      ncol = input$n_col_facet),
                         "Aggregated Term Count" =,
                         "Key Sections" =,
-                        "Aggregated Sentiment" = get_vis(insighted(),
+                        "Aggregated Sentiment" = get_vis(insighted_agg(),
                                                          input$vis_type,
                                                          input$what_vis,
                                                          input$vis_facet,
@@ -342,13 +369,6 @@ visualisation <- reactive({
                                                          x = `Bound Aggregates`,
                                                          desc = input$desc, 
                                                          ncol = input$n_col_facet),
-                        "Term Frequency-Inverse Document Frequency" = get_vis(insighted(), input$vis_type,
-                                                                              input$what_vis,
-                                                                              facet_by = input$vis_facet,
-                                                                              input$scale_fixed,
-                                                                              input$num_terms,
-                                                                              desc = input$desc, 
-                                                                              ncol = input$n_col_facet),
                         
                         get_vis(insighted(), input$vis_type,
                                 input$what_vis,
@@ -357,16 +377,32 @@ visualisation <- reactive({
                                 input$num_terms,
                                 desc = input$desc, 
                                 ncol = input$n_col_facet)),
-         "Density" = get_vis(insighted(), input$vis_type,
-                             input$what_vis, input$vis_facet,
-                             input$scale_fixed, 
-                             ncol = input$n_col_facet),
-         "Histogram" = get_vis(insighted(), input$vis_type,
-                               input$what_vis,
-                               input$vis_facet,
-                               input$scale_fixed, 
-                               ncol = input$n_col_facet))
-})
+         "Density" = switch(input$what_vis,
+                            "Aggregated Term Count" =,
+                            "Key Sections" =,
+                            "Aggregated Sentiment" = get_vis(insighted_agg(), input$vis_type,
+                                                             input$what_vis,
+                                                             input$vis_facet,
+                                                             input$scale_fixed, 
+                                                             ncol = input$n_col_facet),
+                     get_vis(insighted(), input$vis_type,
+                                       input$what_vis, input$vis_facet,
+                                       input$scale_fixed, 
+                                       ncol = input$n_col_facet)),
+         "Histogram" = switch(input$what_vis,
+                              "Aggregated Term Count" =,
+                              "Key Sections" =,
+                              "Aggregated Sentiment" = get_vis(insighted_agg(), input$vis_type,
+                                                               input$what_vis,
+                                                               input$vis_facet,
+                                                               input$scale_fixed, 
+                                                               ncol = input$n_col_facet),
+                               get_vis(insighted(), input$vis_type,
+                                                   input$what_vis,
+                                                   input$vis_facet,
+                                                   input$scale_fixed, 
+                                                   ncol = input$n_col_facet))
+)})
 
 output$plot <- renderPlot({
   visualisation() + theme(axis.text = element_text(size = input$text_size))
@@ -378,8 +414,15 @@ output$plot.ui <- renderUI({
 })
 
 output$insighted_table <- renderDT({
-  insighted()}, 
+  if (input$what_vis %in% c("Aggregated Term Count","Key Sections","Aggregated Sentiment")){
+    insighted_agg()
+  }
+  else{
+    insighted()
+  }
+  }, 
   filter = "bottom")
+
 
 # # table to show the data table output after visualization 
 # output$insighted_table <- renderDT({
