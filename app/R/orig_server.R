@@ -53,52 +53,7 @@ grouped <- reactive({
      data <- data %>%
        dplyr::group_by(!! dplyr::sym(input$group_var))}
    data
- })
-
-
- # ############################################
- # Attempt at conditioning on features
- # ############################################
-.f = function(){
-  
-  output$num_subset <- renderText({as.character(input$subset_data)
-  })
-  output$num_restore <- renderText({as.character(input$restore_data)
-  })
-  
- insighted_filtered <- reactive({
-   full_data <- insighted()
-   filtered_rows <- input$insighted_table_rows_all
-   full_data[filtered_rows, 1:7]
- })
-
- # values <- reactiveValues(data=NULL)
- curr <- data.table()
- makeReactiveBinding("curr")
-
- observe({
-   input$subset_data
-   curr <<- insighted_filtered()
-   #curr <<- data.frame(values$data)
- })
-
- grouped <- reactive({
-   if (input$restore_data >= input$subset_data){
-     data <- filtered()
-     if (isTruthy(input$group_var)){
-       data <- data %>%
-         dplyr::group_by(!! dplyr::sym(input$group_var))}
-     data
-   }
-   else{
-     # get the last few columns of curr (REPLACE LATER> WHAT IF HAVE SECTIONED COL)
-     curr
-   }
- })
-}
-# ############################################
-###########################################
-
+})
 
 output$table <- renderTable({
   filtered() %>% head(300)})
@@ -313,6 +268,7 @@ output$vis_options <- renderUI({
                                selectInput("palette",
                                            "Select the colour palette type",
                                            list("Sequential", "Diverging"))),
+                              
                               tagList(sliderInput("num_terms",
                                                   "Select the number of terms to visualise",
                                                   3, 400, 100),

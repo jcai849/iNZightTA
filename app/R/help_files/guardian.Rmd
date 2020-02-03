@@ -1,0 +1,5 @@
+1.	Visit https://open-platform.theguardian.com/access/ and click on “Register developer key.”
+
+2.	Fill out all the information requested and register for a key. 
+
+3.	A new key will be sent to the email address provided. 

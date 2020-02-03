@@ -147,23 +147,27 @@ ui <- navbarPage("iNZight Text Analytics",
                                 actionButton("restore_data", "Restore Data"),
                                  verbatimTextOutput("num_subset"),
                                  verbatimTextOutput("num_restore"), 
-                                dataTableOutput("lookie")
+                                tableOutput("lookie")
                               )
                               
                             ))),
                  #################
                  tabPanel("Keywords in Context",
                           
-                          sidebarLayout(sidebarPanel(textInput("disp_words", "Keywords", value = ""),
+                          sidebarLayout(sidebarPanel(textInput("disp_words", "Keyword(s) or Key Phrase(s)", 
+                                                               value = "love,thousand pounds"),
                                                      
                                                      selectInput("disp_valuetype",
                                                                  "Type of Pattern Matching",
                                                                  list("glob", "regex",
                                                                       "fixed")),
+                                                     uiOutput("quant"), 
+                                                    
                                                      selectInput("scale",
                                                                  "Scale",
                                                                  list("absolute",
                                                                       "relative")),
+                                                     
                                                      numericInput("window", "Window", value = 5, min = 1, max = 10),
                                                      
                                                      checkboxInput("disp_case_insensitive", "Case Insensitive",
@@ -179,6 +183,7 @@ ui <- navbarPage("iNZight Text Analytics",
                                                      tags$hr(),
                                                      
                                                      ##### For keywords in context
+                                                     
                                                      actionButton("add", "Add Points"),
                                                      actionButton("delete", "Delete Points"),
                                             
@@ -198,18 +203,21 @@ ui <- navbarPage("iNZight Text Analytics",
                             DT::dataTableOutput("keyword_table")
                           ))
                  ),
-                 tabPanel("Help", 
+                 tabPanel("Getting keys and tokens", 
                           fluidPage(
                             navlistPanel(
-                              "Getting keys and tokens",
+                              #"Getting keys and tokens",
                               tabPanel("Twitter",
-                                       includeMarkdown("C:\\Users\\Home\\Desktop\\git stuff\\iNZightTA\\app\\R\\help_files\\twitter_token.rmd")
+                                       includeMarkdown("R\\help_files\\twitter_token.rmd")
                               ),
-                              tabPanel("Second",
-                                       h3("sec")
+                              tabPanel("Spotify/Genius",
+                                       includeMarkdown("R\\help_files\\spot.Rmd")
                               ),
-                              tabPanel("Third",
-                                       h3("third")
+                              tabPanel("The Guardian Articles",
+                                       includeMarkdown("R\\help_files\\guardian.rmd")
+                              ), 
+                              tabPanel("stuff.co.nz comments",
+                                       includeMarkdown("R\\help_files\\stuff.Rmd")
                               )
                             )
                           )

@@ -122,3 +122,11 @@ observeEvent(input$create_kwic, {
     }
   }, filter = "top")
 })
+
+output$quant <- renderUI({HTML(paste0("<small>", 'Examples of pattern matching <a href = "https://quanteda.io/reference/kwic.html" target="_blank">here</a>.',
+                                      "</small>", "<br></br>"))})
+
+# output$dirs <- renderUI({HTML(paste0("<small>", 'Brush (brushing means clicking and dragging a selection box) and double click the selection box to zoom into the plot. Double click again to zoom out. 
+# Brush over some points and click "Add Points" to show the KWIC results for these points. To remove the points, brush over them again and click on "Delete Points." 
+# If you have several texts, tick the "See doc name" checkbox to add in a column showing the source of the text. ',
+#                                      "</small>", "<br></br>"))})

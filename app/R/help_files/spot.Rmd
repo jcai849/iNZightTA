@@ -1,0 +1,17 @@
+#### You will need a Spotify and a Genius Account.
+
+##### For Spotify
+
+1.	Visit https://developer.spotify.com/dashboard/ and log in with your Spotify account. 
+
+2.	Create an app. Fill in anything for the app name and description. You can select “I don’t know” for the question “What are you building?”
+
+3.	Save your Client ID and Client Secret. 
+
+##### For Genius
+
+1.	Visit https://genius.com/api-clients/new to create a Genius API client. 
+
+2.	Fill in anything for the app name and for the app website url, you can type in “http://anything.com”  
+
+3.	Save the client ID, client secret, and the client access token. 

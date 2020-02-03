@@ -171,7 +171,7 @@ output$side <- renderUI({
                           "hashtag" = "hashtag")),
            textInput(inputId = "user",
                      label = "Please provide the Twitter username/hashtag.",
-                     placeholder = "e.g. #ClimateChange, @kfc"),
+                     placeholder = "#ClimateChange or @kfc"),
            numericInput(inputId = "num_tweets",
                         label = "Number of Tweets to Retrieve (up to 18000 every 15 mins)",
                         value = 500),
