@@ -48,12 +48,56 @@ filtered <- reactive({
 })
 
 grouped <- reactive({
-  data <- filtered()
-  if (isTruthy(input$group_var)){
-    data <- data %>%
-      dplyr::group_by(!! dplyr::sym(input$group_var))}
-  data
-})
+   data <- filtered()
+   if (isTruthy(input$group_var)){
+     data <- data %>%
+       dplyr::group_by(!! dplyr::sym(input$group_var))}
+   data
+ })
+
+
+ # ############################################
+ # Attempt at conditioning on features
+ # ############################################
+.f = function(){
+  
+  output$num_subset <- renderText({as.character(input$subset_data)
+  })
+  output$num_restore <- renderText({as.character(input$restore_data)
+  })
+  
+ insighted_filtered <- reactive({
+   full_data <- insighted()
+   filtered_rows <- input$insighted_table_rows_all
+   full_data[filtered_rows, 1:7]
+ })
+
+ # values <- reactiveValues(data=NULL)
+ curr <- data.table()
+ makeReactiveBinding("curr")
+
+ observe({
+   input$subset_data
+   curr <<- insighted_filtered()
+   #curr <<- data.frame(values$data)
+ })
+
+ grouped <- reactive({
+   if (input$restore_data >= input$subset_data){
+     data <- filtered()
+     if (isTruthy(input$group_var)){
+       data <- data %>%
+         dplyr::group_by(!! dplyr::sym(input$group_var))}
+     data
+   }
+   else{
+     # get the last few columns of curr (REPLACE LATER> WHAT IF HAVE SECTIONED COL)
+     curr
+   }
+ })
+}
+# ############################################
+###########################################
 
 
 output$table <- renderTable({
@@ -226,7 +270,7 @@ insighted_agg <- reactive({
   shiny::validate(
     need(input$agg_var != "", "Please select which variable to aggregate on")
   )
-  #req(input$agg_var)
+  
   switch(input$what_vis,
     "Aggregated Term Count" = get_aggregate_insight(grouped(),
                                                     c("Bound Aggregates", input$what_vis),
@@ -238,7 +282,8 @@ insighted_agg <- reactive({
     "Aggregated Sentiment" = get_aggregate_insight(grouped(),
                                                    c("Bound Aggregates", input$what_vis),
                                                    input$agg_var,
-                                                   input$sent_lex))})
+                                                   input$sent_lex))
+  })
 
 
 output$vis_options <- renderUI({
@@ -256,15 +301,27 @@ output$vis_options <- renderUI({
                                                  "triangle-upright",
                                                  "pentagon",
                                                  "star"))),
-         "Page View" = tagList(sliderInput("num_terms",
+         "Page View" = switch(input$what_vis,
+                                "Aggregated Term Count" =,
+                                "Key Sections" =,
+                                "Aggregated Sentiment" = tagList(sliderInput("num_terms",
                                            "Select the number of terms to visualise",
                                            3, 400, 100),
                                sliderInput("term_index",
                                            "Select the point to begin visualisation from",
-                                           1, nrow(insighted()), 1),
+                                           1, nrow(insighted_agg()), 1),
                                selectInput("palette",
                                            "Select the colour palette type",
                                            list("Sequential", "Diverging"))),
+                              tagList(sliderInput("num_terms",
+                                                  "Select the number of terms to visualise",
+                                                  3, 400, 100),
+                                      sliderInput("term_index",
+                                                  "Select the point to begin visualisation from",
+                                                  1, nrow(insighted()), 1),
+                                      selectInput("palette",
+                                                  "Select the colour palette type",
+                                                  list("Sequential", "Diverging")))), 
          
          "Bar" = tagList(sliderInput("num_terms", "Select the number of terms to visualise",
                                      2,50,5),
