@@ -58,7 +58,6 @@ Imports:
     rvest, 
     httr, 
     lubridate
-
 RoxygenNote: 6.1.1
 NeedsCompilation: no
 Packaged: 2019-09-08 10:33:01 UTC; user

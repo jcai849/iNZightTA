@@ -4,7 +4,7 @@
 \alias{struct_pageview}
 \title{Colours a ggpage based on an insight function}
 \usage{
-struct_pageview(.data, col_name, num_terms, term_index, palette)
+struct_pageview(.data, col_name, num_terms, term_index, word_size, palette)
 }
 \arguments{
 \item{.data}{a dataframe containing "word" and insight columns as
@@ -17,6 +17,8 @@ colour plot}
 \item{num_terms}{the number of terms to visualise}
 
 \item{term_index}{which term to start the visualisation from}
+
+\item{word_size}{integer size of words}
 
 \item{palette}{determine coloration of palette (not yet implemented)}
 }
