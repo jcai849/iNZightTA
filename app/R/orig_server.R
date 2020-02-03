@@ -55,19 +55,24 @@ filtered <- reactive({
 #    data
 # })
 
- output$num_subset <- renderText({as.character(input$subset_data)
-                                 })
- output$num_restore <- renderText({as.character(input$restore_data)})
-
 # # ############################################
 # # Attempt at conditioning on features
 # # ############################################
 #
-  # insighted_filtered <- eventReactive(input$subset_data, {
-  #    full_data <- filtered()
-  #    filtered_rows <- input$insighted_table_rows_all
-  #    full_data[filtered_rows, ]
-  #  })
+ observe({
+   if (input$subset_data == 0) {
+     shinyjs::disable("restore_data")
+   } else {
+     shinyjs::enable("restore_data")
+     shinyjs::disable("subset_data")
+   }
+ })
+ 
+ observe({
+   if (input$restore_data == 1) {
+     shinyjs::disable("restore_data")
+   } 
+ })
 
   values <- reactiveValues(data=NULL)
    
@@ -279,7 +284,8 @@ insighted_agg <- reactive({
     "Aggregated Sentiment" = get_aggregate_insight(grouped(),
                                                    c("Bound Aggregates", input$what_vis),
                                                    input$agg_var,
-                                                   input$sent_lex))
+                                                   input$sent_lex, 
+                                                   to_scale = input$scale_senti))
   })
 
 

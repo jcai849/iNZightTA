@@ -107,7 +107,11 @@ ui <- navbarPage("iNZight Text Analytics",
                                          
                                          conditionalPanel(
                                            condition = "!(input.what_vis == 'Readability')",
-                                           uiOutput("insight_options")
+                                           uiOutput("insight_options"),
+                                           conditionalPanel(
+                                             condition = "input.what_vis == 'Aggregated Sentiment'", 
+                                             checkboxInput("scale_senti", "Scale Aggregated Sentiment Scores")
+                                           ),
                                          ),
                                          
                                          
@@ -141,13 +145,9 @@ ui <- navbarPage("iNZight Text Analytics",
                                 condition =  "!(input.what_vis == 'Word Tree'||input.what_vis == 'Readability')",
                                 #plotOutput("plot", height = "1000px"),
                                 uiOutput("plot.ui"), 
-                                DTOutput("insighted_table")
-                                ,
+                                DTOutput("insighted_table"),
                                 actionButton("subset_data", "Subset Data"),
                                 actionButton("restore_data", "Restore Data"),
-                                 verbatimTextOutput("num_subset"),
-                                 verbatimTextOutput("num_restore"), 
-                                dataTableOutput("lookie")
                               )
                               
                             ))),
