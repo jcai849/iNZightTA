@@ -147,7 +147,7 @@ ui <- navbarPage("iNZight Text Analytics",
                                 actionButton("restore_data", "Restore Data"),
                                  verbatimTextOutput("num_subset"),
                                  verbatimTextOutput("num_restore"), 
-                                tableOutput("lookie")
+                                dataTableOutput("lookie")
                               )
                               
                             ))),

@@ -47,13 +47,55 @@ filtered <- reactive({
   data
 })
 
-grouped <- reactive({
-   data <- filtered()
-   if (isTruthy(input$group_var)){
-     data <- data %>%
-       dplyr::group_by(!! dplyr::sym(input$group_var))}
-   data
-})
+# grouped <- reactive({
+#    data <- filtered()
+#    if (isTruthy(input$group_var)){
+#      data <- data %>%
+#        dplyr::group_by(!! dplyr::sym(input$group_var))}
+#    data
+# })
+
+ output$num_subset <- renderText({as.character(input$subset_data)
+                                 })
+ output$num_restore <- renderText({as.character(input$restore_data)})
+
+# # ############################################
+# # Attempt at conditioning on features
+# # ############################################
+#
+  # insighted_filtered <- eventReactive(input$subset_data, {
+  #    full_data <- filtered()
+  #    filtered_rows <- input$insighted_table_rows_all
+  #    full_data[filtered_rows, ]
+  #  })
+
+  values <- reactiveValues(data=NULL)
+   
+   observeEvent(input$subset_data, {
+    filtered_rows <- input$insighted_table_rows_all
+    values$data<-filtered_rows
+   })
+   
+   insighted_filtered <- eventReactive(input$subset_data, {
+     full_data <- filtered()
+     full_data[values$data, ]
+   })
+
+  grouped <- reactive({
+    if (input$restore_data >= input$subset_data){
+      data <- filtered()
+      if (isTruthy(input$group_var)){
+        data <- data %>%
+         dplyr::group_by(!! dplyr::sym(input$group_var))}
+        data
+      }
+    else{
+      insighted_filtered()
+    }
+  })
+
+# ############################################
+###########################################
 
 output$table <- renderTable({
   filtered() %>% head(300)})
