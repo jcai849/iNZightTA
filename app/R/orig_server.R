@@ -78,7 +78,7 @@ filtered <- reactive({
    
    observeEvent(input$subset_data, {
     filtered_rows <- input$insighted_table_rows_all
-    values$data<-filtered_rows
+    values$data <- filtered_rows
    })
    
    insighted_filtered <- eventReactive(input$subset_data, {
