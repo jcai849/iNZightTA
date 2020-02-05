@@ -207,21 +207,20 @@ ui <- navbarPage("iNZight Text Analytics",
                           fluidPage(
                             navlistPanel(
                               #"Getting keys and tokens",
-                              tabPanel("Twitter",
-                                       includeMarkdown("R\\help_files\\twitter_token.rmd")
-                              ),
-                              tabPanel("Spotify/Genius",
-                                       includeMarkdown("R\\help_files\\spot.Rmd")
-                              ),
-                              tabPanel("The Guardian Articles",
-                                       includeMarkdown("R\\help_files\\guardian.rmd")
-                              ), 
-                              tabPanel("stuff.co.nz comments",
-                                       includeMarkdown("R\\help_files\\stuff.Rmd")
-                              )
+                                tabPanel("Twitter",
+                                         includeMarkdown(system.file("app/R/help_files/twitter_token.rmd", package = "inzightta"))),
+                                tabPanel("Spotify/Genius",
+                                         includeMarkdown(system.file("app/R/help_files/spot.rmd", package = "inzightta"))
+                                         ),
+                                tabPanel("The Guardian Articles",
+                                         includeMarkdown(system.file("app/R/help_files/guardian.rmd", package = "inzightta"))
+                                         ), 
+                                tabPanel("stuff.co.nz comments",
+                                         includeMarkdown(system.file("app/R/help_files/stuff.rmd", package = "inzightta"))
+                                         )
                             )
                           )
                           ), 
                  
                  add_busy_spinner(spin = "fading-circle")
-)
+                 )
