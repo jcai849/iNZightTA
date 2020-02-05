@@ -4,6 +4,16 @@
 
 # This file contains the miscellaneous functions called in the server. 
 
+#' Used for generating the colors used in plots
+#' @param n_cols number of colors to generate (number of levels in faceting)
+#' 
+#' @return character vector of hex colors with length n_levels 
+
+gg_cols <- function(n_cols) {
+  h = seq(15, 375, length = n_cols + 1)
+  hcl(h = h, l = 65, c = 100)[1:n_cols]
+}
+
 #########################################################
 ##################### For calculating td-idf
 ##################### 

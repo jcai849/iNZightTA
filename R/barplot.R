@@ -15,38 +15,49 @@
 #'
 #' @export
 score_barplot <- function(.data, y, n = 15,
-                                x = text, desc = FALSE){
+                                x = text, desc = FALSE, fill = NULL){
+    
     wrap <- 50
     text <- dplyr::enquo(x)
     insight_col <- dplyr::enquo(y)
     if (desc == FALSE){
-        .data %>%
+        arranged <- .data %>%
             dplyr::distinct(!! text, .keep_all=TRUE) %>%
-            dplyr::arrange(dplyr::desc(!! insight_col)) %>%
-            dplyr::group_modify(~{.x %>% head(n)}) %>%
-            dplyr::ungroup() %>%
-            dplyr::mutate(text = forcats::fct_reorder(shorten(!! text, wrap),
-                                                      !! insight_col,
-                                                      #.desc = desc
-                                                      )) %>%
-            ggplot2::ggplot(ggplot2::aes(x = text)) +
-            ggplot2::geom_col(ggplot2::aes(y = !! insight_col)) +
-            ggplot2::coord_flip() 
+            dplyr::arrange(dplyr::desc(!! insight_col)) 
     }
     else {
-        .data %>%
+        arranged <- .data %>%
             dplyr::distinct(!! text, .keep_all=TRUE) %>%
-            dplyr::arrange(!! insight_col) %>%
+            dplyr::arrange(!! insight_col) 
+    }
+    
+    if (fill != "") {
+         #cols <- gg_cols(length(unique(.data[,fill])))
+            
+        arranged %>%
             dplyr::group_modify(~{.x %>% head(n)}) %>%
             dplyr::ungroup() %>%
             dplyr::mutate(text = forcats::fct_reorder(shorten(!! text, wrap),
-                                                      !! insight_col,
-                                                      #.desc = desc
-            )) %>%
-            ggplot2::ggplot(ggplot2::aes(x = text)) +
+                                                      !! insight_col)) %>%
+            ggplot2::ggplot(ggplot2::aes_string(x = "text", fill = fill)) +
             ggplot2::geom_col(ggplot2::aes(y = !! insight_col)) +
-            ggplot2::coord_flip() 
+            ggplot2::coord_flip() + 
+            ggplot2::theme(text = element_text(size=20)) + 
+            #scale_fill_manual(cols) + 
+            guides(fill=FALSE)
     }
+    else {
+        
+        arranged %>%
+                dplyr::group_modify(~{.x %>% head(n)}) %>%
+                dplyr::ungroup() %>%
+                dplyr::mutate(text = forcats::fct_reorder(shorten(!! text, wrap),
+                                                          !! insight_col)) %>%
+                ggplot2::ggplot(ggplot2::aes(x = text)) +
+                ggplot2::geom_col(ggplot2::aes(y = !! insight_col, fill = "#4682b4")) +
+                ggplot2::coord_flip() + 
+                ggplot2::theme(text = element_text(size=20)) + guides(fill=FALSE)
+        }
 }
 
 #' Shorten some text up to n characters

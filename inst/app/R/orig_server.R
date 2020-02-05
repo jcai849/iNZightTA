@@ -4,8 +4,6 @@
 #####################################################
 
 # This file containts mostly the server code from the original inzightta shiny app. 
-# Added a button to download the data behind the visualization. Ongoing addition:
-# data table below vis plot
 
 
 prepped <- eventReactive(input$prep_button, {
@@ -337,6 +335,7 @@ visualisation <- reactive({
                                                                input$num_terms,
                                                                input$term_index,
                                                                palette = input$palette, 
+                                                               text_color = input$text_color, 
                                                                ncol = input$n_col_facet, 
                                                                word_size = input$page_text_size),
                              get_vis(insighted(), input$vis_type,
@@ -345,7 +344,8 @@ visualisation <- reactive({
                                                  input$scale_fixed,
                                                  input$num_terms,
                                                  input$term_index,
-                                                 palette = input$palette, 
+                                                 palette = input$palette,
+                                                 text_color = input$text_color,
                                                  ncol = input$n_col_facet, 
                                                  word_size = input$page_text_size)),
          "Time Series" = switch(input$what_vis,
@@ -370,7 +370,8 @@ visualisation <- reactive({
                                                      input$num_terms,
                                                      x = `n-grams`,
                                                      desc = input$desc, 
-                                                     ncol = input$n_col_facet),
+                                                     ncol = input$n_col_facet, 
+                                                     fill = input$vis_facet),
                         "Aggregated Term Count" =,
                         "Key Sections" =,
                         "Aggregated Sentiment" = get_vis(insighted_agg(),
@@ -381,7 +382,8 @@ visualisation <- reactive({
                                                          input$num_terms,
                                                          x = `Bound Aggregates`,
                                                          desc = input$desc, 
-                                                         ncol = input$n_col_facet),
+                                                         ncol = input$n_col_facet, 
+                                                         fill = input$vis_facet),
                         
                         get_vis(insighted(), input$vis_type,
                                 input$what_vis,
@@ -389,7 +391,8 @@ visualisation <- reactive({
                                 input$scale_fixed,
                                 input$num_terms,
                                 desc = input$desc, 
-                                ncol = input$n_col_facet)),
+                                ncol = input$n_col_facet, 
+                                fill = input$vis_facet)),
          "Density" = switch(input$what_vis,
                             "Aggregated Term Count" =,
                             "Key Sections" =,

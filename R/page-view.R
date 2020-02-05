@@ -12,13 +12,13 @@
 #' @param term_index which term to start the visualisation from
 #'
 #' @param palette determine coloration of palette (not yet implemented)
-#'
-#' @param word_size integer size of words 
+#' 
+#' @param text_color color of the words 
 #' 
 #' @return ggplot object as per ggpage
 #'
 #' @export
-struct_pageview <- function(.data, col_name, num_terms, term_index, word_size, palette){
+struct_pageview <- function(.data, col_name, num_terms, term_index, word_size, palette, text_color){
     
     end <- min(nrow(.data), term_index + num_terms)
     q_col_name <- dplyr::enquo(col_name)
@@ -32,11 +32,11 @@ struct_pageview <- function(.data, col_name, num_terms, term_index, word_size, p
                 ggpage::ggpage_build() %>%
                 dplyr::bind_cols(.data[seq(term_index, end),]) %>% 
                 ggpage::ggpage_plot(ggplot2::aes(fill = !! q_col_name)) +
-                ggplot2::scale_fill_distiller(palette = "RdYlGn", limit = limit, direction = 1) +
+                ggplot2::scale_fill_distiller(palette = palette, limit = limit, direction = 1) +
                 ggplot2::geom_text(ggplot2::aes(label = word,
                                                 x = (xmax + xmin)/2,
                                                 y = (ymin + ymax)/2),
-                                   size = word_size, color = "black")
+                                   size = word_size, color = text_color)
         }
         else {
             .data[seq(term_index, end),] %>%
@@ -47,7 +47,7 @@ struct_pageview <- function(.data, col_name, num_terms, term_index, word_size, p
                 ggplot2::geom_text(ggplot2::aes(label = word,
                                                 x = (xmax + xmin)/2,
                                                 y = (ymin + ymax)/2),
-                                   size = word_size, color = "black")
+                                   size = word_size, color = text_color)
         }
     }
     else{
@@ -57,11 +57,11 @@ struct_pageview <- function(.data, col_name, num_terms, term_index, word_size, p
             ggpage::ggpage_build() %>%
             dplyr::bind_cols(.data[seq(term_index, end),]) %>% 
             ggpage::ggpage_plot(ggplot2::aes(fill = !! q_col_name)) +
-            ggplot2::scale_fill_distiller(limit = limit, direction = 1) +
+            ggplot2::scale_fill_distiller(palette = palette, limit = limit, direction = 1) +
             ggplot2::geom_text(ggplot2::aes(label = word,
                                             x = (xmax + xmin)/2,
                                             y = (ymin + ymax)/2),
-                               size = word_size, color = "black")
+                               size = word_size, color = text_color)
     }
     
 }

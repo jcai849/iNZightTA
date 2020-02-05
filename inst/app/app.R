@@ -77,7 +77,9 @@ pacman::p_load(
                httr, 
                lubridate, 
                readr,
-               tibble)
+               tibble, 
+               RColorBrewer, 
+               colourpicker)
 
 source("ui_app.R", local = TRUE)$value
 source("server_app.R", local = TRUE)$value
