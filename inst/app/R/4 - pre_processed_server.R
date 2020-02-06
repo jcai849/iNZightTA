@@ -40,7 +40,11 @@ imported <- eventReactive(input$pre_process_text, {
       cleaned$text <- gsub("@\\w+", "", cleaned$text)
     }
     
+    # split emojis
+    cleaned$text <- gsub("__", "_ _", cleaned$text)
+    
     cleaned <- cleaned %>% clean_for_app(exp_cont = input$expand_contractions)
+    
     cleaned
   }
     
@@ -68,12 +72,11 @@ imported <- eventReactive(input$pre_process_text, {
   }
   
   else if(input$import_from == "Reddit"){
-    
-    cleaned <- raw_data() %>% clean_for_app(exp_cont = input$expand_contractions)
+    cleaned <- raw_data()
+    cleaned <- clean_for_app(cleaned, exp_cont = input$expand_contractions)
     cleaned$text <- gsub("[[(]http.+?[[)]", "", cleaned$text, perl = TRUE)
     cleaned$text <- textclean::replace_url(cleaned$text)
-    df$text <- gsub("[**Extended Summary**].+", "", df$text)
-    
+    #cleaned$text <- gsub("[**Extended Summary**].+", "", cleaned$text)
   }
     
   else {

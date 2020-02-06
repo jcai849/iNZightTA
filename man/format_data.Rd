@@ -4,8 +4,13 @@
 \alias{format_data}
 \title{takes imported one-line-per-row data and prepares it for later analysis}
 \usage{
-format_data(.data, lemmatize = TRUE, stopwords = TRUE,
-  sw_lexicon = "snowball", addl_stopwords = NA)
+format_data(
+  .data,
+  lemmatize = TRUE,
+  stopwords = TRUE,
+  sw_lexicon = "snowball",
+  addl_stopwords = NA
+)
 }
 \arguments{
 \item{.data}{tibble with one line of text per row}

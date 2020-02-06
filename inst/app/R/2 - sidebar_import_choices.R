@@ -46,6 +46,7 @@ output$side <- renderUI({
                                                       #selected = NULL, multiple = TRUE),
                                      
                                        actionButton("gather_data", "Import text"), 
+                                       tags$hr(),
                                        actionButton("pre_process_text", "Pre-process text"), tags$hr() 
                                        ),
 
@@ -58,6 +59,7 @@ output$side <- renderUI({
                                                                                  ".csv", ".xlsx", ".xls")),
                                                             
                                                             actionButton("gather_data", "Import text"), 
+                                                            tags$hr(),
                                                             checkboxInput("expand_contractions", "Expand contractions"), 
                                                             actionButton("pre_process_text", "Pre-process text"), tags$hr()),
          "Spotify/Genius" = tagList(
@@ -101,6 +103,7 @@ output$side <- renderUI({
                                                 
            )}),
            actionButton("gather_data", "Gather lyrics"),
+           tags$hr(),
            checkboxInput("expand_contractions", "Expand contractions"), 
            actionButton("pre_process_text", "Pre-process text"), 
            tags$hr()
@@ -128,6 +131,7 @@ output$side <- renderUI({
            dateRangeInput("guardian_dates", "Date range"),
            selectizeInput("guardian_sections", "Section", guardian_sec),
            actionButton("gather_data", "Gather articles"),
+           tags$hr(),
            checkboxInput("expand_contractions", "Expand contractions"), 
            actionButton("pre_process_text", "Pre-process text"), 
            tags$hr()
@@ -139,6 +143,7 @@ output$side <- renderUI({
            textInput(inputId = "rss_link", label = "URL of RSS Feed", placeholder = ""),
            
            actionButton("gather_data", "Gather comments"),
+           tags$hr(),
            checkboxInput("expand_contractions", "Expand contractions"), 
            actionButton("pre_process_text", "Pre-process text"), 
            tags$hr()
@@ -183,6 +188,7 @@ output$side <- renderUI({
                                                     "</small>", "<br></br>"))}),
            checkboxInput("include_retweets", "Include retweets"),
            actionButton("gather_data", "Gather tweets"),
+           tags$hr(),
            checkboxInput("remove_hash", "Remove hashtags"), 
            checkboxInput("remove_user", "Remove user mentions"),
            checkboxInput("expand_contractions", "Expand contractions"), 
@@ -223,6 +229,7 @@ output$side <- renderUI({
                                                   )
            )}),
            actionButton("gather_data", "Gather data"),
+           tags$hr(),
            checkboxInput("expand_contractions", "Expand contractions"), 
            actionButton("pre_process_text", "Pre-process text"), 
            tags$hr()

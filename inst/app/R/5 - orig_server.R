@@ -327,7 +327,7 @@ output$vis_options <- renderUI({
                               
                               tagList(sliderInput("num_terms",
                                                   "Select the number of terms to visualise",
-                                                  3, 400, 100),
+                                                  3, 600, 100),
                                       sliderInput("term_index",
                                                   "Select the point to begin visualisation from",
                                                   1, nrow(insighted()), 1),

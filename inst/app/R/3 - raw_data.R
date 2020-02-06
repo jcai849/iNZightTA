@@ -242,13 +242,38 @@ raw_data <- eventReactive(input$gather_data, {
     
     else{
       if (input$nest_level == TRUE) {
-        getPushshiftDataRecursive(postType = input$type_reddit, title = input$title, q = input$q,
-                                  subreddit = input$subreddit, after = input$after, before = input$before,
-                                  nest_level = 1)
+        ###########################
+        withCallingHandlers({
+          shinyjs::html(id = "text", html = "")
+          getPushshiftDataRecursive(postType = input$type_reddit, title = input$title, q = input$q,
+                                    subreddit = input$subreddit, after = input$after, before = input$before,
+                                    nest_level = 1)
+        },
+        message = function(m) {
+          shinyjs::html(id = "text", html = m$message, add = TRUE)
+        },
+        warning = function(m) {
+          shinyjs::html(id = "text", html = m$message, add = TRUE)
+        })
+        ############################
+        # getPushshiftDataRecursive(postType = input$type_reddit, title = input$title, q = input$q,
+        #                           subreddit = input$subreddit, after = input$after, before = input$before,
+        #                           nest_level = 1)
       }
       else {
-        getPushshiftDataRecursive(postType = input$type_reddit, title = input$title, q = input$q,
-                                  subreddit = input$subreddit, after = input$after, before = input$before)
+        withCallingHandlers({
+          shinyjs::html(id = "text", html = "")
+          getPushshiftDataRecursive(postType = input$type_reddit, title = input$title, q = input$q,
+                                    subreddit = input$subreddit, after = input$after, before = input$before)
+        },
+        message = function(m) {
+          shinyjs::html(id = "text", html = m$message, add = TRUE)
+        },
+        warning = function(m) {
+          shinyjs::html(id = "text", html = m$message, add = TRUE)
+        })
+        # getPushshiftDataRecursive(postType = input$type_reddit, title = input$title, q = input$q,
+        #                           subreddit = input$subreddit, after = input$after, before = input$before)
       }
     }
     
@@ -265,23 +290,19 @@ raw_data <- eventReactive(input$gather_data, {
 # })
 
 observeEvent(input$gather_data, {
-  output$imported_show <- renderTable({
-    if (input$import_from == "Spotify/Genius"){raw_data()[[1]] %>% head(100)}
-    else if (input$import_from == "The Guardian Articles") {raw_data() %>% head(3)}
+  output$imported_show <- DT::renderDataTable({
+    if (input$import_from == "Spotify/Genius"){
+      DT::datatable(raw_data()[[1]] %>% head(100), options = list(paging = FALSE, searching = FALSE))
+      }
+    else if (input$import_from == "The Guardian Articles") {
+      DT::datatable(raw_data() %>% head(3), options = list(paging = FALSE, searching = FALSE))
+      }
     else {
-      raw_data() %>% head(100)
+      DT::datatable(raw_data() %>% head(100), options = list(paging = FALSE, searching = FALSE))
     }
   })
 })
 
-# output$pre_processed_show <- renderTable({
-#   if (input$import_from == "The Guardian Articles"){
-#     imported() %>% head(3)
-#   }
-#   else {
-#     imported() %>% head(100)
-#   }
-# })
 
 output$downloadData_imported <- downloadHandler(
   filename = function() {

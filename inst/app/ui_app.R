@@ -54,10 +54,9 @@ ui <- navbarPage("iNZight Text Analytics",
                                            
                                            column(width = 12,
                                                   ###################
-                                                  #textOutput("text"), 
+                                                  textOutput("text"), 
                                                   ###################
-                                                  
-                                                  tableOutput("imported_show")
+                                                  DT::dataTableOutput("imported_show")
                                                   #tableOutput("not_coll")
                                                   
                                            )
@@ -157,7 +156,7 @@ ui <- navbarPage("iNZight Text Analytics",
                  tabPanel("Keywords in Context",
                           
                           sidebarLayout(sidebarPanel(textInput("disp_words", "Keyword(s) or Key Phrase(s)", 
-                                                               value = "love,thousand pounds"),
+                                                               placeholder = "love,thousand pounds"),
                                                      
                                                      selectInput("disp_valuetype",
                                                                  "Type of Pattern Matching",
@@ -193,14 +192,6 @@ ui <- navbarPage("iNZight Text Analytics",
                                                      
                           ),
                           mainPanel(
-                            # plotOutput("plot2",
-                            #            dblclick = "plot_dblclick",
-                            #            brush = brushOpts(
-                            #              id = "plot_brush",
-                            #              resetOnNew = TRUE
-                            #            ),
-                            #            height = "800px"
-                            # ),
                             uiOutput("plot2.ui"),
                             DT::dataTableOutput("keyword_table")
                           ))
@@ -209,7 +200,6 @@ ui <- navbarPage("iNZight Text Analytics",
                           fluidPage(
                             navlistPanel(
                               #"Getting keys and tokens",
-#<<<<<<< HEAD:inst/app/ui_app.R
                               tabPanel("Twitter",
                                        includeMarkdown(system.file("app/R/help_files/twitter_token.rmd", package = "inzightta"))),
                               tabPanel("Spotify/Genius",
@@ -221,9 +211,7 @@ ui <- navbarPage("iNZight Text Analytics",
                               tabPanel("stuff.co.nz comments",
                                        includeMarkdown(system.file("app/R/help_files/stuff.rmd", package = "inzightta"))
                               )
-#=======
-                              
-#>>>>>>> master:app/ui_app.R
+
                             )
                           )
                           ), 

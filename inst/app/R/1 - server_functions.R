@@ -441,7 +441,8 @@ getPushshiftData <- function(postType,
       jsonlite::fromJSON() %>%
       .$data %>%
       jsonlite::flatten(recursive = TRUE) %>%
-      select(author, title, selftext, created_utc, permalink, num_comments, score, subreddit) %>%
+      dplyr::select(author, title, selftext, created_utc, permalink, num_comments, score, subreddit) %>%
+      filter(!str_detect(author, "Moderator")) %>%
       as_tibble() %>%
       rename(id = title) %>%
       rename(text = selftext) %>%
@@ -465,6 +466,7 @@ getPushshiftData <- function(postType,
       .$data %>%
       jsonlite::flatten(recursive = TRUE) %>%
       select(author, body, permalink, score, created_utc, subreddit) %>%
+      filter(!str_detect(author, "Moderator")) %>%
       as_tibble() %>%
       rename(id = permalink) %>%
       rename(text = body) %>%
@@ -558,13 +560,12 @@ plot_exception <-function(
 
 emoji_to_words <- function(x, emoji_dt = lexicon::hash_emojis){
   x <- iconv(x, "UTF-8", "ASCII", "byte")
-  gsub("\\s+", " ", mgsub(x, emoji_dt[["x"]], paste0("::", emoji_dt[["y"]], "::")))
+  mgsub(x, emoji_dt[["x"]], paste0("_", gsub("\\s+", "_", emoji_dt[["y"]]), "_"))
 }
 
 #' Same as above, but for emoticons 
 
 emoticon_to_words <- function (x, emoticon_dt = lexicon::hash_emoticons) 
 {
-  gsub("\\s+", " ", .mgsub(emoticon_dt[["x"]], paste0(" ", emoticon_dt[["y"]], " "), 
-                           x))
+  mgsub(x, emoticon_dt[["x"]], paste0("_", gsub("\\s+", "_", emoticon_dt[["y"]]), "_"))
 }
