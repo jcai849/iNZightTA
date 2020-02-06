@@ -58,6 +58,7 @@ output$side <- renderUI({
                                                                                  ".csv", ".xlsx", ".xls")),
                                                             
                                                             actionButton("gather_data", "Import text"), 
+                                                            checkboxInput("expand_contractions", "Expand contractions"), 
                                                             actionButton("pre_process_text", "Pre-process text"), tags$hr()),
          "Spotify/Genius" = tagList(
            
@@ -100,6 +101,7 @@ output$side <- renderUI({
                                                 
            )}),
            actionButton("gather_data", "Gather lyrics"),
+           checkboxInput("expand_contractions", "Expand contractions"), 
            actionButton("pre_process_text", "Pre-process text"), 
            tags$hr()
          ),
@@ -126,6 +128,7 @@ output$side <- renderUI({
            dateRangeInput("guardian_dates", "Date range"),
            selectizeInput("guardian_sections", "Section", guardian_sec),
            actionButton("gather_data", "Gather articles"),
+           checkboxInput("expand_contractions", "Expand contractions"), 
            actionButton("pre_process_text", "Pre-process text"), 
            tags$hr()
            
@@ -136,6 +139,7 @@ output$side <- renderUI({
            textInput(inputId = "rss_link", label = "URL of RSS Feed", placeholder = ""),
            
            actionButton("gather_data", "Gather comments"),
+           checkboxInput("expand_contractions", "Expand contractions"), 
            actionButton("pre_process_text", "Pre-process text"), 
            tags$hr()
          ),
@@ -147,19 +151,19 @@ output$side <- renderUI({
              div(id = "advanced",
                  textInput(inputId = "appname",
                            label = "Name of Twitter application",
-                           value = ""),
+                           value = "bernice's stuff"),
                  textInput(inputId = "key",
                            label = "Application API key",
-                           value = ""),
+                           value = "VrnIgtR0EeROZsaR1dyuMbeUY"),
                  textInput(inputId = "secret",
                            label = "Application API secret",
-                           value = ""),
+                           value = "Uckn9KJQ4QWxfh1SPodrXyV8gqW1sTN81q4MjlU2PrjRuIJ6mt"),
                  textInput(inputId = "access_token",
                            label = "Access token as supplied by Twitter",
-                           value = ""),
+                           value = "141535737-rvUyp6qKNaMSzYzyUSUfwP9eUxWDgZNvv73QdHrX"),
                  textInput(inputId = "access_secret",
                            label = "Access secret as supplied by Twitter",
-                           value = ""),
+                           value = "PLhi6mDlNlQj8HvBGnk9b0TfLPvXJpCe5nDRO62JtjOzu"),
                  actionButton("get_twitter_token", "Create token")
              )
            ),
@@ -171,14 +175,17 @@ output$side <- renderUI({
                           "hashtag" = "hashtag")),
            textInput(inputId = "user",
                      label = "Please provide the Twitter username/hashtag.",
-                     placeholder = "#ClimateChange or @kfc"),
+                     placeholder = "@user1, @user2, @user3 or #hash1, #hash2, #hash3"),
            numericInput(inputId = "num_tweets",
-                        label = "Number of Tweets to Retrieve (up to 18000 every 15 mins)",
+                        label = "Number of Tweets to Retrieve per user/hashtag",
                         value = 500),
+           output$tweet_info <- renderUI({HTML(paste0("<small>", '(up to 18000 total tweets every 15 mins)',
+                                                    "</small>", "<br></br>"))}),
            checkboxInput("include_retweets", "Include retweets"),
            actionButton("gather_data", "Gather tweets"),
            checkboxInput("remove_hash", "Remove hashtags"), 
            checkboxInput("remove_user", "Remove user mentions"),
+           checkboxInput("expand_contractions", "Expand contractions"), 
            actionButton("pre_process_text", "Pre-process text"), 
            
            tags$hr()
@@ -216,6 +223,7 @@ output$side <- renderUI({
                                                   )
            )}),
            actionButton("gather_data", "Gather data"),
+           checkboxInput("expand_contractions", "Expand contractions"), 
            actionButton("pre_process_text", "Pre-process text"), 
            tags$hr()
          )
@@ -225,8 +233,8 @@ output$side <- renderUI({
 
 
 ###### Choices of books for Project Gutenberg
-gut <- copy(gutenberg_metadata)
-gut <- setDT(gut)
+gut <- copy(gutenbergr::gutenberg_metadata)
+gut <- data.table::setDT(gut)
 gut <- gut[language == "en" & gutenberg_id != 0 & has_text]
 gut <- gut[,choice := gsub("\\n|\\r", "", 
                            ifelse(!is.na(author),

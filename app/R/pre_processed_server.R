@@ -9,14 +9,14 @@
 imported <- eventReactive(input$pre_process_text, {
   ############################
   if (input$import_from == "Spotify/Genius"){
-    cleaned <- raw_data()[[1]] %>% clean_for_app()
+    cleaned <- raw_data()[[1]] %>% clean_for_app(exp_cont = input$expand_contractions)
   }
     
   else if (input$import_from == "Twitter"){
     cleaned <- raw_data() 
     
     # fixes the weird apostrophes
-    # cleaned$text <- gsub(intToUtf8(8217), "'", cleaned$text, perl = TRUE)
+    cleaned$text <- gsub(intToUtf8(8217), "'", cleaned$text, perl = TRUE)
     
     # converts the emojis to their description
     cleaned$text <- emoji_to_words(cleaned$text)
@@ -40,7 +40,7 @@ imported <- eventReactive(input$pre_process_text, {
       cleaned$text <- gsub("@\\w+", "", cleaned$text)
     }
     
-    cleaned <- cleaned %>% clean_for_app()
+    cleaned <- cleaned %>% clean_for_app(exp_cont = input$expand_contractions)
     cleaned
   }
     
@@ -50,7 +50,7 @@ imported <- eventReactive(input$pre_process_text, {
     
     cleaned$text <- gsub("<figcaption.+?</figcaption>|Related.+?</aside>", "", cleaned$text, perl = TRUE)
     
-    cleaned <- clean_for_app(cleaned)
+    cleaned <- clean_for_app(cleaned, exp_cont = input$expand_contractions)
 
     cleaned$id <- iconv(cleaned$id, from = "UTF-8", to = "ASCII//TRANSLIT")
       
@@ -69,7 +69,7 @@ imported <- eventReactive(input$pre_process_text, {
   
   else if(input$import_from == "Reddit"){
     
-    cleaned <- raw_data() %>% clean_for_app()
+    cleaned <- raw_data() %>% clean_for_app(exp_cont = input$expand_contractions)
     cleaned$text <- gsub("[[(]http.+?[[)]", "", cleaned$text, perl = TRUE)
     cleaned$text <- textclean::replace_url(cleaned$text)
     df$text <- gsub("[**Extended Summary**].+", "", df$text)
@@ -82,34 +82,42 @@ imported <- eventReactive(input$pre_process_text, {
     
     #cleaned$text <- gsub('""', "", cleaned$text)
     cleaned$text <- gsub('" "', " ", cleaned$text, perl = TRUE)
-    cleaned <- cleaned %>% clean_for_app()
+    cleaned <- cleaned %>% clean_for_app(exp_cont = input$expand_contractions)
   }
   
   cleaned
   
 })
 
-output$pre_processed_show <- DT::renderDataTable({
-  imported()
-}, filter = "bottom")
+# output$pre_processed_show <- DT::renderDataTable({
+#   imported()
+# }, filter = "bottom")
+# 
+# ###################################
+# ########## able to filter the processed data columns 
+# ########## (used in prepped() orig_server.R, )
+# ###################################
+# imported_filtered <- reactive({
+#   full_data <- imported()
+#   filtered_rows <- input$pre_processed_show_rows_all
+#   full_data[filtered_rows, ]
+# })
 
-###################################
-########## able to filter the processed data columns 
-########## (used in prepped() orig_server.R, )
-###################################
-imported_filtered <- reactive({
-  full_data <- imported()
-  filtered_rows <- input$pre_processed_show_rows_all
-  full_data[filtered_rows, ]
+output$pre_processed_show <- renderTable({
+  if (input$import_from == "The Guardian Articles"){
+    imported() %>% head(3)
+  }
+  else {
+    imported() %>% head(100)
+  }
 })
-
 
 output$downloadData_pre_processed <- downloadHandler(
   filename = function() {
     paste("preprocessed", ".csv", sep = "")
   },
   content = function(file) {
-    write.csv(imported_filtered(), file, row.names = FALSE)
+    write.csv(imported(), file, row.names = FALSE)
   }
 )
 

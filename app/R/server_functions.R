@@ -226,7 +226,7 @@ books_with_samples <- function(books){
 ##################### cleaning text
 #########################################################
 
-clean_for_app <- function(df){
+clean_for_app <- function(df, exp_cont = TRUE){
   
   Encoding(df$text) <- "UTF-8"
   
@@ -236,7 +236,7 @@ clean_for_app <- function(df){
   # For the guardian
   df$text <- gsub("<figcaption.+?</figcaption>|Related.+?</aside>", "", df$text)
   
-  df$text <- trimws(gsub("<.+?>|_", "", df$text))
+  df$text <- trimws(gsub("<.+?>", "", df$text))
 
   # Decodes common HTML entities 
   df$text <- gsub("&amp;", "&", df$text)
@@ -245,7 +245,7 @@ clean_for_app <- function(df){
   
   df$text <- gsub("&.*\\w+?;", " ", df$text)
   
-  df$text <- textclean::replace_contraction(df$text)
+  if (exp_cont == TRUE){df$text <- textclean::replace_contraction(df$text)}
   
   # Replace Mr. with Mister ... for sentence tokenization 
   df$text <- qdap::replace_abbreviation(df$text)

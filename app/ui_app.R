@@ -57,7 +57,7 @@ ui <- navbarPage("iNZight Text Analytics",
                                                   textOutput("text"), 
                                                   ###################
                                                   
-                                                  DT::dataTableOutput("imported_show")
+                                                  tableOutput("imported_show")
                                                   #tableOutput("not_coll")
                                                   
                                            )
@@ -67,7 +67,7 @@ ui <- navbarPage("iNZight Text Analytics",
                                          fluidRow(
                                            downloadButton("downloadData_pre_processed", "Download as csv"),
                                            column(width = 12,
-                                                  DT::dataTableOutput("pre_processed_show")
+                                                  tableOutput("pre_processed_show")
                                            )
                                          )
                                 ),
@@ -119,6 +119,7 @@ ui <- navbarPage("iNZight Text Analytics",
                                            condition = "!(input.what_vis == 'Word Tree'||input.what_vis == 'Readability')",
                                            uiOutput("vis_options"),
                                            uiOutput("vis_facet_by"),
+                              
                                            a(id = "toggle_vis", "Additional visualization options", href = "#"),
                                            
                                            uiOutput("add_vis_options"), 
@@ -141,6 +142,7 @@ ui <- navbarPage("iNZight Text Analytics",
                                 
                                 verbatimTextOutput("ex")
                               ),
+  
                               conditionalPanel(
                                 condition =  "!(input.what_vis == 'Word Tree'||input.what_vis == 'Readability')",
                                 #plotOutput("plot", height = "1000px"),

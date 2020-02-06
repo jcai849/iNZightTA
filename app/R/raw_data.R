@@ -18,13 +18,14 @@ twitter_token <- eventReactive(input$get_twitter_token,
                                })
 
 raw_data <- eventReactive(input$gather_data, {
-  
   if (input$import_from == "Twitter"){
+    query <- reactive({trimws(unlist(strsplit(input$user, split = ",")))})
+    q <- query()
     if (input$type == "user2") {
       ###########################
         withCallingHandlers({
           shinyjs::html(id = "text", html = "")
-          tweets <- get_timeline(input$user,
+          tweets <- get_timeline(q,
                                  n = input$num_tweets, token = twitter_token())
         },
         message = function(m) {
@@ -42,11 +43,12 @@ raw_data <- eventReactive(input$gather_data, {
     }
     
     else if (input$type == "hashtag") {
-      tweets <- search_tweets(input$user, lang = "en",
+      
+      tweets <- search_tweets(q, lang = "en",
                               n = input$num_tweets, include_rts = input$include_retweets,
                               token = twitter_token())
     }
-    tweets <- tweets %>% select(status_id, text, is_retweet, hashtags, mentions_screen_name)
+    tweets <- tweets %>% select(screen_name, status_id, text, is_retweet, hashtags, mentions_screen_name)
     tweets$mentions_screen_name <- unlist(lapply(tweets$mentions_screen_name, paste, collapse = " "))
     tweets$hashtags <- unlist(lapply(tweets$hashtags, paste, collapse = " "))
     tweets <- tweets %>% rename(id = status_id)
@@ -134,12 +136,6 @@ raw_data <- eventReactive(input$gather_data, {
         playlist_audio <- get_playlist_audio_features(input$spotify_username, input$playlist_id,
                                                       authorization = spotify_access_token())
         
-        # artists = character(0)
-        # for (i in 1:nrow(playlist_audio)){
-        #   artists[i] <- playlist_audio[[44]][[i]]$name[1]
-        # }
-        # 
-        # playlist_audio$artist <- artists
         
         playlist_audio$artist <- unlist(lapply(playlist_audio[[44]], function(x) x[["name"]][1]))
         
@@ -261,12 +257,31 @@ raw_data <- eventReactive(input$gather_data, {
 })
 
 
+# observeEvent(input$gather_data, {
+#   output$imported_show <- DT::renderDataTable({
+#     if (input$import_from == "Spotify/Genius"){raw_data()[[1]]}
+#     else {raw_data()}
+#   })
+# })
+
 observeEvent(input$gather_data, {
-  output$imported_show <- DT::renderDataTable({
-    if (input$import_from == "Spotify/Genius"){raw_data()[[1]]}
-    else {raw_data()}
+  output$imported_show <- renderTable({
+    if (input$import_from == "Spotify/Genius"){raw_data()[[1]] %>% head(100)}
+    else if (input$import_from == "The Guardian Articles") {raw_data() %>% head(3)}
+    else {
+      raw_data() %>% head(100)
+    }
   })
 })
+
+# output$pre_processed_show <- renderTable({
+#   if (input$import_from == "The Guardian Articles"){
+#     imported() %>% head(3)
+#   }
+#   else {
+#     imported() %>% head(100)
+#   }
+# })
 
 output$downloadData_imported <- downloadHandler(
   filename = function() {
