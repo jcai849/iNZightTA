@@ -12,6 +12,8 @@
 #' @param term_index which term to start the visualisation from
 #'
 #' @param palette determine coloration of palette (not yet implemented)
+#'
+#' @param word_size integer size of words 
 #' 
 #' @return ggplot object as per ggpage
 #'

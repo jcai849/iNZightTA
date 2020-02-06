@@ -2,6 +2,8 @@
 #'
 #' @param filepath string filepath of file for import
 #'
+#' @param filename character name of the file
+#'
 #' @return imported file with document id
 import_base_file <- function(filepath, filename){
   filetype <- get_filetype(filepath)
@@ -33,6 +35,8 @@ import_base_file <- function(filepath, filename){
 #' Import any number of files
 #'
 #' @param filepaths char vector of filepaths
+#'
+#' @param filenames char vector of file names
 #'
 #' @return a [tibble][tibble::tibble-package] imported files with
 #'   document id

@@ -4,7 +4,8 @@
 \alias{get_vis}
 \title{create a group-aware visualisation}
 \usage{
-get_vis(.data, vis, col, facet_by = "", scale_fixed = TRUE, ...)
+get_vis(.data, vis, col, facet_by = "", scale_fixed = TRUE, ncol = 3,
+  ...)
 }
 \arguments{
 \item{.data}{the standard dataframe, modified so the last column
@@ -18,6 +19,8 @@ term_freq)}
 \item{facet_by}{character name of the column to facet by}
 
 \item{scale_fixed}{force scales to be fixed in a facet}
+
+\item{ncol}{number of columns for facet wrap}
 
 \item{...}{additional arguments to the visualisation}
 }
