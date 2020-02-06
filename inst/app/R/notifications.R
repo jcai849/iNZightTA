@@ -1,22 +1,9 @@
-# # If lemmatisation selected
-# observeEvent(input$prep_button, {
-#   if (input$lemmatise == TRUE)
-#     # Save the ID for removal later
-#   {
-#     showNotification("Lemmatisation takes a while...", duration = NULL, type = "message")
-#   }
-# })
-
-
-# If lemmatisation selected
+# For web importing
 observeEvent(input$gather_data, {
-  if (input$lemmatise == TRUE)
-  {
-    showNotification("Please wait... Gathering data...", duration = 3, type = "warning")
-  }
+    showNotification("Please wait... Gathering data...", duration = 4, type = "warning")
 })
 
-# For web importing 
+# For processing - lemmatisation 
 observeEvent(input$prep_button, {
   if (input$lemmatise == TRUE)
   {
