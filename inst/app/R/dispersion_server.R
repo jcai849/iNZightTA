@@ -18,7 +18,7 @@ updateSelectizeInput(session, "merge_id_grps",
 
 ######### Create reactive object merged text. Both for Dispersion Plot and for Readability
 merged <- reactive({
-  merge_id(x = imported_filtered(), source = input$import_from)
+  merge_id(x = imported(), source = input$import_from)
 })
 
 

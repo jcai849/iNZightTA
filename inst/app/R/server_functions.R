@@ -4,6 +4,16 @@
 
 # This file contains the miscellaneous functions called in the server. 
 
+#' Used for generating the colors used in plots
+#' @param n_cols number of colors to generate (number of levels in faceting)
+#' 
+#' @return character vector of hex colors with length n_levels 
+
+gg_cols <- function(n_cols) {
+  h = seq(15, 375, length = n_cols + 1)
+  hcl(h = h, l = 65, c = 100)[1:n_cols]
+}
+
 #########################################################
 ##################### For calculating td-idf
 ##################### 
@@ -216,7 +226,7 @@ books_with_samples <- function(books){
 ##################### cleaning text
 #########################################################
 
-clean_for_app <- function(df){
+clean_for_app <- function(df, exp_cont = TRUE){
   
   Encoding(df$text) <- "UTF-8"
   
@@ -226,7 +236,7 @@ clean_for_app <- function(df){
   # For the guardian
   df$text <- gsub("<figcaption.+?</figcaption>|Related.+?</aside>", "", df$text)
   
-  df$text <- trimws(gsub("<.+?>|_", "", df$text))
+  df$text <- trimws(gsub("<.+?>", "", df$text))
 
   # Decodes common HTML entities 
   df$text <- gsub("&amp;", "&", df$text)
@@ -235,7 +245,7 @@ clean_for_app <- function(df){
   
   df$text <- gsub("&.*\\w+?;", " ", df$text)
   
-  df$text <- textclean::replace_contraction(df$text)
+  if (exp_cont == TRUE){df$text <- textclean::replace_contraction(df$text)}
   
   # Replace Mr. with Mister ... for sentence tokenization 
   df$text <- qdap::replace_abbreviation(df$text)

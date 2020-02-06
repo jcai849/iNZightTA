@@ -13,8 +13,8 @@
 #' @return sentiment of same length as input vector aggregated over the aggregate_on vector
 #'
 #' @export
-aggregate_sentiment <- function(.data, aggregate_on, lexicon = "afinn", statistic = mean){
-  tibble::enframe(.data, "nil1", "word") %>%
+aggregate_sentiment <- function(.data, aggregate_on, lexicon = "afinn", statistic = mean, to_scale = FALSE){
+  agg_senti <- tibble::enframe(.data, "nil1", "word") %>%
     dplyr::bind_cols(tibble::enframe(aggregate_on, "nil2", "aggregate")) %>%
     dplyr::select(word, aggregate) %>%
     dplyr::mutate(sentiment = term_sentiment(word, lexicon)) %>%
@@ -24,4 +24,8 @@ aggregate_sentiment <- function(.data, aggregate_on, lexicon = "afinn", statisti
 		      rep(statistic(.x, na.rm = TRUE), length(.x))
 		    })(sentiment)) %>%
     dplyr::pull(aggregate_sentiment)
+  if (to_scale == TRUE){
+    agg_senti <- scale(agg_senti)
+  }
+  agg_senti
 }

@@ -21,7 +21,7 @@ prepped <- eventReactive(input$prep_button, {
   })
   
   
-  imported_filtered() %>%
+  imported() %>%
     format_data(input$lemmatise, input$stopwords, input$sw_lexicon, addl_stopwords())
 })
 
@@ -47,13 +47,60 @@ filtered <- reactive({
   data
 })
 
-grouped <- reactive({
-   data <- filtered()
-   if (isTruthy(input$group_var)){
-     data <- data %>%
-       dplyr::group_by(!! dplyr::sym(input$group_var))}
-   data
-})
+# grouped <- reactive({
+#    data <- filtered()
+#    if (isTruthy(input$group_var)){
+#      data <- data %>%
+#        dplyr::group_by(!! dplyr::sym(input$group_var))}
+#    data
+# })
+
+# # ############################################
+# # Attempt at conditioning on features
+# # ############################################
+#
+ observe({
+   if (input$subset_data == 0) {
+     shinyjs::disable("restore_data")
+   } else {
+     shinyjs::enable("restore_data")
+     shinyjs::disable("subset_data")
+   }
+ })
+ 
+ observe({
+   if (input$restore_data == 1) {
+     shinyjs::disable("restore_data")
+   } 
+ })
+
+  values <- reactiveValues(data=NULL)
+   
+   observeEvent(input$subset_data, {
+    filtered_rows <- input$insighted_table_rows_all
+    values$data <- filtered_rows
+   })
+   
+   insighted_filtered <- eventReactive(input$subset_data, {
+     full_data <- filtered()
+     full_data[values$data, ]
+   })
+
+  grouped <- reactive({
+    if (input$restore_data >= input$subset_data){
+      data <- filtered()
+      if (isTruthy(input$group_var)){
+        data <- data %>%
+         dplyr::group_by(!! dplyr::sym(input$group_var))}
+        data
+      }
+    else{
+      insighted_filtered()
+    }
+  })
+
+# ############################################
+###########################################
 
 output$table <- renderTable({
   filtered() %>% head(300)})
@@ -64,10 +111,19 @@ output$vars_to_filter <- renderUI(selectInput("filter_var",
                                               "select which column to apply filtering to",
                                               c("", names(sectioned())) %||% c("")))
 
-output$group_by <- renderUI(selectInput("group_var",
-                                        "select which columns to group on",
-                                        c("", names(filtered())) %||% c(""))
-)
+output$group_by <- renderUI({
+                            input$what_vis
+                            if (input$what_vis == "Term Frequency-Inverse Document Frequency"){
+                              selectInput("group_var",
+                                          "select which columns to group on (grouping is combined with faceting)",
+                                          c("", names(filtered())) %||% c(""))
+                            }
+                            else {
+                              selectInput("group_var",
+                                          "select which columns to group on",
+                                          c("", names(filtered())) %||% c(""))
+                            }
+})
 
 output$insight_options <- renderUI({
   switch(input$what_vis,
@@ -196,7 +252,6 @@ output$insight_options <- renderUI({
                                                       c("", names(grouped())) %||% c(""))))})
 
 
-
 insighted <- reactive({
   switch(input$what_vis,
          "Term Frequency" = get_term_insight(grouped(),
@@ -237,7 +292,8 @@ insighted_agg <- reactive({
     "Aggregated Sentiment" = get_aggregate_insight(grouped(),
                                                    c("Bound Aggregates", input$what_vis),
                                                    input$agg_var,
-                                                   input$sent_lex))
+                                                   input$sent_lex, 
+                                                   to_scale = input$scale_senti))
   })
 
 
@@ -284,17 +340,24 @@ output$vis_options <- renderUI({
                          checkboxInput("desc", "Sort descending")))})
 
 
-output$vis_facet_by <- renderUI(tagList(selectInput("vis_facet",
-                                                    "select which variable to facet on",
-                                                    c("", names(grouped())) %||% c(""), selected = input$group_var),
-                                        checkboxInput("scale_fixed", "Scale Fixed", value=FALSE)))
-
-
-
-
-
+output$vis_facet_by <- renderUI({input$what_vis
+                                if (input$what_vis == "Term Frequency-Inverse Document Frequency"){
+                                    tagList(selectInput("vis_facet",
+                                                    "select which variable to facet on (Faceting plot by more than 50 levels may take a few minutes.)",
+                                                    c("", names(grouped())) %||% c(""), selected = input$group_var), 
+                                        checkboxInput("scale_fixed", "Scale Fixed", value=FALSE))
+                                }
+                      else{
+                        tagList(selectInput("vis_facet",
+                                            "select which variable to facet on (Faceting plot by more than 50 levels may take a few minutes.)",
+                                            c("", names(grouped())) %||% c(""), selected = NULL),
+                                checkboxInput("scale_fixed", "Scale Fixed", value=FALSE))
+                      }
+  })
+ 
 
 visualisation <- reactive({
+
   switch(input$vis_type,
          "Word Cloud" = switch(input$what_vis,
                                "n-gram Frequency" = get_vis(
@@ -499,16 +562,11 @@ output$downloadData <- downloadHandler(
 
 
 output$downloadprocessed <- downloadHandler(
-  
-  # This function returns a string which tells the client
-  # browser what name to use when saving the file.
+
   filename = function() {
     paste("processed", "RDS", sep = ".") 
     
   },
-  
-  # This function should write data to a file given to it by
-  # the argument 'file'.
   content = function(file) {
     saveRDS(filtered(), file)
   }

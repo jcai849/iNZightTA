@@ -57,7 +57,7 @@ ui <- navbarPage("iNZight Text Analytics",
                                                   textOutput("text"), 
                                                   ###################
                                                   
-                                                  DT::dataTableOutput("imported_show")
+                                                  tableOutput("imported_show")
                                                   #tableOutput("not_coll")
                                                   
                                            )
@@ -67,7 +67,7 @@ ui <- navbarPage("iNZight Text Analytics",
                                          fluidRow(
                                            downloadButton("downloadData_pre_processed", "Download as csv"),
                                            column(width = 12,
-                                                  DT::dataTableOutput("pre_processed_show")
+                                                  tableOutput("pre_processed_show")
                                            )
                                          )
                                 ),
@@ -107,7 +107,11 @@ ui <- navbarPage("iNZight Text Analytics",
                                          
                                          conditionalPanel(
                                            condition = "!(input.what_vis == 'Readability')",
-                                           uiOutput("insight_options")
+                                           uiOutput("insight_options"),
+                                           conditionalPanel(
+                                             condition = "input.what_vis == 'Aggregated Sentiment'", 
+                                             checkboxInput("scale_senti", "Scale Aggregated Sentiment Scores")
+                                           ),
                                          ),
                                          
                                          
@@ -115,6 +119,7 @@ ui <- navbarPage("iNZight Text Analytics",
                                            condition = "!(input.what_vis == 'Word Tree'||input.what_vis == 'Readability')",
                                            uiOutput("vis_options"),
                                            uiOutput("vis_facet_by"),
+                              
                                            a(id = "toggle_vis", "Additional visualization options", href = "#"),
                                            
                                            uiOutput("add_vis_options"), 
@@ -137,17 +142,14 @@ ui <- navbarPage("iNZight Text Analytics",
                                 
                                 verbatimTextOutput("ex")
                               ),
+  
                               conditionalPanel(
                                 condition =  "!(input.what_vis == 'Word Tree'||input.what_vis == 'Readability')",
                                 #plotOutput("plot", height = "1000px"),
                                 uiOutput("plot.ui"), 
-                                DTOutput("insighted_table")
-                                ,
+                                DTOutput("insighted_table"),
                                 actionButton("subset_data", "Subset Data"),
                                 actionButton("restore_data", "Restore Data"),
-                                 verbatimTextOutput("num_subset"),
-                                 verbatimTextOutput("num_restore"), 
-                                tableOutput("lookie")
                               )
                               
                             ))),
@@ -207,6 +209,19 @@ ui <- navbarPage("iNZight Text Analytics",
                           fluidPage(
                             navlistPanel(
                               #"Getting keys and tokens",
+<<<<<<< HEAD:inst/app/ui_app.R
+                              tabPanel("Twitter",
+                                       includeMarkdown(system.file("app/R/help_files/twitter_token.rmd", package = "inzightta"))),
+                              tabPanel("Spotify/Genius",
+                                       includeMarkdown(system.file("app/R/help_files/spot.rmd", package = "inzightta"))
+                              ),
+                              tabPanel("The Guardian Articles",
+                                       includeMarkdown(system.file("app/R/help_files/guardian.rmd", package = "inzightta"))
+                              ), 
+                              tabPanel("stuff.co.nz comments",
+                                       includeMarkdown(system.file("app/R/help_files/stuff.rmd", package = "inzightta"))
+                              )
+=======
                                 tabPanel("Twitter",
                                          includeMarkdown(system.file("app/R/help_files/twitter_token.rmd", package = "inzightta"))),
                                 tabPanel("Spotify/Genius",
@@ -218,6 +233,7 @@ ui <- navbarPage("iNZight Text Analytics",
                                 tabPanel("stuff.co.nz comments",
                                          includeMarkdown(system.file("app/R/help_files/stuff.rmd", package = "inzightta"))
                                          )
+>>>>>>> master:app/ui_app.R
                             )
                           )
                           ), 

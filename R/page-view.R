@@ -26,7 +26,7 @@ struct_pageview <- function(.data, col_name, num_terms, term_index, word_size, p
     if (as_label(q_col_name) %in% c("Term Sentiment", "Moving Average Term Sentiment", 
                         "Aggregated Sentiment")){
         if (sum(grepl("[[:digit:]]",.data[,as_label(q_col_name)])) > 0) {
-            limit <- max(abs(.data[,as_label(q_col_name)])) * c(-1, 1) # limits for color palette
+            limit <- max(abs(.data[,as_label(q_col_name)]), na.rm = TRUE) * c(-1, 1) # limits for color palette
             .data[seq(term_index, end),] %>%
                 dplyr::pull(word) %>%
                 ggpage::ggpage_build() %>%
@@ -51,7 +51,7 @@ struct_pageview <- function(.data, col_name, num_terms, term_index, word_size, p
         }
     }
     else{
-        limit <- c(0, max(.data[,as_label(q_col_name)])) # limits for color palette
+        limit <- c(0, max(.data[,as_label(q_col_name)], na.rm = TRUE)) # limits for color palette
         .data[seq(term_index, end),] %>%
             dplyr::pull(word) %>%
             ggpage::ggpage_build() %>%
