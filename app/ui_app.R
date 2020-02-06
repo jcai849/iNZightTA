@@ -210,16 +210,15 @@ ui <- navbarPage("iNZight Text Analytics",
                             navlistPanel(
                               #"Getting keys and tokens",
                               tabPanel("Twitter",
-                                       includeMarkdown("R\\help_files\\twitter_token.rmd")
-                              ),
+                                       includeMarkdown(system.file("app/R/help_files/twitter_token.rmd", package = "inzightta"))),
                               tabPanel("Spotify/Genius",
-                                       includeMarkdown("R\\help_files\\spot.Rmd")
+                                       includeMarkdown(system.file("app/R/help_files/spot.rmd", package = "inzightta"))
                               ),
                               tabPanel("The Guardian Articles",
-                                       includeMarkdown("R\\help_files\\guardian.rmd")
+                                       includeMarkdown(system.file("app/R/help_files/guardian.rmd", package = "inzightta"))
                               ), 
                               tabPanel("stuff.co.nz comments",
-                                       includeMarkdown("R\\help_files\\stuff.Rmd")
+                                       includeMarkdown(system.file("app/R/help_files/stuff.rmd", package = "inzightta"))
                               )
                             )
                           )
