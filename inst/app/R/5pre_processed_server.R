@@ -9,7 +9,8 @@
 imported <- eventReactive(input$pre_process_text, {
   ############################
   if (input$import_from == "Spotify/Genius"){
-    cleaned <- raw_data()[[1]] %>% clean_for_app(exp_cont = input$expand_contractions)
+    cleaned <- raw_data()[[1]] %>% clean_for_app(exp_cont = input$expand_contractions, 
+                                                 fancy_apos = FALSE, abbrev = FALSE)
   }
     
   else if (input$import_from == "Twitter"){
@@ -40,10 +41,10 @@ imported <- eventReactive(input$pre_process_text, {
       cleaned$text <- gsub("@\\w+", "", cleaned$text)
     }
     
+    cleaned <- cleaned %>% clean_for_app(exp_cont = input$expand_contractions)
+    
     # split emojis
     cleaned$text <- gsub("__", "_ _", cleaned$text)
-    
-    cleaned <- cleaned %>% clean_for_app(exp_cont = input$expand_contractions)
     
     cleaned
   }
@@ -80,12 +81,17 @@ imported <- eventReactive(input$pre_process_text, {
   }
     
   else {
-    # for imported text files
     cleaned <- raw_data() 
     
-    #cleaned$text <- gsub('""', "", cleaned$text)
-    cleaned$text <- gsub('" "', " ", cleaned$text, perl = TRUE)
-    cleaned <- cleaned %>% clean_for_app(exp_cont = input$expand_contractions)
+    if ("artist" %in% names(cleaned)||"mode_name" %in% names(cleaned)){
+      cleaned <- cleaned %>% clean_for_app(exp_cont = input$expand_contractions, 
+                                           lyrics = TRUE)
+    }
+    else{
+      cleaned <- cleaned %>% clean_for_app(exp_cont = input$expand_contractions)
+      cleaned$text <- gsub('" "', " ", cleaned$text, perl = TRUE)
+    }
+    
   }
   
   cleaned

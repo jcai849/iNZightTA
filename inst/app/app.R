@@ -74,7 +74,7 @@ pacman::p_load(
                forcats, 
                rvest, 
                dplyr, 
-               httr, 
+               httr,
                lubridate, 
                readr,
                tibble)

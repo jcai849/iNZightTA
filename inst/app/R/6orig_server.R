@@ -327,7 +327,7 @@ output$vis_options <- renderUI({
                               
                               tagList(sliderInput("num_terms",
                                                   "Select the number of terms to visualise",
-                                                  3, 600, 100),
+                                                  3, 400, 100),
                                       sliderInput("term_index",
                                                   "Select the point to begin visualisation from",
                                                   1, nrow(insighted()), 1),
@@ -556,7 +556,12 @@ output$downloadData <- downloadHandler(
     paste(input$what_vis, ".csv", sep = "")
   },
   content = function(file) {
-    write.csv(insighted(), file, row.names = FALSE)
+    if (input$what_vis %in% c("Aggregated Term Count","Key Sections","Aggregated Sentiment")){
+      write.csv(insighted_agg(), file, row.names = FALSE)
+    }
+    else{
+      write.csv(insighted(), file, row.names = FALSE)
+    }
   }
 )
 

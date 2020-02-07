@@ -7,7 +7,7 @@
 #' @return imported file with document id
 import_base_file <- function(filepath, filename){
   filetype <- get_filetype(filepath)
-  id <- basename(filename)
+  f_name <- basename(filename)
   
   if (filetype == "csv"){
     imported <- import_csv(filepath)
@@ -28,8 +28,12 @@ import_base_file <- function(filepath, filename){
     imported <- import_txt(filepath)
   }
 
-  imported %>%
-    dplyr::mutate(id = id)
+  if ("id" %in% names(imported)){
+    imported %>% dplyr::mutate(docname = f_name)
+  }
+  else{
+    imported %>% dplyr::mutate(id = f_name)
+  }
 }
 
 #' Import any number of files

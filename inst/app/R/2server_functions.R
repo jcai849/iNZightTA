@@ -122,54 +122,6 @@ merge_id <- function(x, source){
   
 }
 
-# merge_id <- function(x, source){
-#   if (source == "Project Gutenberg")
-#   {
-#     # if user sections the text by chapter/book/canto in the beginning, 
-#     # add in the column for the sectioning
-#     if (isTruthy(input$section_by)){
-#       x <- x %>%
-#         section_for_merge_id(input$section_by)
-#       
-#       # and merge the text by these columns
-#       by_section <- x %>%
-#         group_by(id, !! dplyr::sym(input$section_by)) %>%
-#         mutate(text = paste(text, collapse = " ")) %>%
-#         distinct(text) %>% ungroup() %>%
-#         mutate(id = paste(id, input$section_by))
-#       by_section
-#     }
-#     
-#     
-#     # Otherwise just merge together the text from the whole book. 
-#     else {
-#       
-#       by_id <- x %>% group_by(id) %>%
-#         mutate(text = paste(text, collapse = " ")) %>%
-#         distinct(text)
-#       
-#       by_id
-#       
-#     }
-#     
-#   }
-#   
-#   else if (source %in% c("The Guardian Articles", "Spotify/Genius", "Upload .txt, .csv, .xlsx, or .xls file")){
-#     by_id <- x %>% group_by(id) %>%
-#       mutate(text = paste(text, collapse = " ")) %>%
-#       distinct(text)
-#     by_id
-#   }
-#   
-#   # For tweets, comments, etc 
-#   else{
-#     all_merged <- x %>% mutate(text = paste(text, collapse = ". ")) %>%
-#       distinct(text) %>% mutate(id = "Text")
-#     all_merged
-#   }
-#   
-# }
-
 
 #' Creates kwic object to pass into textplot_xray() and for concordance table
 #'
@@ -226,17 +178,20 @@ books_with_samples <- function(books){
 ##################### cleaning text
 #########################################################
 
-clean_for_app <- function(df, exp_cont = TRUE){
+clean_for_app <- function(df, exp_cont = TRUE, lyrics = FALSE){
   
-  Encoding(df$text) <- "UTF-8"
+  if (lyrics == FALSE){Encoding(df$text) <- "UTF-8"}
+  else{Encoding(df$text) <- "UNICODE"}
   
   # replaces the fancy apostrophes (for replacing contractions later on)
-  df$text <- gsub(intToUtf8(8217), "'", df$text, perl = TRUE)
+  if (lyrics == FALSE) {
+    df$text <- gsub(intToUtf8(8217), "'", df$text, perl = TRUE)
+  }
   
   # For the guardian
   df$text <- gsub("<figcaption.+?</figcaption>|Related.+?</aside>", "", df$text)
   
-  df$text <- trimws(gsub("<.+?>", "", df$text))
+  df$text <- gsub("<.+?>", "", df$text)
 
   # Decodes common HTML entities 
   df$text <- gsub("&amp;", "&", df$text)
@@ -248,7 +203,9 @@ clean_for_app <- function(df, exp_cont = TRUE){
   if (exp_cont == TRUE){df$text <- textclean::replace_contraction(df$text)}
   
   # Replace Mr. with Mister ... for sentence tokenization 
-  df$text <- qdap::replace_abbreviation(df$text)
+  if (lyrics == FALSE) {
+    df$text <- qdap::replace_abbreviation(df$text)
+  }
   df$text <- gsub("^\"|\"$", "", df$text)
   
   return(df)
@@ -256,13 +213,14 @@ clean_for_app <- function(df, exp_cont = TRUE){
 
 #########################################################
 ##################### get song lyrics. 
-##################### genius_lyrics from genius package
+##################### 
 #########################################################
 
 get_lyrics <- function(artist,song){
-  df <- genius_lyrics(artist = artist, song = song)
+  df <- genius::genius_lyrics(artist = artist, song = song)
   names(df)[names(df) == "lyric"] <- "text"
   names(df)[names(df) == "track_title"] <- "title"
+  df$artist <- artist
   df
 }
 

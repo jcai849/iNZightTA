@@ -44,9 +44,9 @@ raw_data <- eventReactive(input$gather_data, {
     
     else if (input$type == "hashtag") {
       
-      tweets <- search_tweets(q, lang = "en",
+      tweets <- search_tweets2(q, lang = "en",
                               n = input$num_tweets, include_rts = input$include_retweets,
-                              token = twitter_token())
+                              token = twitter_token(), lang = "en")
     }
     tweets <- tweets %>% select(screen_name, status_id, text, is_retweet, hashtags, mentions_screen_name)
     tweets$mentions_screen_name <- unlist(lapply(tweets$mentions_screen_name, paste, collapse = " "))
@@ -113,7 +113,7 @@ raw_data <- eventReactive(input$gather_data, {
       }
       
       else if (input$type_spotify == "album"){
-        albums <- reactive({trimws(unlist(strsplit(input$album_title, split = ",")))})
+        albums <- reactive({trimws(unlist(strsplit(input$album_title, split = "%")))})
         df <- get_album_data(input$artist, albums(), authorization = get_spotify_access_token(input$spotify_id, input$spotify_secret)) %>%
           filter(!is.null(lyrics)) %>%
           unnest(lyrics)
