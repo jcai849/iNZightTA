@@ -39,7 +39,9 @@ observeEvent(input$create_kwic, {
     error = function(e){
       return(plot_exception("Keywords not found"))
     })
-  
+    #######
+    dt$actual <- ins()$keyword
+    ########  
     brushedPoints(dt, input$plot_brush)
   })
   
@@ -115,10 +117,10 @@ observeEvent(input$create_kwic, {
   output$keyword_table <- DT::renderDataTable({
     df <- data.frame(points)
     if (input$line_num == TRUE){
-      data.frame("doc" = df$docname, "pre" = df$pre, "keyword" = df$keyword, "post" = df$post)
+      data.frame("doc" = df$docname, "pre" = df$pre, "keyword" = df$actual, "post" = df$post)
     }
     else {
-      data.frame("pre" = df$pre, "keyword" = df$keyword, "post" = df$post)
+      data.frame("pre" = df$pre, "keyword" = df$actual, "post" = df$post)
     }
   }, filter = "top")
 })

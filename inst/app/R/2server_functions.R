@@ -141,10 +141,10 @@ merge_id <- function(x, source){
 #'
 
 get_kwic <- function(merged, patt, value, window, case_ins){
-  words <- phrase(unlist(strsplit(patt, split = ",")))
-  corp <- corpus(merged, text_field = "text",
+  words <- quanteda::phrase(unlist(strsplit(patt, split = ",")))
+  corp <- quanteda::corpus(merged, text_field = "text",
                  docid_field = "id")
-  kwic(x = corp, pattern = words, window = window, valuetype = value, case_insensitive = case_ins)
+  quanteda::kwic(x = corp, pattern = words, window = window, valuetype = value, case_insensitive = case_ins)
   
 }
 

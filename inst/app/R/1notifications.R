@@ -1,13 +1,13 @@
 # For web importing
 observeEvent(input$gather_data, {
-    showNotification("Please wait... Gathering data...", duration = 4, type = "warning")
+    showNotification("Please wait... Gathering data...", duration = 5, type = "warning")
 })
 
 # For processing - lemmatisation 
 observeEvent(input$prep_button, {
   if (input$lemmatise == TRUE)
   {
-    showNotification("Lemmatisation may take a while...", duration = 4, type = "warning")
+    showNotification("Lemmatisation may take a while...", duration = 5, type = "warning")
   }
 })
 
@@ -25,4 +25,9 @@ observe({
 
 
 # For word Tree
+observe({
+  if (input$what_vis == "Word Tree"){
+    showNotification("Connecting to Google API, please wait...", duration = 5, type = "warning")
+  }
+})
 

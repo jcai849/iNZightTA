@@ -94,8 +94,8 @@ output$side <- renderUI({
                           "spotify playlist ID" = "playlist")),
            
            output$more_spot <- renderUI({switch(input$type_spotify,
-                                                "songs" = tagList(textInput(inputId = "artist", label = "Artist(s)", placeholder = "Taylor Swift, Adele"),
-                                                                  textInput(inputId = "song_title", label = "Song Title(s)", placeholder = "Love Story, Rolling in the Deep")),
+                                                "songs" = tagList(textInput(inputId = "artist", label = "Artist(s)", placeholder = "Taylor Swift%Adele%Lorde"),
+                                                                  textInput(inputId = "song_title", label = "Song Title(s)", placeholder = "Love Story%Rolling in the Deep%Royals")),
                                                 "album" = tagList(textInput(inputId = "artist", label = "Artist", placeholder = "Ariana Grande"),
                                                                   textInput(inputId = "album_title", label = "Album Title", placeholder = "Sweetener%Thank U, Next")),
                                                 "playlist" = tagList(textInput(inputId = "spotify_username", label = "Spotify Username", placeholder = "spotify"),
@@ -175,12 +175,24 @@ output$side <- renderUI({
            
            tags$hr(),
            
-           radioButtons("type", "Retrieve tweets from a",
+           radioButtons("tw_type", "Retrieve tweets from a",
                         c("user" = "user2",
                           "hashtag" = "hashtag")),
-           textInput(inputId = "user",
-                     label = "Please provide the Twitter username/hashtag.",
-                     placeholder = "@user1, @user2, @user3 or #hash1, #hash2, #hash3"),
+          ####!!!!!
+          output$more_twitter <- renderUI({switch(input$tw_type,
+                                                  "user2" = tagList(
+                                                    textInput(inputId = "given_user",
+                                                              label = "Please provide the Twitter username(s).",
+                                                              placeholder = "@user1%@user2%@user3")
+                                                    
+                                                  ),
+                                                  "hashtag" = tagList(
+                                                    textInput(inputId = "given_hashtag",
+                                                              label = "Please provide the Twitter hashtag(s).",
+                                                              placeholder = "#hash1%#hash2%#hash3"))
+          )
+          }),
+           
            numericInput(inputId = "num_tweets",
                         label = "Number of Tweets to Retrieve per user/hashtag",
                         value = 500),

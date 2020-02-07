@@ -19,36 +19,59 @@ twitter_token <- eventReactive(input$get_twitter_token,
 
 raw_data <- eventReactive(input$gather_data, {
   if (input$import_from == "Twitter"){
-    query <- reactive({trimws(unlist(strsplit(input$user, split = ",")))})
-    q <- query()
-    if (input$type == "user2") {
+    
+    if (input$tw_type == "user2") {
+      query <- reactive({trimws(unlist(strsplit(input$given_user, split = "%")))})
+      q <- query()
       ###########################
-        withCallingHandlers({
+      withCallingHandlers({
           shinyjs::html(id = "text", html = "")
           tweets <- get_timeline(q,
                                  n = input$num_tweets, token = twitter_token())
+          
+          # how many tweets collected
+          for (i in 1:length(q)){
+            message(paste(sum(tweets$screen_name == substring(q[i], 2)), "tweets collected from", q[i]))
+          }
+
         },
         message = function(m) {
           shinyjs::html(id = "text", html = m$message, add = TRUE)
         },
         warning = function(m) {
           shinyjs::html(id = "text", html = m$message, add = TRUE)
-        })
-      
+      })
       ###########################
       
       if (input$include_retweets == FALSE){
         tweets <- tweets %>% filter(is_retweet == FALSE)
       }
+      tweets <- tweets %>% select(screen_name, status_id, text, is_retweet, hashtags, mentions_screen_name)
     }
     
-    else if (input$type == "hashtag") {
+    else {
+      query <- reactive({trimws(unlist(strsplit(input$given_hashtag, split = "%")))})
+      q <- query()
+      withCallingHandlers({
+        shinyjs::html(id = "text", html = "")
+    
+          tweets <- search_tweets2(q, lang = "en",
+                                  n = input$num_tweets, include_rts = input$include_retweets,
+                                  token = twitter_token(), lang = "en")
+          tweets <- tweets %>% select(screen_name, status_id, text, is_retweet, hashtags, mentions_screen_name, query)
       
-      tweets <- search_tweets2(q, lang = "en",
-                              n = input$num_tweets, include_rts = input$include_retweets,
-                              token = twitter_token(), lang = "en")
+      # how many collected 
+          for (i in 1:length(q)){
+            message(paste(sum(tweets$query == q[i]), "tweets collected with hashtag", q[i]))
+          }
+      },
+      message = function(m) {
+        shinyjs::html(id = "text", html = m$message, add = TRUE)
+      },
+      warning = function(m) {
+        shinyjs::html(id = "text", html = m$message, add = TRUE)
+      })
     }
-    tweets <- tweets %>% select(screen_name, status_id, text, is_retweet, hashtags, mentions_screen_name)
     tweets$mentions_screen_name <- unlist(lapply(tweets$mentions_screen_name, paste, collapse = " "))
     tweets$hashtags <- unlist(lapply(tweets$hashtags, paste, collapse = " "))
     tweets <- tweets %>% rename(id = status_id)
@@ -97,8 +120,8 @@ raw_data <- eventReactive(input$gather_data, {
       if (input$type_spotify == "songs") {
         song_tib <- tibble(title = character(0), line = character(0), text = character(0))
         
-        singers <- reactive({trimws(unlist(strsplit(input$artist, split = ",")))})
-        songs <- reactive({trimws(unlist(strsplit(input$song_title, split = ",")))})
+        singers <- reactive({trimws(unlist(strsplit(input$artist, split = "%")))})
+        songs <- reactive({trimws(unlist(strsplit(input$song_title, split = "%")))})
         
         for (i in 1:length(singers())){
           song_tib <- rbind(song_tib, get_lyrics(singers()[i], songs()[i]))

@@ -27,6 +27,7 @@ struct_pageview <- function(.data, col_name, num_terms, term_index, word_size, p
                         "Aggregated Sentiment")){
         if (sum(grepl("[[:digit:]]",.data[,as_label(q_col_name)])) > 0) {
             limit <- max(abs(.data[,as_label(q_col_name)]), na.rm = TRUE) * c(-1, 1) # limits for color palette
+            
             .data[seq(term_index, end),] %>%
                 dplyr::pull(word) %>%
                 ggpage::ggpage_build() %>%
