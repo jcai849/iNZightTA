@@ -184,6 +184,8 @@ output$side <- renderUI({
            checkboxInput("include_retweets", "Include retweets"),
            actionButton("gather_data", "Gather tweets"),
            tags$hr(),
+           selectInput("time_col", "Create ... factor from created_at column", 
+                       choices = c("", "month", "day", "hour")),
            checkboxInput("remove_hash", "Remove hashtags"), 
            checkboxInput("remove_user", "Remove user mentions"),
            checkboxInput("expand_contractions", "Expand contractions"), 

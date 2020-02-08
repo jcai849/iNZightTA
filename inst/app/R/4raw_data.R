@@ -45,7 +45,8 @@ raw_data <- eventReactive(input$gather_data, {
       if (input$include_retweets == FALSE){
         tweets <- tweets %>% dplyr::filter(is_retweet == FALSE)
       }
-      tweets <- tweets %>% dplyr::select(screen_name, status_id, text, is_retweet, hashtags, mentions_screen_name)
+      tweets <- tweets %>% dplyr::select(screen_name, created_at, status_id, text, 
+                                         is_retweet, hashtags, mentions_screen_name)
     }
     
     else {
@@ -57,7 +58,8 @@ raw_data <- eventReactive(input$gather_data, {
           tweets <- rtweet::search_tweets2(q, lang = "en",
                                   n = input$num_tweets, include_rts = input$include_retweets,
                                   token = twitter_token(), lang = "en")
-          tweets <- tweets %>% dplyr::select(screen_name, status_id, text, is_retweet, hashtags, mentions_screen_name, query)
+          tweets <- tweets %>% dplyr::select(screen_name, created_at, status_id, text, 
+                                             is_retweet, hashtags, mentions_screen_name, query)
       
       # how many collected 
           for (i in 1:length(q)){
@@ -71,10 +73,13 @@ raw_data <- eventReactive(input$gather_data, {
         shinyjs::html(id = "text", html = m$message, add = TRUE)
       })
     }
+
     tweets$mentions_screen_name <- unlist(lapply(tweets$mentions_screen_name, paste, collapse = " "))
     tweets$hashtags <- unlist(lapply(tweets$hashtags, paste, collapse = " "))
     tweets <- tweets %>% dplyr::rename(id = status_id)
-    tweets
+    
+    # tweets originally from newest to oldest. reverse oldest to newest
+    tweets[order(tweets$created_at), ]
   }
   
   else if (input$import_from == "Project Gutenberg"){
@@ -328,3 +333,9 @@ output$downloadData_imported <- downloadHandler(
   }
 )
 
+##### clear text (showing messages from console)
+observeEvent(input$prep_button, {
+  output$text <- renderText({
+    
+  })
+})

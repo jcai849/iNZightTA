@@ -46,6 +46,16 @@ imported <- eventReactive(input$pre_process_text, {
     # split emojis
     cleaned$text <- gsub("__", "_ _", cleaned$text)
     
+    if (input$time_col == "month"){
+      cleaned$month_yr = format(cleaned$created_at,"%Y-%m")
+    }
+    else if (input$time_col == "day"){
+      cleaned$yr_month_day = format(cleaned$created_at,"%Y-%m-%d")
+    }
+    else if (input$time_col == "hour"){
+      cleaned$yr_month_day_hr = format(cleaned$created_at,"%Y-%m-%d %H")
+    }
+    
     cleaned
   }
     
@@ -124,5 +134,7 @@ output$downloadData_pre_processed <- downloadHandler(
     utils::write.csv(imported(), file, row.names = FALSE)
   }
 )
+
+
 
 
