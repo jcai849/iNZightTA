@@ -9,7 +9,7 @@
 
 twitter_token <- eventReactive(input$get_twitter_token,
                                {
-                                 create_token(
+                                 rtweet::create_token(
                                    app = input$appname,
                                    consumer_key = input$key,
                                    consumer_secret = input$secret,
@@ -19,14 +19,13 @@ twitter_token <- eventReactive(input$get_twitter_token,
 
 raw_data <- eventReactive(input$gather_data, {
   if (input$import_from == "Twitter"){
-    
     if (input$tw_type == "user2") {
       query <- reactive({trimws(unlist(strsplit(input$given_user, split = "%")))})
       q <- query()
-      ###########################
+
       withCallingHandlers({
           shinyjs::html(id = "text", html = "")
-          tweets <- get_timeline(q,
+          tweets <- rtweet::get_timeline(q,
                                  n = input$num_tweets, token = twitter_token())
           
           # how many tweets collected
@@ -44,9 +43,9 @@ raw_data <- eventReactive(input$gather_data, {
       ###########################
       
       if (input$include_retweets == FALSE){
-        tweets <- tweets %>% filter(is_retweet == FALSE)
+        tweets <- tweets %>% dplyr::filter(is_retweet == FALSE)
       }
-      tweets <- tweets %>% select(screen_name, status_id, text, is_retweet, hashtags, mentions_screen_name)
+      tweets <- tweets %>% dplyr::select(screen_name, status_id, text, is_retweet, hashtags, mentions_screen_name)
     }
     
     else {
@@ -55,10 +54,10 @@ raw_data <- eventReactive(input$gather_data, {
       withCallingHandlers({
         shinyjs::html(id = "text", html = "")
     
-          tweets <- search_tweets2(q, lang = "en",
+          tweets <- rtweet::search_tweets2(q, lang = "en",
                                   n = input$num_tweets, include_rts = input$include_retweets,
                                   token = twitter_token(), lang = "en")
-          tweets <- tweets %>% select(screen_name, status_id, text, is_retweet, hashtags, mentions_screen_name, query)
+          tweets <- tweets %>% dplyr::select(screen_name, status_id, text, is_retweet, hashtags, mentions_screen_name, query)
       
       # how many collected 
           for (i in 1:length(q)){
@@ -74,26 +73,26 @@ raw_data <- eventReactive(input$gather_data, {
     }
     tweets$mentions_screen_name <- unlist(lapply(tweets$mentions_screen_name, paste, collapse = " "))
     tweets$hashtags <- unlist(lapply(tweets$hashtags, paste, collapse = " "))
-    tweets <- tweets %>% rename(id = status_id)
+    tweets <- tweets %>% dplyr::rename(id = status_id)
     tweets
   }
   
   else if (input$import_from == "Project Gutenberg"){
-    chosen_title <- unlist(lapply(str_split(input$gutenberg_work, " :by: "), function(x){x[1]}))
+    chosen_title <- unlist(lapply(stringr::str_split(input$gutenberg_work, " :by: "), function(x){x[1]}))
     id = numeric(0)
     
     for (i in 1:length(chosen_title)){
-      id_list <- gutenberg_metadata %>%
-        filter(title %in% chosen_title[i]) %>%
-        select(gutenberg_id)
+      id_list <- gutenbergr::gutenberg_metadata %>%
+        dplyr::filter(title %in% chosen_title[i]) %>%
+        dplyr::select(gutenberg_id)
       id <- c(id, id_list$gutenberg_id[1])
     }
     
-    gutenberg_metadata %>% filter(gutenberg_id %in% id) -> title_inf
+    gutenbergr::gutenberg_metadata %>% dplyr::filter(gutenberg_id %in% id) -> title_inf
     
-    downloaded_text <- gutenberg_download(id, mirror = "http://aleph.gutenberg.org")
-    downloaded_text <- left_join(downloaded_text, title_inf, by = "gutenberg_id") %>%
-      select(text, title, author)
+    downloaded_text <- gutenbergr::gutenberg_download(id, mirror = "http://aleph.gutenberg.org")
+    downloaded_text <- dplyr::left_join(downloaded_text, title_inf, by = "gutenberg_id") %>%
+      dplyr::select(text, title, author)
     names(downloaded_text)[names(downloaded_text) == "title"] <- "id"
     downloaded_text
   }
@@ -106,7 +105,7 @@ raw_data <- eventReactive(input$gather_data, {
   else if (input$import_from == "Spotify/Genius"){
     
     spotify_access_token <- eventReactive(input$get_spot_token, {
-      get_spotify_access_token(input$spotify_id, input$spotify_secret)
+      spotifyr::get_spotify_access_token(input$spotify_id, input$spotify_secret)
     })
     
     GENIUS_API_TOKEN <- eventReactive(input$get_spot_token,
@@ -118,7 +117,7 @@ raw_data <- eventReactive(input$gather_data, {
     lyrics_with_audio = reactive({
       #####
       if (input$type_spotify == "songs") {
-        song_tib <- tibble(title = character(0), line = character(0), text = character(0))
+        song_tib <- tibble::tibble(title = character(0), line = character(0), text = character(0))
         
         singers <- reactive({trimws(unlist(strsplit(input$artist, split = "%")))})
         songs <- reactive({trimws(unlist(strsplit(input$song_title, split = "%")))})
@@ -137,15 +136,17 @@ raw_data <- eventReactive(input$gather_data, {
       
       else if (input$type_spotify == "album"){
         albums <- reactive({trimws(unlist(strsplit(input$album_title, split = "%")))})
-        df <- get_album_data(input$artist, albums(), authorization = get_spotify_access_token(input$spotify_id, input$spotify_secret)) %>%
-          filter(!is.null(lyrics)) %>%
-          unnest(lyrics)
+        df <- spotifyr::get_album_data(input$artist, albums(), 
+                                       authorization = spotifyr::get_spotify_access_token(input$spotify_id, 
+                                                                                          input$spotify_secret)) %>%
+          dplyr::filter(!is.null(lyrics)) %>%
+          tidyr::unnest(lyrics)
         
         names(df)[names(df) == "lyric"] <- "text"
         
         df <- df %>%
-          select(valence, mode_name, album_name, track_name, line, text) %>%
-          rename(id = track_name)
+          dplyr::select(valence, mode_name, album_name, track_name, line, text) %>%
+          dplyr::rename(id = track_name)
         
         df$valence <- cut(df$valence, 5, labels = FALSE)
         
@@ -156,7 +157,7 @@ raw_data <- eventReactive(input$gather_data, {
       }
       
       else{
-        playlist_audio <- get_playlist_audio_features(input$spotify_username, input$playlist_id,
+        playlist_audio <- spotifyr::get_playlist_audio_features(input$spotify_username, input$playlist_id,
                                                       authorization = spotify_access_token())
         
         
@@ -164,22 +165,22 @@ raw_data <- eventReactive(input$gather_data, {
         
         ##### Fix track name
         playlist_audio <- playlist_audio %>%
-          select(artist, track.name, valence, mode_name) %>%
-          mutate(track.name = str_replace_all(track.name,
+          dplyr::select(artist, track.name, valence, mode_name) %>%
+          dplyr::mutate(track.name = stringr::str_replace_all(track.name,
                                               "[(].+[)]?.|\\[.+\\]|FEAT.+| - .+ Edit", "")) %>%
-          mutate(track.name = stri_trans_general(track.name, "Latin-ASCII"))
+          dplyr::mutate(track.name = stringi::stri_trans_general(track.name, "Latin-ASCII"))
         
         
         ###### collect the lyrics from Genius
         playlist <- playlist_audio %>%
-          add_genius(artist, track.name, type = "lyrics") %>%
-          select(-valence, -mode_name)
+          genius::add_genius(artist, track.name, type = "lyrics") %>%
+          dplyr::select(-valence, -mode_name)
         
-        playlist_merged <- left_join(playlist, playlist_audio, by = c('track.name', 'artist')) %>%
-          filter(!is.na(lyric)) %>%
-          rename(text = lyric) %>%
-          select(valence, mode_name, track_title, artist, line, text) %>%
-          rename(id = track_title)
+        playlist_merged <- dplyr::left_join(playlist, playlist_audio, by = c('track.name', 'artist')) %>%
+          dplyr::filter(!is.na(lyric)) %>%
+          dplyr::rename(text = lyric) %>%
+          dplyr::select(valence, mode_name, track_title, artist, line, text) %>%
+          dplyr::rename(id = track_title)
         
         playlist_merged$valence <- cut(playlist_merged$valence, 5, labels = FALSE)
         
@@ -199,8 +200,8 @@ raw_data <- eventReactive(input$gather_data, {
   else if (input$import_from == "stuff.co.nz Comments"){
     rss <- reactive({
       
-      rss_tibb <- tidyfeed(input$rss_link) %>%
-        select(item_description)
+      rss_tibb <- tidyRSS::tidyfeed(input$rss_link) %>%
+        dplyr::select(item_description)
       
       names(rss_tibb)[names(rss_tibb) == "item_description"] <- "text"
       
@@ -216,23 +217,23 @@ raw_data <- eventReactive(input$gather_data, {
     
     guardian_articles <- reactive({
       if (input$guardian_sections == "all"){
-        results <- get_guardian(input$guardian_keywords,
+        results <- GuardianR::get_guardian(input$guardian_keywords,
                                 from.date = input$guardian_dates[1],
                                 to.date = input$guardian_dates[2],
                                 api.key= input$guardian_api)
       }
       
       else {
-        results <- get_guardian(input$guardian_keywords, section = input$guardian_sections,
+        results <- GuardianR::get_guardian(input$guardian_keywords, section = input$guardian_sections,
                                 from.date= input$guardian_dates[1],
                                 to.date= input$guardian_dates[2],
                                 api.key= input$guardian_api)
       }
       
       results <- results %>%
-        select(headline, webPublicationDate, body) %>%
-        rename(text = body) %>%
-        rename(id = headline)
+        dplyr::select(headline, webPublicationDate, body) %>%
+        dplyr::rename(text = body) %>%
+        dplyr::rename(id = headline)
       
       results
       
@@ -246,18 +247,18 @@ raw_data <- eventReactive(input$gather_data, {
     
     if (input$type_reddit == "comments_url"){
       reddit_df <- RedditExtractoR::reddit_content(input$url) %>%
-        select(comm_date,comment_score,user,comment,id, structure) %>%
-        rename(text = comment)
+        dplyr::select(comm_date,comment_score,user,comment,id, structure) %>%
+        dplyr::rename(text = comment)
       
       if (input$nest_level == TRUE){
         reddit_df <- reddit_df %>%
-          filter(stringr::str_detect(structure, "_", negate = FALSE)) %>%
-          select(-structure)
+          dplyr::filter(stringr::str_detect(structure, "_", negate = FALSE)) %>%
+          dplyr::select(-structure)
       }
       
       else {
         reddit_df <- reddit_df %>%
-          select(-structure)
+          dplyr::select(-structure)
       }
       
       reddit_df
@@ -295,8 +296,6 @@ raw_data <- eventReactive(input$gather_data, {
         warning = function(m) {
           shinyjs::html(id = "text", html = m$message, add = TRUE)
         })
-        # getPushshiftDataRecursive(postType = input$type_reddit, title = input$title, q = input$q,
-        #                           subreddit = input$subreddit, after = input$after, before = input$before)
       }
     }
     
@@ -305,23 +304,16 @@ raw_data <- eventReactive(input$gather_data, {
 })
 
 
-# observeEvent(input$gather_data, {
-#   output$imported_show <- DT::renderDataTable({
-#     if (input$import_from == "Spotify/Genius"){raw_data()[[1]]}
-#     else {raw_data()}
-#   })
-# })
-
 observeEvent(input$gather_data, {
   output$imported_show <- DT::renderDataTable({
     if (input$import_from == "Spotify/Genius"){
-      DT::datatable(raw_data()[[1]] %>% head(100), options = list(paging = FALSE, searching = FALSE))
+      DT::datatable(raw_data()[[1]] %>% utils::head(100), options = list(paging = FALSE, searching = FALSE))
       }
     else if (input$import_from == "The Guardian Articles") {
-      DT::datatable(raw_data() %>% head(3), options = list(paging = FALSE, searching = FALSE))
+      DT::datatable(raw_data() %>% utils::head(3), options = list(paging = FALSE, searching = FALSE))
       }
     else {
-      DT::datatable(raw_data() %>% head(100), options = list(paging = FALSE, searching = FALSE))
+      DT::datatable(raw_data() %>% utils::head(100), options = list(paging = FALSE, searching = FALSE))
     }
   })
 })
@@ -332,7 +324,7 @@ output$downloadData_imported <- downloadHandler(
     paste("raw", ".csv", sep = "")
   },
   content = function(file) {
-    write.csv(raw_data(), file, row.names = FALSE)
+    utils::write.csv(raw_data(), file, row.names = FALSE)
   }
 )
 

@@ -22,7 +22,7 @@ prepped <- eventReactive(input$prep_button, {
   
   
   imported() %>%
-    format_data(input$lemmatise, input$stopwords, input$sw_lexicon, addl_stopwords())
+    inzightta::format_data(input$lemmatise, input$stopwords, input$sw_lexicon, addl_stopwords())
 })
 
 sectioned <- reactive({
@@ -41,7 +41,7 @@ filtered <- reactive({
     
     ###########################
     data <- data %>%
-      dplyr::filter(str_detect(!! dplyr::sym(input$filter_var), input$filter_pred))
+      dplyr::filter(stringr::str_detect(!! dplyr::sym(input$filter_var), input$filter_pred))
     ###########################
   }
   data
@@ -76,15 +76,15 @@ filtered <- reactive({
 
   values <- reactiveValues(data=NULL)
    
-   observeEvent(input$subset_data, {
+  observeEvent(input$subset_data, {
     filtered_rows <- input$insighted_table_rows_all
     values$data <- filtered_rows
-   })
+  })
    
-   insighted_filtered <- eventReactive(input$subset_data, {
+  insighted_filtered <- eventReactive(input$subset_data, {
      full_data <- filtered()
      full_data[values$data, ]
-   })
+  })
 
   grouped <- reactive({
     if (input$restore_data >= input$subset_data){
@@ -103,7 +103,7 @@ filtered <- reactive({
 ###########################################
 
 output$table <- renderTable({
-  filtered() %>% head(300)})
+  filtered() %>% utils::head(300)})
 
 output$sw_lexicon <- renderUI(selectInput("sw_lexicon", "Select the Stopword Lexicon",
                                           stopwords::stopwords_getsources()))
@@ -357,7 +357,6 @@ output$vis_facet_by <- renderUI({input$what_vis
  
 
 visualisation <- reactive({
-
   switch(input$vis_type,
          "Word Cloud" = switch(input$what_vis,
                                "n-gram Frequency" = get_vis(
@@ -481,7 +480,7 @@ visualisation <- reactive({
 )})
 
 output$plot <- renderPlot({
-  visualisation() + theme(axis.text = element_text(size = input$text_size))
+  visualisation() + ggplot2::theme(axis.text = element_text(size = input$text_size))
 })
 
 # to allow users to dynamically alter the plot
@@ -489,7 +488,7 @@ output$plot.ui <- renderUI({
   plotOutput("plot", height = input$plot_height)
 })
 
-output$insighted_table <- renderDT({
+output$insighted_table <- DT::renderDT({
   if (input$what_vis %in% c("Aggregated Term Count","Key Sections","Aggregated Sentiment")){
     insighted_agg()
   }
@@ -497,7 +496,7 @@ output$insighted_table <- renderDT({
     insighted()
   }
   }, 
-  filter = "bottom")
+filter = "bottom")
 
 
 # # table to show the data table output after visualization 
@@ -557,20 +556,18 @@ output$downloadData <- downloadHandler(
   },
   content = function(file) {
     if (input$what_vis %in% c("Aggregated Term Count","Key Sections","Aggregated Sentiment")){
-      write.csv(insighted_agg(), file, row.names = FALSE)
+      utils::write.csv(insighted_agg(), file, row.names = FALSE)
     }
     else{
-      write.csv(insighted(), file, row.names = FALSE)
+      utils::write.csv(insighted(), file, row.names = FALSE)
     }
   }
 )
 
 
 output$downloadprocessed <- downloadHandler(
-
   filename = function() {
     paste("processed", "RDS", sep = ".") 
-    
   },
   content = function(file) {
     saveRDS(filtered(), file)

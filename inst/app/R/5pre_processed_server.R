@@ -10,7 +10,7 @@ imported <- eventReactive(input$pre_process_text, {
   ############################
   if (input$import_from == "Spotify/Genius"){
     cleaned <- raw_data()[[1]] %>% clean_for_app(exp_cont = input$expand_contractions, 
-                                                 fancy_apos = FALSE, abbrev = FALSE)
+                                                 lyrics = TRUE)
   }
     
   else if (input$import_from == "Twitter"){
@@ -60,7 +60,7 @@ imported <- eventReactive(input$pre_process_text, {
     cleaned$id <- iconv(cleaned$id, from = "UTF-8", to = "ASCII//TRANSLIT")
       
     cleaned <- cleaned %>%
-      mutate(id = str_replace_all(id, "<.+?>", ""))
+      dplyr::mutate(id = stringr::str_replace_all(id, "<.+?>", ""))
       
     # Fix the pound sign becoming ?
     cleaned$text <- gsub("[?](\\d+)", "£\\1", cleaned$text, perl = TRUE)
@@ -74,15 +74,13 @@ imported <- eventReactive(input$pre_process_text, {
   
   else if(input$import_from == "Reddit"){
     cleaned <- raw_data()
+    cleaned$text <- gsub("http.+\\w", "", cleaned$text, perl = TRUE)
     cleaned <- clean_for_app(cleaned, exp_cont = input$expand_contractions)
-    cleaned$text <- gsub("[[(]http.+?[[)]", "", cleaned$text, perl = TRUE)
     cleaned$text <- textclean::replace_url(cleaned$text)
-    #cleaned$text <- gsub("[**Extended Summary**].+", "", cleaned$text)
   }
     
   else {
     cleaned <- raw_data() 
-    
     if ("artist" %in% names(cleaned)||"mode_name" %in% names(cleaned)){
       cleaned <- cleaned %>% clean_for_app(exp_cont = input$expand_contractions, 
                                            lyrics = TRUE)
@@ -91,11 +89,8 @@ imported <- eventReactive(input$pre_process_text, {
       cleaned <- cleaned %>% clean_for_app(exp_cont = input$expand_contractions)
       cleaned$text <- gsub('" "', " ", cleaned$text, perl = TRUE)
     }
-    
   }
-  
   cleaned
-  
 })
 
 # output$pre_processed_show <- DT::renderDataTable({
@@ -114,10 +109,10 @@ imported <- eventReactive(input$pre_process_text, {
 
 output$pre_processed_show <- renderTable({
   if (input$import_from == "The Guardian Articles"){
-    imported() %>% head(3)
+    imported() %>% utils::head(3)
   }
   else {
-    imported() %>% head(100)
+    imported() %>% utils::head(100)
   }
 })
 
@@ -126,7 +121,7 @@ output$downloadData_pre_processed <- downloadHandler(
     paste("preprocessed", ".csv", sep = "")
   },
   content = function(file) {
-    write.csv(imported(), file, row.names = FALSE)
+    utils::write.csv(imported(), file, row.names = FALSE)
   }
 )
 

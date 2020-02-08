@@ -38,8 +38,8 @@ get_tf_idf <- function(.data, grouping){
     dplyr::summarise(total_words = sum(n))
   
   # calculate term frequency tf 
-  df <- left_join(df, tot_words) %>% 
-    mutate(tf = n/total_words)
+  df <- dplyr::left_join(df, tot_words) %>% 
+    dplyr::mutate(tf = n/total_words)
   
   # calculate inverse doc freq idf
   t <- df$text
@@ -47,8 +47,9 @@ get_tf_idf <- function(.data, grouping){
   
   df$idf <- as.numeric(idf[t])
   df$`Term Frequency-Inverse Document Frequency` <- df$tf * df$idf
-  df <- df %>% select(!! dplyr::sym(grouping), text, `Term Frequency-Inverse Document Frequency`)
-  left_join(.data, df)
+  df <- df %>% dplyr::select(!! dplyr::sym(grouping), text, `Term Frequency-Inverse Document Frequency`)
+  
+  dplyr::left_join(.data, df)
 }
 
 #########################################################
@@ -72,7 +73,7 @@ section_for_merge_id  <- function(.data, section_by){
                     "canto" = get_cantos,
                     "book" = get_books)
   .data %>%
-    group_by(id) %>%
+    dplyr::group_by(id) %>%
     dplyr::mutate(!! section_by := sec_table[[section_by]](text))
 }
 
@@ -97,26 +98,28 @@ merge_id <- function(x, source){
         
       # and merge the text by these columns
       by_section <- x %>%
-        group_by(id, !! dplyr::sym(input$section_by)) %>%
-        mutate(text = paste(text, collapse = " ")) %>%
-        distinct(text) %>% ungroup() %>%
-        mutate(id = paste(id, input$section_by))
+        dplyr::group_by(id, !! dplyr::sym(input$section_by)) %>%
+        dplyr::mutate(text = paste(text, collapse = " ")) %>%
+        dplyr::distinct(text) %>% dplyr::ungroup() %>%
+        dplyr::mutate(id = paste(id, input$section_by))
       by_section
     }
     
     else {
       by_chosen <- x %>% 
-        group_by(!! dplyr::sym(input$merge_id_grps)) %>%
-        mutate(text = paste(text, collapse = " ")) %>%
-        distinct(text) %>% ungroup() %>%
-        mutate(id = !! dplyr::sym(input$merge_id_grps))
+        dplyr::group_by(!! dplyr::sym(input$merge_id_grps)) %>%
+        dplyr::mutate(text = paste(text, collapse = " ")) %>%
+        dplyr::distinct(text) %>% dplyr::ungroup() %>%
+        dplyr::mutate(id = !! dplyr::sym(input$merge_id_grps))
       by_chosen
     }
   }
  
   else{
-    all_merged <- x %>% mutate(text = paste(text, collapse = ". ")) %>%
-      distinct(text) %>% mutate(id = "Text")
+    all_merged <- x %>% 
+      dplyr::mutate(text = paste(text, collapse = ". ")) %>%
+      dplyr::distinct(text) %>% 
+      dplyr::mutate(id = "Text")
     all_merged
   }
   
@@ -167,16 +170,27 @@ books_with_samples <- function(books){
   
   # no sample excerpts for the texts provided
   books$excerpt <- ""
-  books <- books %>% select(id, FK, excerpt)
+  books <- books %>% dplyr::select(id, FK, excerpt)
   
   # bind the provided texts with the sample (reference) texts
   samps <- rbind.data.frame(samples, books)
-  samps %>% arrange(FK)
+  samps %>% dplyr::arrange(FK)
 }
 
 #########################################################
 ##################### cleaning text
 #########################################################
+
+#' does basic cleaning before processing (converts encoding, removes HTML entities, 
+#' expanding contractions, ...)
+#'
+#' @param df data frame with the a column `text` containing the text to be cleaned
+#' 
+#' @param exp_cont logical - whether to expand contractions or not
+#' 
+#' @param lyrics logical - is the text from genius? (different encoding)
+#'
+#' @return data frame with `text` column cleaned
 
 clean_for_app <- function(df, exp_cont = TRUE, lyrics = FALSE){
   
@@ -267,11 +281,7 @@ textplot_xray.kwic <- function(..., scale = c("absolute", "relative"),
   
   # replace "found" keyword with patterned keyword
   x[, keyword := unlist(lapply(kwics, function(l) l[["pattern"]]))]
-  
-  ###############################
-  
-  ###############################
-  
+
   # pre-emptively convert keyword to factor before ggplot does it, so that we
   # can keep the order of the factor the same as the order of the kwic objects
   # x[, keyword := factor(keyword, levels = unique(keyword))]
@@ -398,13 +408,13 @@ getPushshiftData <- function(postType,
       .$url %>%
       jsonlite::fromJSON() %>%
       .$data %>%
-      jsonlite::flatten(recursive = TRUE) %>%
+      jsonlite::flatten() %>%
       dplyr::select(author, title, selftext, created_utc, permalink, num_comments, score, subreddit) %>%
-      filter(!str_detect(author, "Moderator")) %>%
-      as_tibble() %>%
-      rename(id = title) %>%
-      rename(text = selftext) %>%
-      arrange(created_utc)
+      dplyr::filter(!stringr::str_detect(author, "Moderator")) %>%
+      tibble::as_tibble() %>%
+      dplyr::rename(id = title) %>%
+      dplyr::rename(text = selftext) %>%
+      dplyr::arrange(created_utc)
     
   } 
   
@@ -420,15 +430,15 @@ getPushshiftData <- function(postType,
                            nest_level = nest_level, 
                            sort = "asc")) %>%
       .$url %>%
-      fromJSON() %>%
+      jsonlite::fromJSON() %>%
       .$data %>%
-      jsonlite::flatten(recursive = TRUE) %>%
-      select(author, body, permalink, score, created_utc, subreddit) %>%
-      filter(!str_detect(author, "Moderator")) %>%
-      as_tibble() %>%
-      rename(id = permalink) %>%
-      rename(text = body) %>%
-      arrange(created_utc)
+      jsonlite::flatten() %>%
+      dplyr::select(author, body, permalink, score, created_utc, subreddit) %>%
+      dplyr::filter(!stringr::str_detect(author, "Moderator")) %>%
+      tibble::as_tibble() %>%
+      dplyr::rename(id = permalink) %>%
+      dplyr::rename(text = body) %>%
+      dplyr::arrange(created_utc)
   }
 }
 
@@ -451,9 +461,9 @@ getPushshiftDataRecursive <- function(postType = "submission",
                           subreddit,
                           nest_level)
   
-  out <- tmp %>% filter(FALSE)
+  out <- tmp %>% dplyr::filter(FALSE)
   on.exit(return(out), add = TRUE)
-  after <- last(tmp$created_utc)
+  after <- data.table::last(tmp$created_utc)
   
   while(nrow(tmp) > 0) {
     message(
@@ -462,7 +472,7 @@ getPushshiftDataRecursive <- function(postType = "submission",
               postType,
               as.Date(as.POSIXct(as.numeric(after), origin = "1970-01-01"))))
     out <- rbind(out, tmp)
-    after <- last(tmp$created_utc)
+    after <- data.table::last(tmp$created_utc)
     tmp <- getPushshiftData(postType,
                             title,
                             size,
@@ -493,7 +503,6 @@ getPushshiftDataRecursive <- function(postType = "submission",
 plot_exception <-function(
   ...,
   sep=" "){      
-  
   txt = paste(...,collapse = sep)
   print(ggplot2::ggplot() +
           ggplot2::geom_text(ggplot2::aes(x = 0, y = 0, label = txt), color = "red", size = 6) + 
@@ -518,12 +527,12 @@ plot_exception <-function(
 
 emoji_to_words <- function(x, emoji_dt = lexicon::hash_emojis){
   x <- iconv(x, "UTF-8", "ASCII", "byte")
-  mgsub(x, emoji_dt[["x"]], paste0("_", gsub("\\s+", "_", emoji_dt[["y"]]), "_"))
+  textclean::mgsub(x, emoji_dt[["x"]], paste0("_", gsub("\\s+", "_", emoji_dt[["y"]]), "_"))
 }
 
 #' Same as above, but for emoticons 
 
 emoticon_to_words <- function (x, emoticon_dt = lexicon::hash_emoticons) 
 {
-  mgsub(x, emoticon_dt[["x"]], paste0("_", gsub("\\s+", "_", emoticon_dt[["y"]]), "_"))
+  textclean::mgsub(x, emoticon_dt[["x"]], paste0("_", gsub("\\s+", "_", emoticon_dt[["y"]]), "_"))
 }

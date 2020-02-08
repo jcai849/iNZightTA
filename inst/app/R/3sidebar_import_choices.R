@@ -30,24 +30,13 @@ output$side <- renderUI({
                     "fashion", "culture", "society", "tourism", "health", "cars",
                     "uk-news", "business", "football", "stage", "money")
   
-  ##### Proj Gutenberg choices
-  # choices <- gutenberg_metadata %>%
-  #   filter(language == "en", gutenberg_id != 0, has_text) %>%
-  #   mutate(choice = ifelse(!is.na(author),
-  #                          paste(title, author, sep = " :by: "),
-  #                          title)) %>%
-  #   select(choice) %>%
-  #   mutate(choice = str_replace_all(choice, "\\n|\\r", " "))
-
-  
   
   switch(input$import_from,
-         "Project Gutenberg" = tagList(#selectInput("gutenberg_work", "Please select a book.", multiple = TRUE, choices = character(0)),
-                                                      #selected = NULL, multiple = TRUE),
-                                     
-                                       actionButton("gather_data", "Import text"), 
+         "Project Gutenberg" = tagList(actionButton("gather_data", "Import text"), 
                                        tags$hr(),
-                                       actionButton("pre_process_text", "Pre-process text"), tags$hr() 
+                                       checkboxInput("expand_contractions", "Expand contractions"), 
+                                       actionButton("pre_process_text", "Pre-process text"), 
+                                       tags$hr() 
                                        ),
 
          
@@ -57,36 +46,34 @@ output$side <- renderUI({
                                                                       accept = c("text/csv",
                                                                                  "text/comma-separated-values,text/plain",
                                                                                  ".csv", ".xlsx", ".xls")),
-                                                            
                                                             actionButton("gather_data", "Import text"), 
                                                             tags$hr(),
                                                             checkboxInput("expand_contractions", "Expand contractions"), 
                                                             actionButton("pre_process_text", "Pre-process text"), tags$hr()),
          "Spotify/Genius" = tagList(
-           
-           a(id = "toggleAdvanced2", "Create Spotify and Genius authorization tokens", href = "#"),
-           shinyjs::hidden(
-             div(id = "advanced2",
-                 textInput(inputId = "spotify_id",
-                           label = "Spotify client ID",
-                           value = "b6a084cd50c24a719faa226d86cdc5bb"),
-                 textInput(inputId = "spotify_secret",
-                           label = "Spotify client secret",
-                           value = "fb0a842fb38741d4b01b7dacb818ffbe"),
-                 textInput(inputId = "genius_id",
-                           label = "Genius client ID",
-                           value = "996iWyyrjOrcZawwrQ3tKhcVWT9do_7hVgzhjg6Ztzc7P_GTKyvJRiZnx_nIwWBA"),
-                 textInput(inputId = "genius_secret",
-                           label = "Genius client secret",
-                           value = "LqSpA2RPm3IW31-l9h54f-9C3TncKpb6S_RNd7I5CShMUM_Ukg4hIaYYjQCVxxh9lONHkAWnqRQghfYORez36Q"),
-                 textInput(inputId = "genius_api_token",
-                           label = "Genius API token",
-                           value = "XtjTOqxOPzG5srXgANiZVyUIWM91PU_T0DAIf4Emnrh7COVq1CsIUGeN-OGOYar1"),
-                 actionButton("get_spot_token", "Create tokens")
-             )
-           ),
-           
-           tags$hr(),
+             a(id = "toggleAdvanced2", "Create Spotify and Genius authorization tokens", href = "#"),
+             shinyjs::hidden(
+               div(id = "advanced2",
+                   textInput(inputId = "spotify_id",
+                             label = "Spotify client ID",
+                             value = "b6a084cd50c24a719faa226d86cdc5bb"),
+                   textInput(inputId = "spotify_secret",
+                             label = "Spotify client secret",
+                             value = "fb0a842fb38741d4b01b7dacb818ffbe"),
+                   textInput(inputId = "genius_id",
+                             label = "Genius client ID",
+                             value = "996iWyyrjOrcZawwrQ3tKhcVWT9do_7hVgzhjg6Ztzc7P_GTKyvJRiZnx_nIwWBA"),
+                   textInput(inputId = "genius_secret",
+                             label = "Genius client secret",
+                             value = "LqSpA2RPm3IW31-l9h54f-9C3TncKpb6S_RNd7I5CShMUM_Ukg4hIaYYjQCVxxh9lONHkAWnqRQghfYORez36Q"),
+                   textInput(inputId = "genius_api_token",
+                             label = "Genius API token",
+                             value = "XtjTOqxOPzG5srXgANiZVyUIWM91PU_T0DAIf4Emnrh7COVq1CsIUGeN-OGOYar1"),
+                   actionButton("get_spot_token", "Create tokens")
+               )
+             ),
+             
+             tags$hr(),
            
            radioButtons("type_spotify", "Retrieve lyrics for",
                         c("songs" = "songs",
@@ -116,8 +103,7 @@ output$side <- renderUI({
              div(id = "advanced3",
                  textInput(inputId = "guardian_api",
                            label = "API Key",
-                           value = ""),
-                 
+                           value = "")
              )
            ),
            
@@ -150,7 +136,6 @@ output$side <- renderUI({
          ),
          
          "Twitter" = tagList(
-           
            a(id = "toggleAdvanced", "Create Twitter authorization token", href = "#"),
            shinyjs::hidden(
              div(id = "advanced",
@@ -178,20 +163,18 @@ output$side <- renderUI({
            radioButtons("tw_type", "Retrieve tweets from a",
                         c("user" = "user2",
                           "hashtag" = "hashtag")),
-          ####!!!!!
+           
           output$more_twitter <- renderUI({switch(input$tw_type,
                                                   "user2" = tagList(
                                                     textInput(inputId = "given_user",
                                                               label = "Please provide the Twitter username(s).",
                                                               placeholder = "@user1%@user2%@user3")
-                                                    
                                                   ),
                                                   "hashtag" = tagList(
                                                     textInput(inputId = "given_hashtag",
                                                               label = "Please provide the Twitter hashtag(s).",
-                                                              placeholder = "#hash1%#hash2%#hash3"))
-          )
-          }),
+                                                              placeholder = "#hash1%#hash2%#hash3")))
+                                          }),
            
            numericInput(inputId = "num_tweets",
                         label = "Number of Tweets to Retrieve per user/hashtag",

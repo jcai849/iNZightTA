@@ -19,7 +19,7 @@ import_base_file <- function(filepath, filename){
   
   ################
   else if (filetype == "pdf"){
-    imported <- pdf_text(filepath) %>% 
+    imported <- pdftools::pdf_text(filepath) %>% 
       tibble::tibble(text=.)
   }
 

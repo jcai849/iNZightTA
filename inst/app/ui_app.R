@@ -6,7 +6,7 @@ ui <- navbarPage("iNZight Text Analytics",
                  tabPanel("Processing",
                           sidebarLayout(
                             sidebarPanel(
-                              useShinyjs(),
+                              shinyjs::useShinyjs(),
                               selectizeInput("import_from", "Retrieve text from", choices = text_sources),
                               
                               conditionalPanel(
@@ -14,8 +14,6 @@ ui <- navbarPage("iNZight Text Analytics",
                                 selectInput("gutenberg_work", "Select work(s)", multiple = TRUE, choices = character(0))
                               ),
                               uiOutput("side"),
-                               
-                              
                               tags$h4("Process"),
                               checkboxInput("lemmatise", "Lemmatise"),
                               uiOutput("sw_lexicon"),
@@ -36,29 +34,23 @@ ui <- navbarPage("iNZight Text Analytics",
                               
                               actionButton("prep_button", "Prepare Text"),
                               tags$hr(),
-                              
                               selectInput("section_by", "Section By",
                                           list("", "chapter", "part", "section", "canto", "book")),
-                              
                               uiOutput("vars_to_filter"),
                               textInput("filter_pred", "value to match", "")
-                              
                             ),
                             mainPanel(
                               tabsetPanel(
-                                
                                 tabPanel("Imported",
-                                         
                                          fluidRow(
                                            downloadButton("downloadData_imported", "Download as csv"),
                                            
                                            column(width = 12,
-                                                  ###################
+                                                  # for the console messages
                                                   textOutput("text"), 
                                                   ###################
                                                   DT::dataTableOutput("imported_show")
                                                   #tableOutput("not_coll")
-                                                  
                                            )
                                          )
                                 ),
@@ -66,17 +58,14 @@ ui <- navbarPage("iNZight Text Analytics",
                                          fluidRow(
                                            downloadButton("downloadData_pre_processed", "Download as csv"),
                                            column(width = 12,
-                                                  tableOutput("pre_processed_show")
+                                                tableOutput("pre_processed_show")
                                            )
                                          )
                                 ),
                                 tabPanel("Processed",
                                          downloadButton('downloadprocessed', 'Download'),
-                                         
                                          tableOutput("table")
-                                         
                                 )
-                                
                               )
                             ))),
                  
@@ -122,7 +111,8 @@ ui <- navbarPage("iNZight Text Analytics",
                                            a(id = "toggle_vis", "Additional visualization options", href = "#"),
                                            
                                            uiOutput("add_vis_options"), 
-                  
+                                           tags$hr(),
+                                           
                                            downloadButton("downloadData", "Download data used in visualization")
                                          )
                             ),
@@ -130,7 +120,8 @@ ui <- navbarPage("iNZight Text Analytics",
                             mainPanel(
                               conditionalPanel(
                                 condition = "input.what_vis == 'Word Tree'",
-                                addSpinner(htmlOutput("shinytest"), spin = "fading-circle", color = "#000000")
+                                shinyWidgets::addSpinner(htmlOutput("shinytest"), spin = "fading-circle", 
+                                                         color = "#000000")
                               ),
                               conditionalPanel(
                                 condition =  "input.what_vis == 'Readability'",
@@ -138,23 +129,19 @@ ui <- navbarPage("iNZight Text Analytics",
                                            dblclick = dblclickOpts(
                                              id = "plot1_click"), height = "1000px"
                                 ),
-                                
                                 verbatimTextOutput("ex")
                               ),
-  
                               conditionalPanel(
                                 condition =  "!(input.what_vis == 'Word Tree'||input.what_vis == 'Readability')",
                                 #plotOutput("plot", height = "1000px"),
                                 uiOutput("plot.ui"), 
-                                DTOutput("insighted_table"),
+                                DT::DTOutput("insighted_table"),
                                 actionButton("subset_data", "Subset Data"),
                                 actionButton("restore_data", "Restore Data"),
                               )
-                              
                             ))),
                  #################
                  tabPanel("Keywords in Context",
-                          
                           sidebarLayout(sidebarPanel(textInput("disp_words", "Keyword(s) or Key Phrase(s)", 
                                                                placeholder = "love,thousand pounds"),
                                                      
@@ -176,10 +163,8 @@ ui <- navbarPage("iNZight Text Analytics",
                                                      sliderInput("plot_height2", "Plot height",
                                                                  min = 400, max = 2000,
                                                                  value = 1000),
-                                                     ###################
                                                      selectInput("merge_id_grps", "Group text by", 
                                                                  choices = NULL, selected = "id"), 
-                                                     ###################
                                                      actionButton("create_kwic", "Create lexical dispersion plot"),
                                                      tags$hr(),
                                                      
@@ -211,10 +196,8 @@ ui <- navbarPage("iNZight Text Analytics",
                               tabPanel("stuff.co.nz comments",
                                        includeMarkdown(system.file("app/R/help_files/stuff.rmd", package = "inzightta"))
                               )
-
                             )
                           )
                           ), 
-                 
-                 add_busy_spinner(spin = "fading-circle")
+                 shinybusy::add_busy_spinner(spin = "fading-circle")
                  )

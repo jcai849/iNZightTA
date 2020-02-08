@@ -12,8 +12,8 @@ merge_choices <- reactive({
 })
 
 observe({
-updateSelectizeInput(session, "merge_id_grps", 
-                     choices = merge_choices(), server = TRUE)
+  updateSelectizeInput(session, "merge_id_grps", 
+                       choices = merge_choices(), server = TRUE)
 })
 
 ######### Create reactive object merged text. Both for Dispersion Plot and for Readability
@@ -39,13 +39,14 @@ observeEvent(input$create_kwic, {
     error = function(e){
       return(plot_exception("Keywords not found"))
     })
-    #######
+    
+    # add a column with the whole retrieved word
     dt$actual <- ins()$keyword
-    ########  
+ 
     brushedPoints(dt, input$plot_brush)
   })
   
-  points <- data.table()
+  points <- data.table::data.table()
   makeReactiveBinding("points")
   
   observeEvent(input$add, {
@@ -77,15 +78,15 @@ observeEvent(input$create_kwic, {
     if (!is.null(ranges$x) & !is.null(ranges$y)){
       p2 <- tryCatch({
         textplot_xray(ins(), scale = input$scale)[[2]] +
-          coord_cartesian(xlim = ranges$x, ylim = ranges$y, expand = FALSE)
+          ggplot2::coord_cartesian(xlim = ranges$x, ylim = ranges$y, expand = FALSE)
       }, 
       error = function(e){
         return(plot_exception("Keywords not found"))
       })
       
       if (dim(points)[1] > 0) {
-        p2 <- p2 + geom_point(aes(position, yvar), data = points, color = "red") +
-          coord_cartesian(xlim = ranges$x, ylim = ranges$y, expand = FALSE)
+        p2 <- p2 + ggplot2::geom_point(aes(position, yvar), data = points, color = "red") +
+          ggplot2::coord_cartesian(xlim = ranges$x, ylim = ranges$y, expand = FALSE)
       }
     }
     else{
@@ -97,7 +98,7 @@ observeEvent(input$create_kwic, {
       })
       
       if (dim(points)[1] > 0) {
-        p2 <- p2 + geom_point(aes(position, yvar), data = points, color = "red")
+        p2 <- p2 + ggplot2::geom_point(aes(position, yvar), data = points, color = "red")
       }
     }
     return(p2)
@@ -125,7 +126,8 @@ observeEvent(input$create_kwic, {
   }, filter = "top")
 })
 
-output$quant <- renderUI({HTML(paste0("<small>", 'Examples of pattern matching <a href = "https://quanteda.io/reference/kwic.html" target="_blank">here</a>.',
+output$quant <- renderUI({HTML(paste0("<small>", 
+                                      'Examples of pattern matching <a href = "https://quanteda.io/reference/kwic.html" target="_blank">here</a>.',
                                       "</small>", "<br></br>"))})
 
 # output$dirs <- renderUI({HTML(paste0("<small>", 'Brush (brushing means clicking and dragging a selection box) and double click the selection box to zoom into the plot. Double click again to zoom out. 
