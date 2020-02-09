@@ -160,9 +160,9 @@ output$side <- renderUI({
            
            tags$hr(),
            
-           radioButtons("tw_type", "Retrieve tweets from a",
-                        c("user" = "user2",
-                          "hashtag" = "hashtag")),
+           radioButtons("tw_type", "Retrieve tweets given",
+                        c("username" = "user2",
+                          "query/hashtag" = "hashtag")),
            
           output$more_twitter <- renderUI({switch(input$tw_type,
                                                   "user2" = tagList(
@@ -172,8 +172,8 @@ output$side <- renderUI({
                                                   ),
                                                   "hashtag" = tagList(
                                                     textInput(inputId = "given_hashtag",
-                                                              label = "Please provide the Twitter hashtag(s).",
-                                                              placeholder = "#hash1%#hash2%#hash3")))
+                                                              label = "Please provide the Twitter query or hashtag(s).",
+                                                              placeholder = "#hash1%#hash2%my query")))
                                           }),
            
            numericInput(inputId = "num_tweets",
@@ -185,7 +185,7 @@ output$side <- renderUI({
            actionButton("gather_data", "Gather tweets"),
            tags$hr(),
            selectInput("time_col", "Create ... factor from created_at column", 
-                       choices = c("", "month", "day", "hour")),
+                       choices = c("", "month", "day", "hour", "minute")),
            checkboxInput("remove_hash", "Remove hashtags"), 
            checkboxInput("remove_user", "Remove user mentions"),
            checkboxInput("expand_contractions", "Expand contractions"), 

@@ -63,7 +63,7 @@ raw_data <- eventReactive(input$gather_data, {
       
       # how many collected 
           for (i in 1:length(q)){
-            message(paste(sum(tweets$query == q[i]), "tweets collected with hashtag", q[i]))
+            message(paste(sum(tweets$query == q[i]), "tweets collected with query", q[i]))
           }
       },
       message = function(m) {

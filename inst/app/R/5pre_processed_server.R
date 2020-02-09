@@ -55,7 +55,9 @@ imported <- eventReactive(input$pre_process_text, {
     else if (input$time_col == "hour"){
       cleaned$yr_month_day_hr = format(cleaned$created_at,"%Y-%m-%d %H")
     }
-    
+    else if (input$time_col == "minute"){
+      cleaned$minute = format(cleaned$created_at,"%Y-%m-%d %H:%M")
+    }
     cleaned
   }
     
