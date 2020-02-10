@@ -63,7 +63,7 @@ imported <- eventReactive(input$pre_process_text, {
       dplyr::mutate(id = stringr::str_replace_all(id, "<.+?>", ""))
       
     # Fix the pound sign becoming ?
-    cleaned$text <- gsub("[?](\\d+)", "£\\1", cleaned$text, perl = TRUE)
+    ## cleaned$text <- gsub("[?](\\d+)", "£\\1", cleaned$text, perl = TRUE)
     
     while(sum(grepl("<.+?>", cleaned$text)) > 0){
       cleaned$text <- trimws(gsub("<.+?>|_", "", cleaned$text, perl = TRUE))

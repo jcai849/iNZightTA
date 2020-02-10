@@ -4,13 +4,8 @@
 \alias{aggregate_sentiment}
 \title{Get statistics for sentiment over some group, such as sentence.}
 \usage{
-aggregate_sentiment(
-  .data,
-  aggregate_on,
-  lexicon = "afinn",
-  statistic = mean,
-  to_scale = FALSE
-)
+aggregate_sentiment(.data, aggregate_on, lexicon = "afinn",
+  statistic = mean, to_scale = FALSE)
 }
 \arguments{
 \item{.data}{character vector of words}

@@ -4,7 +4,8 @@
 \alias{get_vis}
 \title{create a group-aware visualisation}
 \usage{
-get_vis(.data, vis, col, facet_by = "", scale_fixed = TRUE, ncol = 3, ...)
+get_vis(.data, vis, col, facet_by = "", scale_fixed = TRUE, ncol = 3,
+  ...)
 }
 \arguments{
 \item{.data}{the standard dataframe, modified so the last column

@@ -4,7 +4,8 @@
 \alias{ma_term_sentiment}
 \title{Determine the lagged sentiment of terms}
 \usage{
-ma_term_sentiment(.data, lexicon = "afinn", lag = 10, statistic = mean)
+ma_term_sentiment(.data, lexicon = "afinn", lag = 10,
+  statistic = mean)
 }
 \arguments{
 \item{.data}{vector of terms}
