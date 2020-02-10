@@ -23,7 +23,7 @@ key_aggregates <- function(.data, aggregate_on, summ_method){
     dplyr::pull(sentence) %>%
     lexRankr::lexRank(., n=length(.),removePunc = FALSE, returnTies = FALSE,
 	    removeNum = FALSE, toLower = FALSE, stemWords = FALSE,
-	    rmStopWords = FALSE, Verbose = TRUE)
+	    rmStopWords = FALSE, Verbose = TRUE, sentencesAsDocs = TRUE)
   ## match lexrank output to .data
   lr %>%
     dplyr::distinct(sentence, .keep_all = TRUE) %>% 
