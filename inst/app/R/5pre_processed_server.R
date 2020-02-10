@@ -73,7 +73,8 @@ imported <- eventReactive(input$pre_process_text, {
   }
   
   else if(input$import_from == "Reddit"){
-    cleaned <- raw_data()
+    cleaned <- raw_data() %>%
+      dplyr::filter(text != "[removed]")
     cleaned$text <- gsub("http.+\\w", "", cleaned$text, perl = TRUE)
     cleaned <- clean_for_app(cleaned, exp_cont = input$expand_contractions)
     cleaned$text <- textclean::replace_url(cleaned$text)
@@ -107,13 +108,15 @@ imported <- eventReactive(input$pre_process_text, {
 #   full_data[filtered_rows, ]
 # })
 
-output$pre_processed_show <- renderTable({
-  if (input$import_from == "The Guardian Articles"){
-    imported() %>% utils::head(3)
-  }
-  else {
-    imported() %>% utils::head(100)
-  }
+observeEvent(input$pre_process_text, {
+  output$pre_processed_show <- DT::renderDataTable({
+    if (input$import_from == "The Guardian Articles") {
+      DT::datatable(imported() %>% utils::head(3), options = list(paging = FALSE, searching = FALSE))
+    }
+    else {
+      DT::datatable(imported() %>% utils::head(100), options = list(paging = FALSE, searching = FALSE))
+    }
+  })
 })
 
 output$downloadData_pre_processed <- downloadHandler(

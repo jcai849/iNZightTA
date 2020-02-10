@@ -248,7 +248,8 @@ raw_data <- eventReactive(input$gather_data, {
     if (input$type_reddit == "comments_url"){
       reddit_df <- RedditExtractoR::reddit_content(input$url) %>%
         dplyr::select(comm_date,comment_score,user,comment,id, structure) %>%
-        dplyr::rename(text = comment)
+        dplyr::rename(text = comment) %>%
+        dplyr::arrange(comm_date)
       
       if (input$nest_level == TRUE){
         reddit_df <- reddit_df %>%
@@ -279,10 +280,6 @@ raw_data <- eventReactive(input$gather_data, {
         warning = function(m) {
           shinyjs::html(id = "text", html = m$message, add = TRUE)
         })
-        ############################
-        # getPushshiftDataRecursive(postType = input$type_reddit, title = input$title, q = input$q,
-        #                           subreddit = input$subreddit, after = input$after, before = input$before,
-        #                           nest_level = 1)
       }
       else {
         withCallingHandlers({

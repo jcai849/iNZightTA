@@ -58,7 +58,7 @@ ui <- navbarPage("iNZight Text Analytics",
                                          fluidRow(
                                            downloadButton("downloadData_pre_processed", "Download as csv"),
                                            column(width = 12,
-                                                tableOutput("pre_processed_show")
+                                                DT::dataTableOutput("pre_processed_show")
                                            )
                                          )
                                 ),

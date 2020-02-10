@@ -194,7 +194,11 @@ books_with_samples <- function(books){
 
 clean_for_app <- function(df, exp_cont = TRUE, lyrics = FALSE){
   
-  if (lyrics == FALSE){Encoding(df$text) <- "UTF-8"}
+  if (lyrics == FALSE){
+    Encoding(df$text) <- "UTF-8"
+    df$text <- iconv(df$text, "UTF-8", "UTF-8", "")
+  }
+  
   else{Encoding(df$text) <- "UNICODE"}
   
   # replaces the fancy apostrophes (for replacing contractions later on)
@@ -526,8 +530,9 @@ plot_exception <-function(
 #' @return Character vector with emojis replaced with ::description of emoji::
 
 emoji_to_words <- function(x, emoji_dt = lexicon::hash_emojis){
+  emoji_dt[["y"]] <- gsub("-", "_", emoji_dt[["y"]])
   x <- iconv(x, "UTF-8", "ASCII", "byte")
-  textclean::mgsub(x, emoji_dt[["x"]], paste0("_", gsub("\\s+", "_", emoji_dt[["y"]]), "_"))
+  x <- textclean::mgsub(x, emoji_dt[["x"]], paste0("_", gsub("\\s+", "_", emoji_dt[["y"]]), "_"))
 }
 
 #' Same as above, but for emoticons 
