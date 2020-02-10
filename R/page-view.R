@@ -25,12 +25,15 @@ struct_pageview <- function(.data, col_name, num_terms, term_index, word_size, p
     
     if (rlang::as_label(q_col_name) %in% c("Term Sentiment", "Moving Average Term Sentiment", 
                         "Aggregated Sentiment")){
+        # if afinn, bing, nrc, loughran (some numeric scale)
         if (sum(grepl("[[:digit:]]",.data[,rlang::as_label(q_col_name)])) > 0) {
+            
             limit <- max(abs(.data[,rlang::as_label(q_col_name)]), na.rm = TRUE) * c(-1, 1) # limits for color palette
             
             .data[seq(term_index, end),] %>%
                 dplyr::pull(word) %>%
                 ggpage::ggpage_build() %>%
+                dplyr::arrange(page, line) %>%
                 dplyr::bind_cols(.data[seq(term_index, end),]) %>% 
                 ggpage::ggpage_plot(ggplot2::aes(fill = !! q_col_name)) +
                 ggplot2::scale_fill_distiller(palette = "RdYlGn", limit = limit, direction = 1) +
@@ -39,10 +42,12 @@ struct_pageview <- function(.data, col_name, num_terms, term_index, word_size, p
                                                 y = (ymin + ymax)/2),
                                    size = word_size, color = "black")
         }
+        # if nrc emotions, loughran all senti
         else {
             .data[seq(term_index, end),] %>%
                 dplyr::pull(word) %>%
                 ggpage::ggpage_build() %>%
+                dplyr::arrange(page, line) %>%
                 dplyr::bind_cols(.data[seq(term_index, end),]) %>% 
                 ggpage::ggpage_plot(ggplot2::aes(fill = !! q_col_name)) +
                 ggplot2::geom_text(ggplot2::aes(label = word,
@@ -56,6 +61,7 @@ struct_pageview <- function(.data, col_name, num_terms, term_index, word_size, p
         .data[seq(term_index, end),] %>%
             dplyr::pull(word) %>%
             ggpage::ggpage_build() %>%
+            dplyr::arrange(page, line) %>%
             dplyr::bind_cols(.data[seq(term_index, end),]) %>% 
             ggpage::ggpage_plot(ggplot2::aes(fill = !! q_col_name)) +
             ggplot2::scale_fill_distiller(limit = limit, direction = 1) +
