@@ -6,7 +6,7 @@
 # cleaning for the raw data and the code that presents the pre-processed data
 # as a data table. 
 
-imported <- eventReactive(input$pre_process_text, {
+imported <- eventReactive(input$prep_button, {
   ############################
   if (input$import_from == "Spotify/Genius"){
     cleaned <- raw_data()[[1]] %>% clean_for_app(exp_cont = input$expand_contractions, 
@@ -108,24 +108,24 @@ imported <- eventReactive(input$pre_process_text, {
 #   full_data[filtered_rows, ]
 # })
 
-observeEvent(input$pre_process_text, {
-  output$pre_processed_show <- DT::renderDataTable({
-    if (input$import_from == "The Guardian Articles") {
-      DT::datatable(imported() %>% utils::head(3), options = list(paging = FALSE, searching = FALSE))
-    }
-    else {
-      DT::datatable(imported() %>% utils::head(100), options = list(paging = FALSE, searching = FALSE))
-    }
-  })
-})
+# observeEvent(input$prep_button, {
+#   output$pre_processed_show <- DT::renderDataTable({
+#     if (input$import_from == "The Guardian Articles") {
+#       DT::datatable(imported() %>% utils::head(3), options = list(paging = FALSE, searching = FALSE))
+#     }
+#     else {
+#       DT::datatable(imported() %>% utils::head(100), options = list(paging = FALSE, searching = FALSE))
+#     }
+#   })
+# })
 
-output$downloadData_pre_processed <- downloadHandler(
-  filename = function() {
-    paste("preprocessed", ".csv", sep = "")
-  },
-  content = function(file) {
-    utils::write.csv(imported(), file, row.names = FALSE)
-  }
-)
+# output$downloadData_pre_processed <- downloadHandler(
+#   filename = function() {
+#     paste("preprocessed", ".csv", sep = "")
+#   },
+#   content = function(file) {
+#     utils::write.csv(imported(), file, row.names = FALSE)
+#   }
+# )
 
 

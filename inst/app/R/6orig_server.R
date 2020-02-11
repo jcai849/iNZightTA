@@ -174,13 +174,9 @@ output$insight_options <- renderUI({
            
            selectizeInput("tree_type", "Tree Type",
                           c("suffix", "prefix", "double"),
-                          selected = "suffix"),
-           actionButton("create_tree", "Create Tree")
+                          selected = "suffix")
          ),
-         
-         # "Readability" = tagList(
-         #   checkboxInput('groups', 'Group by chapter', value = FALSE, width = NULL)
-         # ),
+
          ##########################
          "Term Sentiment" = tagList(selectInput("vis_type",
                                                 "Select how to Visualise it",
@@ -266,7 +262,6 @@ insighted <- reactive({
          ########################################
          "Term Frequency-Inverse Document Frequency" = get_tf_idf(grouped(), input$group_var),
          
-         "Readability" = books_with_samples(merged()),
          ########################################
          "Term Sentiment" = get_term_insight(grouped(),
                                              input$what_vis,

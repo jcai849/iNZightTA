@@ -87,34 +87,39 @@ section_for_merge_id  <- function(.data, section_by){
 #' @return data frame with new groupings and text within each group merged together
 #' 
 
-merge_id <- function(x, source){
-  if (isTruthy(input$merge_id_grps)){
-    if (input$section_by == input$merge_id_grps)
+merge_id <- function(x, source, groups, filter = NULL){
+  if (isTruthy(filter)){
+    x <- x %>%
+      dplyr::filter(!! dplyr::sym(groups) == filter)
+  }
+  
+  if (isTruthy(groups)){
+    if (input$section_by == groups)
     {
       # if user sections the text by chapter/book/canto in the beginning, 
       # add in the column for the sectioning
       x <- x %>%
-        section_for_merge_id(input$section_by)
-        
+        section_for_merge_id(groups)
+      
       # and merge the text by these columns
       by_section <- x %>%
-        dplyr::group_by(id, !! dplyr::sym(input$section_by)) %>%
+        dplyr::group_by(id, !! dplyr::sym(groups)) %>%
         dplyr::mutate(text = paste(text, collapse = " ")) %>%
         dplyr::distinct(text) %>% dplyr::ungroup() %>%
-        dplyr::mutate(id = paste(id, input$section_by))
+        dplyr::mutate(id = paste(id, groups))
       by_section
     }
     
     else {
       by_chosen <- x %>% 
-        dplyr::group_by(!! dplyr::sym(input$merge_id_grps)) %>%
+        dplyr::group_by(!! dplyr::sym(groups)) %>%
         dplyr::mutate(text = paste(text, collapse = " ")) %>%
         dplyr::distinct(text) %>% dplyr::ungroup() %>%
-        dplyr::mutate(id = !! dplyr::sym(input$merge_id_grps))
+        dplyr::mutate(id = !! dplyr::sym(groups))
       by_chosen
     }
   }
- 
+  
   else{
     all_merged <- x %>% 
       dplyr::mutate(text = paste(text, collapse = ". ")) %>%
@@ -124,6 +129,44 @@ merge_id <- function(x, source){
   }
   
 }
+
+# merge_id <- function(x, source){
+#   if (isTruthy(input$merge_id_grps)){
+#     if (input$section_by == input$merge_id_grps)
+#     {
+#       # if user sections the text by chapter/book/canto in the beginning, 
+#       # add in the column for the sectioning
+#       x <- x %>%
+#         section_for_merge_id(input$section_by)
+#         
+#       # and merge the text by these columns
+#       by_section <- x %>%
+#         dplyr::group_by(id, !! dplyr::sym(input$section_by)) %>%
+#         dplyr::mutate(text = paste(text, collapse = " ")) %>%
+#         dplyr::distinct(text) %>% dplyr::ungroup() %>%
+#         dplyr::mutate(id = paste(id, input$section_by))
+#       by_section
+#     }
+#     
+#     else {
+#       by_chosen <- x %>% 
+#         dplyr::group_by(!! dplyr::sym(input$merge_id_grps)) %>%
+#         dplyr::mutate(text = paste(text, collapse = " ")) %>%
+#         dplyr::distinct(text) %>% dplyr::ungroup() %>%
+#         dplyr::mutate(id = !! dplyr::sym(input$merge_id_grps))
+#       by_chosen
+#     }
+#   }
+#  
+#   else{
+#     all_merged <- x %>% 
+#       dplyr::mutate(text = paste(text, collapse = ". ")) %>%
+#       dplyr::distinct(text) %>% 
+#       dplyr::mutate(id = "Text")
+#     all_merged
+#   }
+#   
+# }
 
 
 #' Creates kwic object to pass into textplot_xray() and for concordance table

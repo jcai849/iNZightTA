@@ -33,9 +33,10 @@ output$side <- renderUI({
   
   switch(input$import_from,
          "Project Gutenberg" = tagList(actionButton("gather_data", "Import text"), 
-                                       tags$hr(),
-                                       checkboxInput("expand_contractions", "Expand contractions"), 
-                                       actionButton("pre_process_text", "Pre-process text"), 
+                                       # tags$hr(),
+                                       # tags$h4("Pre-process"),
+                                       # checkboxInput("expand_contractions", "Expand contractions"), 
+                                       #actionButton("pre_process_text", "Pre-process text"), 
                                        tags$hr() 
                                        ),
 
@@ -47,11 +48,13 @@ output$side <- renderUI({
                                                                                  "text/comma-separated-values,text/plain",
                                                                                  ".csv", ".xlsx", ".xls")),
                                                             actionButton("gather_data", "Import text"), 
-                                                            tags$hr(),
-                                                            checkboxInput("expand_contractions", "Expand contractions"), 
-                                                            actionButton("pre_process_text", "Pre-process text"), tags$hr()),
+                                                            # tags$hr(),
+                                                            # tags$h4("Pre-process"),
+                                                            # checkboxInput("expand_contractions", "Expand contractions"), 
+                                                            #actionButton("pre_process_text", "Pre-process text"),
+                                                            tags$hr()),
          "Spotify/Genius" = tagList(
-             a(id = "toggleAdvanced2", "Create Spotify and Genius authorization tokens", href = "#"),
+             a(id = "toggleAdvanced2", "***Create Spotify and Genius authorization tokens***", href = "#"),
              shinyjs::hidden(
                div(id = "advanced2",
                    textInput(inputId = "spotify_id",
@@ -90,15 +93,16 @@ output$side <- renderUI({
                                                 
            )}),
            actionButton("gather_data", "Gather lyrics"),
-           tags$hr(),
-           checkboxInput("expand_contractions", "Expand contractions"), 
-           actionButton("pre_process_text", "Pre-process text"), 
+           # tags$hr(),
+           # tags$h4("Pre-process"),
+           # checkboxInput("expand_contractions", "Expand contractions"), 
+           #actionButton("pre_process_text", "Pre-process text"), 
            tags$hr()
          ),
          
          "The Guardian Articles" = tagList(
            
-           a(id = "toggleAdvanced3", "Input The Guardian API Key", href = "#"),
+           a(id = "toggleAdvanced3", "***Input The Guardian API Key***", href = "#"),
            shinyjs::hidden(
              div(id = "advanced3",
                  textInput(inputId = "guardian_api",
@@ -117,9 +121,10 @@ output$side <- renderUI({
            dateRangeInput("guardian_dates", "Date range"),
            selectizeInput("guardian_sections", "Section", guardian_sec),
            actionButton("gather_data", "Gather articles"),
-           tags$hr(),
-           checkboxInput("expand_contractions", "Expand contractions"), 
-           actionButton("pre_process_text", "Pre-process text"), 
+           # tags$hr(),
+           # checkboxInput("expand_contractions", "Expand contractions"), 
+           # tags$h4("Pre-process"),
+           #actionButton("pre_process_text", "Pre-process text"), 
            tags$hr()
            
          ),
@@ -129,14 +134,15 @@ output$side <- renderUI({
            textInput(inputId = "rss_link", label = "URL of RSS Feed", placeholder = ""),
            
            actionButton("gather_data", "Gather comments"),
-           tags$hr(),
-           checkboxInput("expand_contractions", "Expand contractions"), 
-           actionButton("pre_process_text", "Pre-process text"), 
+           # tags$hr(),
+           # checkboxInput("expand_contractions", "Expand contractions"), 
+           # actionButton("pre_process_text", "Pre-process text"), 
+           # tags$h4("Pre-process"),
            tags$hr()
          ),
          
          "Twitter" = tagList(
-           a(id = "toggleAdvanced", "Create Twitter authorization token", href = "#"),
+           a(id = "toggleAdvanced", "***Create Twitter authorization token***", href = "#"),
            shinyjs::hidden(
              div(id = "advanced",
                  textInput(inputId = "appname",
@@ -183,13 +189,14 @@ output$side <- renderUI({
                                                     "</small>", "<br></br>"))}),
            checkboxInput("include_retweets", "Include retweets"),
            actionButton("gather_data", "Gather tweets"),
-           tags$hr(),
-           checkboxInput("remove_hash", "Remove hashtags"), 
-           checkboxInput("remove_user", "Remove user mentions"),
-           checkboxInput("expand_contractions", "Expand contractions"), 
-           actionButton("pre_process_text", "Pre-process text"), 
+           tags$hr()#,
+           # tags$h4("Pre-process"),
+           # checkboxInput("remove_hash", "Remove hashtags"), 
+           # checkboxInput("remove_user", "Remove user mentions"),
+           # checkboxInput("expand_contractions", "Expand contractions"), 
+           #actionButton("pre_process_text", "Pre-process text"), 
            
-           tags$hr()
+           #tags$hr()
          ),
          "Reddit" = tagList(
            
@@ -224,9 +231,10 @@ output$side <- renderUI({
                                                   )
            )}),
            actionButton("gather_data", "Gather data"),
-           tags$hr(),
-           checkboxInput("expand_contractions", "Expand contractions"), 
-           actionButton("pre_process_text", "Pre-process text"), 
+           # tags$hr(),
+           # tags$h4("Pre-process"),
+           # checkboxInput("expand_contractions", "Expand contractions"), 
+           #actionButton("pre_process_text", "Pre-process text"), 
            tags$hr()
          )
          

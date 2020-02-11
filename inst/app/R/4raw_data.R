@@ -45,7 +45,12 @@ raw_data <- eventReactive(input$gather_data, {
       if (input$include_retweets == FALSE){
         tweets <- tweets %>% dplyr::filter(is_retweet == FALSE)
       }
-      tweets <- tweets %>% dplyr::select(screen_name, status_id, text, is_retweet, hashtags, mentions_screen_name)
+      
+      tweets <- tweets %>% dplyr::select(screen_name, status_id, text, is_retweet, 
+                                         hashtags, mentions_screen_name, created_at) %>% 
+        dplyr::group_by(screen_name) %>%
+        dplyr::arrange(created_at) %>%
+        dplyr::ungroup()
     }
     
     else {
@@ -54,10 +59,14 @@ raw_data <- eventReactive(input$gather_data, {
       withCallingHandlers({
         shinyjs::html(id = "text", html = "")
     
-          tweets <- rtweet::search_tweets2(q, lang = "en",
+          tweets <- rtweet::search_tweets2(q, 
                                   n = input$num_tweets, include_rts = input$include_retweets,
                                   token = twitter_token(), lang = "en")
-          tweets <- tweets %>% dplyr::select(screen_name, status_id, text, is_retweet, hashtags, mentions_screen_name, query)
+          tweets <- tweets %>% dplyr::select(screen_name, status_id, text,
+                                             is_retweet, hashtags, mentions_screen_name, query, created_at) %>%
+            dplyr::group_by(query) %>%
+            dplyr::arrange(created_at) %>%
+            dplyr::ungroup()
       
       # how many collected 
           for (i in 1:length(q)){
@@ -74,6 +83,7 @@ raw_data <- eventReactive(input$gather_data, {
     tweets$mentions_screen_name <- unlist(lapply(tweets$mentions_screen_name, paste, collapse = " "))
     tweets$hashtags <- unlist(lapply(tweets$hashtags, paste, collapse = " "))
     tweets <- tweets %>% dplyr::rename(id = status_id)
+    
     tweets
   }
   
@@ -304,13 +314,13 @@ raw_data <- eventReactive(input$gather_data, {
 observeEvent(input$gather_data, {
   output$imported_show <- DT::renderDataTable({
     if (input$import_from == "Spotify/Genius"){
-      DT::datatable(raw_data()[[1]] %>% utils::head(100), options = list(paging = FALSE, searching = FALSE))
+      DT::datatable(raw_data()[[1]], options = list(paging = TRUE, searching = FALSE))
       }
     else if (input$import_from == "The Guardian Articles") {
-      DT::datatable(raw_data() %>% utils::head(3), options = list(paging = FALSE, searching = FALSE))
+      DT::datatable(raw_data(), options = list(paging = TRUE, searching = FALSE))
       }
     else {
-      DT::datatable(raw_data() %>% utils::head(100), options = list(paging = FALSE, searching = FALSE))
+      DT::datatable(raw_data(), options = list(paging = TRUE, searching = FALSE))
     }
   })
 })

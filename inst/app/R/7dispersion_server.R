@@ -16,9 +16,9 @@ observe({
                        choices = merge_choices(), server = TRUE)
 })
 
-######### Create reactive object merged text. Both for Dispersion Plot and for Readability
-merged <- reactive({
-  merge_id(x = imported(), source = input$import_from)
+######### Create reactive object merged text for Dispersion Plot 
+merged_disp <- reactive({
+  merge_id(x = imported(), source = input$import_from, groups = input$merge_id_grps)
 })
 
 
@@ -26,7 +26,7 @@ merged <- reactive({
 
 observeEvent(input$create_kwic, {
   ins <- eventReactive(input$create_kwic,{
-    get_kwic(merged = merged(), patt = input$disp_words, window = input$window,
+    get_kwic(merged = merged_disp(), patt = input$disp_words, window = input$window,
              value = input$disp_valuetype,
              case_ins = input$disp_case_insensitive)
   })

@@ -16,16 +16,20 @@ ui <- navbarPage("iNZight Text Analytics",
                               uiOutput("side"),
                               tags$h4("Process"),
                               checkboxInput("lemmatise", "Lemmatise"),
+                              checkboxInput("expand_contractions", "Expand contractions"),
+                              conditionalPanel(
+                                condition = "input.import_from == 'Twitter'",
+                                checkboxInput("remove_hash", "Remove hashtags"), 
+                                checkboxInput("remove_user", "Remove user mentions"),
+                              ),
                               uiOutput("sw_lexicon"),
-                              checkboxInput("stopwords", "Stopwords"),
-                              
+                              checkboxInput("stopwords", "Remove stopwords"),
                               textInput("addl_stopwords", "Additional stopwords",
                                         placeholder = "separate,the,words,with,commas"),
                               
                               a(id = "toggleAdvanced4", "Or upload stopword file(s)"), #, href = "#"),
                               shinyjs::hidden(
                                 div(id = "advanced4",
-                                    
                                     fileInput(inputId = "sw_file", label = ".txt files with one stopword per line", multiple = TRUE,
                                               accept = c("text/comma-separated-values,text/plain")),
                                     
@@ -54,16 +58,8 @@ ui <- navbarPage("iNZight Text Analytics",
                                            )
                                          )
                                 ),
-                                tabPanel("Pre-processed",
-                                         fluidRow(
-                                           downloadButton("downloadData_pre_processed", "Download as csv"),
-                                           column(width = 12,
-                                                DT::dataTableOutput("pre_processed_show")
-                                           )
-                                         )
-                                ),
                                 tabPanel("Processed",
-                                         downloadButton('downloadprocessed', 'Download'),
+                                         #downloadButton('downloadprocessed', 'Download'),
                                          tableOutput("table")
                                 )
                               )
@@ -78,7 +74,6 @@ ui <- navbarPage("iNZight Text Analytics",
                                                        "n-gram Frequency",
                                                        "Key Words",
                                                        ###########
-                                                       "Readability",
                                                        "Word Tree",
                                                        ###########
                                                        "Term Sentiment",
@@ -89,22 +84,34 @@ ui <- navbarPage("iNZight Text Analytics",
                                          
                                          #####
                                          conditionalPanel(
-                                           condition = "!(input.what_vis == 'Word Tree'||input.what_vis == 'Readability')",
+                                           condition = "!(input.what_vis == 'Word Tree')",
                                            uiOutput("group_by")
                                          ),
                                          
-                                         conditionalPanel(
-                                           condition = "!(input.what_vis == 'Readability')",
+                                         
                                            uiOutput("insight_options"),
+                                           ################################
+                                           ################################
+                                           
+                                           conditionalPanel(
+                                             condition = "input.what_vis == 'Word Tree'", 
+                                             selectizeInput("merge_id_grps_wt", "Filter word tree by", choices = character(0)),
+                                             selectizeInput("filter_wt", "View only for", choices = character(0)), 
+                                             actionButton("create_tree", "Create Tree")
+                                             ), 
+                                           
+                                           
+                                           ################################
+                                           ################################
                                            conditionalPanel(
                                              condition = "input.what_vis == 'Aggregated Sentiment'", 
                                              checkboxInput("scale_senti", "Scale Aggregated Sentiment Scores")
                                            ),
-                                         ),
+                                        
                                          
                                          
                                          conditionalPanel(
-                                           condition = "!(input.what_vis == 'Word Tree'||input.what_vis == 'Readability')",
+                                           condition = "!(input.what_vis == 'Word Tree')",
                                            uiOutput("vis_options"),
                                            uiOutput("vis_facet_by"),
                               
@@ -124,16 +131,7 @@ ui <- navbarPage("iNZight Text Analytics",
                                                          color = "#000000")
                               ),
                               conditionalPanel(
-                                condition =  "input.what_vis == 'Readability'",
-                                plotOutput("flesch_plot",
-                                           dblclick = dblclickOpts(
-                                             id = "plot1_click"), height = "1000px"
-                                ),
-                                verbatimTextOutput("ex")
-                              ),
-                              conditionalPanel(
-                                condition =  "!(input.what_vis == 'Word Tree'||input.what_vis == 'Readability')",
-                                #plotOutput("plot", height = "1000px"),
+                                condition =  "!(input.what_vis == 'Word Tree')",
                                 uiOutput("plot.ui"), 
                                 DT::DTOutput("insighted_table"),
                                 actionButton("subset_data", "Subset Data"),
