@@ -194,31 +194,31 @@ get_kwic <- function(merged, patt, value, window, case_ins){
   
 }
 
-#########################################################
-##################### For readability
-#########################################################
-
-# After merge_id() merges all the text for each id into one long string, 
-# books_with_samples() takes in this data frame containing the id and the merged text, 
-# then calculates the Flesch Kincaid score for each. 
-# Afterwards binding these together with the sample texts in samples.R and 
-# arranging the texts in ascending Flesch Kincaid score. 
-
-books_with_samples <- function(books){
-  # calculate the FK score of the text for each id
-  books$scores <- lapply(books$text, quanteda::textstat_readability, measure = "Flesch.Kincaid")
-  
-  # extract the scores and place them in their own column in the data frame
-  books$FK <- unlist(lapply(books[["scores"]], function(x) x[[2]])) 
-  
-  # no sample excerpts for the texts provided
-  books$excerpt <- ""
-  books <- books %>% dplyr::select(id, FK, excerpt)
-  
-  # bind the provided texts with the sample (reference) texts
-  samps <- rbind.data.frame(samples, books)
-  samps %>% dplyr::arrange(FK)
-}
+# #########################################################
+# ##################### For readability
+# #########################################################
+# 
+# # After merge_id() merges all the text for each id into one long string, 
+# # books_with_samples() takes in this data frame containing the id and the merged text, 
+# # then calculates the Flesch Kincaid score for each. 
+# # Afterwards binding these together with the sample texts in samples.R and 
+# # arranging the texts in ascending Flesch Kincaid score. 
+# 
+# books_with_samples <- function(books){
+#   # calculate the FK score of the text for each id
+#   books$scores <- lapply(books$text, quanteda::textstat_readability, measure = "Flesch.Kincaid")
+#   
+#   # extract the scores and place them in their own column in the data frame
+#   books$FK <- unlist(lapply(books[["scores"]], function(x) x[[2]])) 
+#   
+#   # no sample excerpts for the texts provided
+#   books$excerpt <- ""
+#   books <- books %>% dplyr::select(id, FK, excerpt)
+#   
+#   # bind the provided texts with the sample (reference) texts
+#   samps <- rbind.data.frame(samples, books)
+#   samps %>% dplyr::arrange(FK)
+# }
 
 #########################################################
 ##################### cleaning text

@@ -59,20 +59,35 @@ filtered <- reactive({
 # # Attempt at conditioning on features
 # # ############################################
 #
- observe({
-   if (input$subset_data == 0) {
-     shinyjs::disable("restore_data")
-   } else {
-     shinyjs::enable("restore_data")
-     shinyjs::disable("subset_data")
-   }
- })
- 
- observe({
-   if (input$restore_data == 1) {
-     shinyjs::disable("restore_data")
-   } 
- })
+observe({
+  if (input$subset_data == input$restore_data) {
+    shinyjs::disable("restore_data")
+    shinyjs::enable("subset_data")
+  } else {
+    shinyjs::enable("restore_data")
+    shinyjs::disable("subset_data")
+  }
+})
+
+# observe({
+#   if (input$restore_data == 1) {
+#     shinyjs::disable("restore_data")
+#   } 
+# })
+# observe({
+#    if (input$subset_data == 0) {
+#      shinyjs::disable("restore_data")
+#    } else {
+#      shinyjs::enable("restore_data")
+#      shinyjs::disable("subset_data")
+#    }
+#  })
+#  
+#  observe({
+#    if (input$restore_data == 1) {
+#      shinyjs::disable("restore_data")
+#    } 
+#  })
 
   values <- reactiveValues(data=NULL)
    
@@ -164,7 +179,9 @@ output$insight_options <- renderUI({
                                                 "Histogram")),
                                selectInput("summ_method",
                                            "Method of summary generation",
-                                           list("TextRank", "LexRank"))),
+                                           list("LexRank")
+                                           #list("TextRank", "LexRank")
+                                           )),
          ##########################
          
          "Word Tree" = tagList(
@@ -185,12 +202,13 @@ output$insight_options <- renderUI({
                                                      "Time Series",
                                                      "Bar",
                                                      "Density",
-                                                     "Histogram")),
-                                    selectInput("sent_lex",
-                                                "Lexicon for Sentiment Dictionary",
-                                                list("afinn", "bing",
-                                                     "loughran", "nrc",
-                                                     "nrc emotions", "loughran - all sentiments"))),
+                                                     "Histogram"))#,
+                                    # selectInput("sent_lex",
+                                    #             "Lexicon for Sentiment Dictionary",
+                                    #             list("afinn", "bing",
+                                    #                  "loughran", "nrc",
+                                    #                  "nrc emotions", "loughran - all sentiments"))
+                                    ),
          "Moving Average Term Sentiment" = tagList(selectInput("vis_type",
                                                                "Select how to Visualise it",
                                                                list("Time Series",
@@ -201,11 +219,12 @@ output$insight_options <- renderUI({
                                                                     "Histogram")),
                                                    sliderInput("term_sent_lag",
                                                                "Lag Length for Calculation of Moving Average",
-                                                               3,10000,250),
-                                                   selectInput("sent_lex",
-                                                               "Lexicon for Sentiment Dictionary",
-                                                               list("afinn", "bing",
-                                                                    "loughran", "nrc"))),
+                                                               3,10000,250) #,
+                                                   # selectInput("sent_lex",
+                                                   #             "Lexicon for Sentiment Dictionary",
+                                                   #             list("afinn", "bing",
+                                                   #                  "loughran", "nrc"))
+                                                   ),
          "Aggregated Term Count" = tagList(selectInput("vis_type",
                                                        "Select how to Visualise it",
                                                        list("Bar",
@@ -227,7 +246,9 @@ output$insight_options <- renderUI({
                                                    "Histogram")),
                                   selectInput("summ_method",
                                               "Method of summary generation",
-                                              list("TextRank", "LexRank")),
+                                              list("LexRank")
+                                              #list("TextRank", "LexRank")
+                                              ),
                                   selectInput("agg_var",
                                               "Select which variable to aggregate on",
                                               c("", names(grouped())) %||% c(""))),
@@ -239,14 +260,49 @@ output$insight_options <- renderUI({
                                                            "Bar",
                                                            "Density",
                                                            "Histogram")),
-                                          selectInput("sent_lex",
-                                                      "Lexicon for Sentiment Dictionary",
-                                                      list("afinn", "bing",
-                                                           "loughran", "nrc")),
+                                          # selectInput("sent_lex",
+                                          #             "Lexicon for Sentiment Dictionary",
+                                          #             list("afinn", "bing",
+                                          #                  "loughran", "nrc")),
                                           selectInput("agg_var",
                                                       "Select which variable to aggregate on",
                                                       c("", names(grouped())) %||% c(""))))})
 
+
+################
+output$senti_choices <- renderUI({
+  if (input$what_vis == "Term Sentiment" && input$vis_type == "Page View"){
+    selectInput("sent_lex",
+                "Lexicon for Sentiment Dictionary",
+                list("afinn", "bing",
+                     "loughran", "nrc",
+                     "nrc - all sentiments", "loughran - all sentiments"))
+  }
+  else {
+    if(input$what_vis %in% c("Term Sentiment", "Moving Average Term Sentiment", "Aggregated Sentiment"))
+      selectInput("sent_lex",
+                  "Lexicon for Sentiment Dictionary",
+                  list("afinn", "bing",
+                       "loughran", "nrc"))
+  }
+})
+
+output$senti_choices2 <- renderUI({
+  if (input$what_vis == "Term Sentiment" && input$vis_type == "Page View"){
+    if (input$sent_lex == "nrc - all sentiments"){
+      selectInput("spec_senti",
+                  "Highlight words with a sentiment of",
+                  list("anger", "anticipation", "disgust", "fear", 
+                       "joy", "sadness", "surprise", "trust"))
+    }
+    else if (input$sent_lex == "loughran - all sentiments"){
+      selectInput("spec_senti",
+                  "Highlight words with a sentiment of",
+                  list("litigious", "uncertainty", 
+                       "constraining","superfluous"))
+    }
+  }
+})
 
 insighted <- reactive({
   switch(input$what_vis,
@@ -265,7 +321,10 @@ insighted <- reactive({
          ########################################
          "Term Sentiment" = get_term_insight(grouped(),
                                              input$what_vis,
-                                             input$sent_lex),
+                                             input$sent_lex,
+                                             ##############
+                                             input$spec_senti
+                                             ),
          "Moving Average Term Sentiment" = get_term_insight(grouped(),
                                                             input$what_vis,
                                                             input$sent_lex,
@@ -493,57 +552,6 @@ output$insighted_table <- DT::renderDT({
   }, 
 filter = "bottom")
 
-
-# # table to show the data table output after visualization 
-# output$insighted_table <- renderDT({
-#   if (input$what_vis %in% c("Term Frequency",
-#                             "Key Words", "Term Sentiment")){
-#     tab <- insighted() %>%
-#       select(id, word, tail(names(.), 2)) %>%
-#       filter(!is.na(!! dplyr::sym(input$what_vis))) %>%
-#       distinct(word, .keep_all = TRUE) 
-#     
-#     if (input$desc == FALSE) {
-#         tab <- tab %>% arrange(desc(!! dplyr::sym(input$what_vis))) 
-#     }
-#     else{
-#       tab <- tab %>% 
-#         arrange(!! dplyr::sym(input$what_vis)) 
-#     }
-#     
-#   }
-#   
-#   else if (input$what_vis %in% c("n-gram Frequency")){
-#     tab <- insighted() %>%
-#       select(id, word, tail(names(.), 2)) %>%
-#       filter(!is.na(!! dplyr::sym(input$what_vis))) %>%
-#       distinct(n-grams, .keep_all = TRUE) 
-#     
-#     if (input$desc == FALSE) {
-#       tab <- tab %>% arrange(desc(!! dplyr::sym(input$what_vis))) 
-#     }
-#     else{
-#       tab <- tab %>% 
-#         arrange(!! dplyr::sym(input$what_vis)) 
-#     }
-#   }
-#   
-#   else if (input$what_vis %in% c("Moving Average Term Sentiment")){
-#     tab <- insighted() %>%
-#       select(id, word, tail(names(.), 1)) 
-#   }
-#   
-#   else {
-#     tab <- insighted() %>%
-#       select(-word, -word_id, -lemma, -stopword, -text) %>%
-#       distinct(`Bound Aggregates`, .keep_all = TRUE) 
-#     
-#     ##%>%
-#       #select(!! dplyr::sym(input$agg_var), !! dplyr::sym(input$what_vis)) %>%
-#       #distinct(!! dplyr::sym(input$agg_var), .keep_all = TRUE)
-#   }
-#   
-# })
   
 output$downloadData <- downloadHandler(
   filename = function() {

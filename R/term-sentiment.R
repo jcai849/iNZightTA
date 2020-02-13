@@ -16,7 +16,7 @@
 #     dplyr::pull(value)
 # }
 
-term_sentiment <- function(.data, lexicon="afinn"){
+term_sentiment <- function(.data, lexicon="afinn", senti = NULL){
    data <- tibble::enframe(.data, "number", "word")
    
    if (lexicon == "afinn"){ 
@@ -57,17 +57,17 @@ term_sentiment <- function(.data, lexicon="afinn"){
        dplyr::pull(value)
    }
    
-   else if (lexicon == "nrc emotions"){ 
+   else if (lexicon == "nrc - all sentiments"){ 
       tidytext::get_sentiments("nrc") %>%
-         dplyr::filter(!sentiment %in% c("positive", "negative")) %>%
+         dplyr::filter(sentiment == senti) %>%
          dplyr::right_join(data, by="word") %>%
          dplyr::distinct(number, .keep_all = TRUE) %>%
          dplyr::pull(sentiment)
    }
    
-   else {
+   else { # loughran - all sentiments
       tidytext::get_sentiments("loughran") %>%
-         dplyr::filter(!sentiment %in% c("positive", "negative")) %>%
+         dplyr::filter(sentiment == senti) %>%
          dplyr::right_join(data, by="word") %>%
          dplyr::distinct(number, .keep_all = TRUE) %>%
          dplyr::pull(sentiment)

@@ -42,7 +42,7 @@ struct_pageview <- function(.data, col_name, num_terms, term_index, word_size, p
                                                 y = (ymin + ymax)/2),
                                    size = word_size, color = "black")
         }
-        # if nrc emotions, loughran all senti
+        # if nrc all senti, loughran all senti
         else {
             .data[seq(term_index, end),] %>%
                 dplyr::pull(word) %>%
@@ -50,6 +50,8 @@ struct_pageview <- function(.data, col_name, num_terms, term_index, word_size, p
                 dplyr::arrange(page, line) %>%
                 dplyr::bind_cols(.data[seq(term_index, end),]) %>% 
                 ggpage::ggpage_plot(ggplot2::aes(fill = !! q_col_name)) +
+                ggplot2::scale_fill_manual(values = c("grey70", "blue"),
+                                  name = "Sentiment") +
                 ggplot2::geom_text(ggplot2::aes(label = word,
                                                 x = (xmax + xmin)/2,
                                                 y = (ymin + ymax)/2),

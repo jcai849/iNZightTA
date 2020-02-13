@@ -4,7 +4,7 @@
 \alias{term_sentiment}
 \title{Determine sentiment of terms}
 \usage{
-term_sentiment(.data, lexicon = "afinn")
+term_sentiment(.data, lexicon = "afinn", senti = NULL)
 }
 \arguments{
 \item{.data}{vector of terms}

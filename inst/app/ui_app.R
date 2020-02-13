@@ -38,8 +38,12 @@ ui <- navbarPage("iNZight Text Analytics",
                               
                               actionButton("prep_button", "Prepare Text"),
                               tags$hr(),
-                              selectInput("section_by", "Section By",
-                                          list("", "chapter", "part", "section", "canto", "book")),
+                              conditionalPanel(
+                                condition = "input.import_from == 'Project Gutenberg'||input.import_from == 'Upload .txt, .csv, .xlsx, or .xls file'", 
+                                selectInput("section_by", "Section By",
+                                          list("", "chapter", "part", "section", "canto", "book"))
+                              ),
+                              
                               uiOutput("vars_to_filter"),
                               textInput("filter_pred", "value to match", "")
                             ),
@@ -90,6 +94,8 @@ ui <- navbarPage("iNZight Text Analytics",
                                          
                                          
                                            uiOutput("insight_options"),
+                                           uiOutput("senti_choices"),
+                                           uiOutput("senti_choices2"),
                                            ################################
                                            ################################
                                            
@@ -171,7 +177,8 @@ ui <- navbarPage("iNZight Text Analytics",
                                                      actionButton("add", "Add Points"),
                                                      actionButton("delete", "Delete Points"),
                                             
-                                                     checkboxInput('line_num', 'See doc name', value = FALSE, width = NULL)
+                                                     checkboxInput('line_num', 'See doc name', value = FALSE, width = NULL),
+                                                     downloadButton("download_kwic_data", "Download KWIC table")
                                                      
                           ),
                           mainPanel(
