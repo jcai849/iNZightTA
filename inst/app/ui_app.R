@@ -101,7 +101,7 @@ ui <- navbarPage("iNZight Text Analytics",
                                            
                                            conditionalPanel(
                                              condition = "input.what_vis == 'Word Tree'", 
-                                             selectizeInput("merge_id_grps_wt", "Filter word tree by", choices = character(0)),
+                                             selectizeInput("merge_id_grps_wt", "Group data by", choices = character(0)),
                                              selectizeInput("filter_wt", "View only for", choices = character(0)), 
                                              actionButton("create_tree", "Create Tree")
                                              ), 

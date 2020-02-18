@@ -4,6 +4,8 @@
 #'
 #' @param lexicon sentiment lexicon to use, based on the corpus
 #'   provided by tidytext
+#'   
+#' @param senti sentiment to use for page view for nrc or loughran (joy, anger ...)
 #' 
 #' @return vector with sentiment score of each word in the vector
 #'
@@ -57,7 +59,7 @@ term_sentiment <- function(.data, lexicon="afinn", senti = NULL){
        dplyr::pull(value)
    }
    
-   else if (lexicon == "nrc - all sentiments"){ 
+   else if (lexicon == "nrc - emotions"){ 
       tidytext::get_sentiments("nrc") %>%
          dplyr::filter(sentiment == senti) %>%
          dplyr::right_join(data, by="word") %>%
@@ -65,7 +67,7 @@ term_sentiment <- function(.data, lexicon="afinn", senti = NULL){
          dplyr::pull(sentiment)
    }
    
-   else { # loughran - all sentiments
+   else { # loughran - emotions
       tidytext::get_sentiments("loughran") %>%
          dplyr::filter(sentiment == senti) %>%
          dplyr::right_join(data, by="word") %>%

@@ -179,7 +179,7 @@ output$insight_options <- renderUI({
                                                 "Histogram")),
                                selectInput("summ_method",
                                            "Method of summary generation",
-                                           list("LexRank")
+                                           list("TextRank")
                                            #list("TextRank", "LexRank")
                                            )),
          ##########################
@@ -271,12 +271,12 @@ output$insight_options <- renderUI({
 
 ################
 output$senti_choices <- renderUI({
-  if (input$what_vis == "Term Sentiment" && input$vis_type == "Page View"){
+  if (input$what_vis == "Term Sentiment" && input$vis_type %in% c("Page View", "Bar")){
     selectInput("sent_lex",
                 "Lexicon for Sentiment Dictionary",
                 list("afinn", "bing",
                      "loughran", "nrc",
-                     "nrc - all sentiments", "loughran - all sentiments"))
+                     "nrc - emotions", "loughran - emotions"))
   }
   else {
     if(input$what_vis %in% c("Term Sentiment", "Moving Average Term Sentiment", "Aggregated Sentiment"))
@@ -288,14 +288,14 @@ output$senti_choices <- renderUI({
 })
 
 output$senti_choices2 <- renderUI({
-  if (input$what_vis == "Term Sentiment" && input$vis_type == "Page View"){
-    if (input$sent_lex == "nrc - all sentiments"){
+  if (input$what_vis == "Term Sentiment" && input$vis_type %in% c("Page View", "Bar")){
+    if (input$sent_lex == "nrc - emotions"){
       selectInput("spec_senti",
                   "Highlight words with a sentiment of",
                   list("anger", "anticipation", "disgust", "fear", 
                        "joy", "sadness", "surprise", "trust"))
     }
-    else if (input$sent_lex == "loughran - all sentiments"){
+    else if (input$sent_lex == "loughran - emotions"){
       selectInput("spec_senti",
                   "Highlight words with a sentiment of",
                   list("litigious", "uncertainty", 

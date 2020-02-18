@@ -11,6 +11,8 @@ term_sentiment(.data, lexicon = "afinn", senti = NULL)
 
 \item{lexicon}{sentiment lexicon to use, based on the corpus
 provided by tidytext}
+
+\item{senti}{sentiment to use for page view for nrc or loughran (joy, anger ...)}
 }
 \value{
 vector with sentiment score of each word in the vector
