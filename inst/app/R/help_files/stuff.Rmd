@@ -2,4 +2,6 @@
 
 2.	Click on the “RSS” button, located on the line above the first displayed comment. 
 
+![stuff RSS pic](RSS_comments.png)
+
 3.	Copy the RSS feed URL and paste this link into the input box.  

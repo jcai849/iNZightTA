@@ -63,3 +63,7 @@ NeedsCompilation: no
 Packaged: 2019-09-08 10:33:01 UTC; user
 Author: Jason Cairns [aut, cre]
 Maintainer: Jason Cairns <jcai849@aucklanduni.ac.nz>
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
