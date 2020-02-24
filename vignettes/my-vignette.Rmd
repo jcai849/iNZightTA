@@ -5,7 +5,7 @@ output:
     toc: true
     toc_depth: 5
 vignette: >
-  %\VignetteIndexEntry{my-vignette}
+  %\VignetteIndexEntry{Guide to the iNZightTA App}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
