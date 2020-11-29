@@ -3,7 +3,7 @@
 
 if(!require(pacman)) install.packages("pacman")
 
-devtools::install_github('charlie86/spotifyr')
+devtools::install_github('charlie86/spotifyr', quiet=TRUE)
 
 # pacman::p_load(
 #                spotifyr,
@@ -52,6 +52,6 @@ pacman::p_load(
   quanteda
  )
 
-source("ui_app.R", local = TRUE)$value
-source("server_app.R", local = TRUE)$value
-shinyApp(ui, server) 
+source("ui_app.R", local = TRUE)
+source("server_app.R", local = TRUE)
+shiny::runApp(shiny::shinyApp(ui, server))

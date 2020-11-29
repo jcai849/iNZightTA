@@ -3,6 +3,5 @@
 #' @return void; launch app for iNZightTA
 #'
 #' @export
-main <- function(){
-    shiny::runApp(system.file("app", package = "inzightta"))
-    }
+main <- function()
+    source(system.file("app", "app.R", package = "inzightta"))
